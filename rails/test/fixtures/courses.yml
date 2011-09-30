@@ -1,0 +1,9 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  department: MyString
+  number: 1
+
+two:
+  department: MyString
+  number: 1
