@@ -1,4 +1,0 @@
-most of the real operating code is in mainapp.util
-
-to run tests:
-$ python manage.py test mainapp
