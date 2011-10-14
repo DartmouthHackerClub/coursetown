@@ -1,0 +1,17 @@
+class CreateOfferings < ActiveRecord::Migration
+  def self.up
+    create_table :offerings do |t|
+      t.Course :course
+      t.integer :year
+      t.string :season
+      t.string :professor
+      t.time :time
+
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :offerings
+  end
+end
