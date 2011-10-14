@@ -2,11 +2,14 @@ class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.xml
   def index
-    @courses = Course.all
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @courses }
+    
+    if params[:uid].present?
+      @user_id = params[:uid]
+      @wishlist = Wishlist.find_all_by_user_id(@user_id)
+      @courses = @wishlist.map(&:course)
+      @user = User.find(@user_id)
+    else
+      @courses = Course.all
     end
   end
 
