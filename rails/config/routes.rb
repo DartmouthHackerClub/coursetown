@@ -4,6 +4,9 @@ Coursetown::Application.routes.draw do
   resources :offerings
 
   resources :courses
+  
+  resources :wishlists
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
