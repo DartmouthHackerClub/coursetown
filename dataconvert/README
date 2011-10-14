@@ -1,0 +1,2 @@
+convert-from-old produces a series of INSERT statements.
+schema.sql is the basic schema (that convert-from-old( wants, imported from courseguide and adapted to sqlite3)
