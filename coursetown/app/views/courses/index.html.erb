@@ -2,7 +2,7 @@
   
 <table>
   <tr>
-    <% if @wishlist.present? %>
+    <% if @user.present? %>
     <th>Wishlist</th>
     <% end %>
     <th>Department</th>
@@ -11,12 +11,12 @@
     <th></th>
     <th></th>
   </tr>
-<% form_tag  do %>
+<%= form_tag do -%>
   <% @courses.each do |course| %>
     <tr>
-      <% if @wishlist.present? %>
+      <% if @user.present? %>
         <td>
-          <input type="checkbox" name="course[#{course.id}][wishlist]" <%= "checked" if @wishlist.include?(course) %>>
+          <%= check_box_tag 'course[#{course.id}][wishlist]', true.to_s, @wishlist.include?(course) %>
         </td>
       <% end %>
       <td><%= course.department %></td>

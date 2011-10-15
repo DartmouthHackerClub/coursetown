@@ -6,10 +6,10 @@ class CoursesController < ApplicationController
     @courses = Course.all
     if params[:uid].present?
       @user_id = params[:uid]
+      # TODO if wishlist doesn't exist, will this return an empty list?
       @wishlist = Wishlist.find_all_by_user_id(@user_id).map(&:course)
       @user = User.find(@user_id)
     end
-
   end
 
   # GET /courses/1
