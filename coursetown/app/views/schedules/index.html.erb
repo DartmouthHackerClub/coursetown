@@ -1,0 +1,19 @@
+<%= "#{@user.name}'s Schedule" %>
+
+<% if @offerings.empty? %>
+  Your schedule is empty.
+<% else %>
+  <table>
+    <% @offerings.each do |offering| %>
+      <tr>
+        <td><%= offering.department %></td>
+        <td><%= offering.number %></td>
+        <td><%= offering.name %></td>
+        <td><%= link_to 'Details', offering %></td>
+        <td><%= link_to 'Remove', offering, :confirm => 'Are you sure?', :method => :delete %></td>
+      </tr>
+    <% end %>
+  </table>
+<%end%>
+<br />
+

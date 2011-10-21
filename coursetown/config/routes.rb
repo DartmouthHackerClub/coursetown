@@ -1,4 +1,6 @@
 Coursetown::Application.routes.draw do
+  get "schedule/index"
+
   resources :users
 
   resources :offerings
@@ -7,6 +9,7 @@ Coursetown::Application.routes.draw do
   
   resources :wishlists
   
+  resources :schedules
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
