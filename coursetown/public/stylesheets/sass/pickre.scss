@@ -1,0 +1,114 @@
+a img{
+    border: none;
+
+}
+
+.term a, .time a {
+    vertical-align: top;
+    font-size: .8em;
+}
+
+@font-face {
+    font-family: 'ChunkFiveRegular';
+    src: url('font-face/ChunkFive/Chunkfive-webfont.eot');
+    src: url('font-face/ChunkFive/Chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
+         url('font-face/ChunkFive/Chunkfive-webfont.woff') format('woff'),
+         url('font-face/ChunkFive/Chunkfive-webfont.ttf') format('truetype'),
+         url('font-face/ChunkFive/Chunkfive-webfont.svg#ChunkFiveRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h3 {
+	font-family:ChunkFiveRegular;
+	letter-spacing:0.05em;
+	font-size:2em;
+	color:#060;
+	margin:0;
+	padding:0;
+}
+
+html{
+    width: 100%;
+}
+
+body{
+    width: 700px;
+    margin: auto;
+    background-color: #eee;
+    font-family: arial;
+    font-size: 14px;
+    color: #4d4d4d;
+}
+
+#header{
+	height:130px;
+}
+
+#header a#logo{
+	position:relative;
+	float:right;
+	right:10px;
+}
+
+#content{
+    padding: 20px;
+}
+
+fieldset{
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+
+
+/* error handling has different formatting than a single result*/
+.error_msg {
+	background-color:#aaa;
+	color:white;
+	font-weight:normal;
+	padding:10px;
+	border-radius:10px;
+}
+
+.description,
+.note {
+	font-weight:normal;
+}
+
+.cglink{
+	color:white;
+	background-color:#055005;
+	font-style:italic;
+	font-weight:normal;
+	font-size:0.9em;
+	vertical-align:middle;
+	text-decoration:none;
+	display:block;
+	float:right;
+	padding:6px 7px;
+	margin:6px;
+	border-radius:3px;
+}
+
+.cglink:hover{
+    background-color:#3a3;
+}
+
+
+#disclaimer {
+    margin-top: 15px;
+    color: #999;
+}
+
+#disclaimer a {
+    color: #999;
+}
+
+#sortby {
+    display: inline-block;
+    float: left;
+    margin-left: 22px;
+}
