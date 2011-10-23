@@ -1,3 +1,6 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+  # GET /
+  def index
+    render :template => "layouts/index.html.erb"
+  end
 end
