@@ -1,0 +1,237 @@
+a img {
+  border: none; }
+
+.term a, .time a {
+  vertical-align: top;
+  font-size: .8em; }
+
+@font-face {
+  font-family: 'ChunkFiveRegular';
+  src: url("font-face/ChunkFive/Chunkfive-webfont.eot");
+  src: url("font-face/ChunkFive/Chunkfive-webfont.eot?#iefix") format("embedded-opentype"), url("font-face/ChunkFive/Chunkfive-webfont.woff") format("woff"), url("font-face/ChunkFive/Chunkfive-webfont.ttf") format("truetype"), url("font-face/ChunkFive/Chunkfive-webfont.svg#ChunkFiveRegular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
+h3 {
+  font-family: ChunkFiveRegular;
+  letter-spacing: 0.05em;
+  font-size: 2em;
+  color: #060;
+  margin: 0;
+  padding: 0; }
+
+html {
+  width: 100%; }
+
+body {
+  width: 700px;
+  margin: auto;
+  background-color: #eee;
+  font-family: arial;
+  font-size: 14px;
+  color: #4d4d4d; }
+
+#header {
+  height: 130px; }
+
+#header a#logo {
+  position: relative;
+  float: right;
+  right: 10px; }
+
+#content {
+  padding: 20px; }
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none; }
+
+/* error handling has different formatting than a single result*/
+.error_msg {
+  background-color: #aaa;
+  color: white;
+  font-weight: normal;
+  padding: 10px;
+  border-radius: 10px; }
+
+.description,
+.note {
+  font-weight: normal; }
+
+.cglink {
+  color: white;
+  background-color: #055005;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 0.9em;
+  vertical-align: middle;
+  text-decoration: none;
+  display: block;
+  float: right;
+  padding: 6px 7px;
+  margin: 6px;
+  border-radius: 3px; }
+
+.cglink:hover {
+  background-color: #3a3; }
+
+#disclaimer {
+  margin-top: 15px;
+  color: #999; }
+
+#disclaimer a {
+  color: #999; }
+
+#sortby {
+  display: inline-block;
+  float: left;
+  margin-left: 22px; }
+
+.result h4 {
+  margin: 5px 10px 3px 10px; }
+
+.result .dept_num {
+  display: block;
+  width: 100%;
+  font-size: 1.3em; }
+
+.result .desc {
+  display: block;
+  width: 100%;
+  font-size: 1.1em; }
+
+.result > span {
+  display: block;
+  padding: 2px 10px; }
+
+.result span span.fieldname,
+.result span.notfound {
+  font-weight: normal;
+  font-style: italic; }
+
+.result span span.fieldname {
+  color: #3a3;
+  display: block;
+  float: left;
+  width: 100px; }
+
+.result span.notfound {
+  color: #044904; }
+
+.result {
+  width: 100%;
+  margin-bottom: 20px;
+  background-color: #262;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  padding-bottom: 6px;
+  margin: 13px 0 13px 0; }
+
+/* course title acts as the header of each section -- darker color */
+.result .dept_num_title {
+  background-color: #055005;
+  border-radius: 10px 10px 0 0;
+  padding-top: 5px;
+  font-size: 1.2em;
+  letter-spacing: 1px; }
+
+/* CRN is differently colored & off to the right b/c people don't care about it when skimming */
+.result .crn {
+  float: right;
+  color: #3a3;
+  font-weight: normal;
+  font-style: italic; }
+
+/* unused */
+.result .offering {
+  margin-left: 10px; }
+
+.result .offering .prof {
+  margin-left: 5px; }
+
+.result .offering .time {
+  margin-left: 5px; }
+
+.result .offering .crn {
+  margin-left: 5px; }
+
+.result a {
+  color: #4c4;
+  text-decoration: none; }
+
+.result span a:visited {
+  color: #3a3; }
+
+.result span a:hover {
+  color: #33e033; }
+
+.result span a:active {
+  color: #1e1; }
+
+#search_form {
+  border-radius: 10px;
+  -border-radius: 10px;
+  -moz-border-radius: 10px;
+  font-size: 1.2em;
+  text-align: right;
+  background-color: #ddd;
+  padding: 20px; }
+
+#search_form input[type='submit'] {
+  display: inline-block;
+  font-size: 1.2em; }
+
+.search_row {
+  text-align: left;
+  height: 50px; }
+
+.search_row .left_side {
+  width: 300px;
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+  text-align: right; }
+
+.search_row .left_side select {
+  width: 93%;
+  overflow: hidden;
+  text-align: left; }
+
+.search_row .left_side .close_link {
+  width: 7%;
+  overflow: hidden;
+  text-align: left; }
+
+.search_row .right_side {
+  height: 100%;
+  vertical-align: middle;
+  width: 300px;
+  display: inline-block;
+  padding: 0 10px 0 10px; }
+
+.search_row .right_side input[type='text'] {
+  width: 100%; }
+
+.search_row a.close_row {
+  font-size: .8em; }
+
+.search_row a {
+  text-decoration: none;
+  font-family: arial 'courier new';
+  font-weight: bold;
+  vertical-align: middle;
+  margin: 0px 3px;
+  background-color: #aaa;
+  color: #ddd;
+  border: 0;
+  padding: 0 3px 0 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px; }
+
+.search_row a:hover {
+  background-color: #999;
+  color: white; }

@@ -1,6 +1,13 @@
 class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.xml
+  def search
+    @courses = Course.all
+    render :json => @courses
+  end
+
+  # GET /courses
+  # GET /courses.xml
   def index
     
     @courses = Course.all
