@@ -15,7 +15,8 @@ var profs = null;
 var dept_abbrevs = null;
 var titles = null;
 var empty_rows = 0;
-var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
+//var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
+var search_query_url = 'search_json';
 
 function show_error(e) {
     //console.log(e);
@@ -377,7 +378,6 @@ function make_left_side_dropdown() {
         }
     });
     return dropdown
-
 }
 
 function add_search_row_if_we_need_one() {
@@ -611,6 +611,8 @@ function do_search(form_params) {
         dataType: "json",
         type: "POST",
         url: query_url,
+        //when we're ready to query the new database, uncomment the below
+        //url: search_query_url,
         data: JSON.stringify(search_params),
         success: function (data) {
             //we only want the juicy part of the data
