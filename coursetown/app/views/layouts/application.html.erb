@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>Dartmouth Course Picker by Hacker Club</title>
+
+        <%= javascript_include_tag "https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" %>
+        <%= javascript_include_tag "/dept_map.js" %>
+        <%= javascript_include_tag "/jquery-autocomplete/jquery.autocomplete.min.js" %>
+        <%= javascript_include_tag "/json-sans-eval.js" %>
+        <%= javascript_include_tag "/pickre.js" %>
+
+        <%= stylesheet_link_tag    "/stylesheets/compiled/application.css" %>
+        <%= stylesheet_link_tag "/jquery-autocomplete/jquery.autocomplete.css" %>
+        <%= csrf_meta_tags %>
+
+		<script type="text/javascript" >
+</script>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23367713-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+	</head>
+	<body>
+		<div id="header">
+            <a id="login" href="">
+                login
+            </a>
+			<a id="logo" href="http://hacktown.cs.dartmouth.edu">
+            <%= image_tag "pickr_logo.png" %>
+			</a>
+		</div>
+		<div id="content">
+            <%= yield %>
+		</div>
+	</body>
+</html>

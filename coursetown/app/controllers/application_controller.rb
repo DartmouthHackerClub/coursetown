@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   # GET /
   def index
-    render :template => "layouts/index.html.erb"
+    render :template => "application/index"
   end
 end

@@ -1,9 +1,15 @@
 class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.xml
-  def search
+  def search_results
     @courses = Course.all
     render :json => @courses
+  end
+
+  def search
+    respond_to do |format|
+      format.html # search.html.erb
+    end
   end
 
   # GET /courses
