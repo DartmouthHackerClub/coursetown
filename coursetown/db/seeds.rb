@@ -7,10 +7,10 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 courses = Course.create([
-  {department: 'Computer Science', number: 5, title: 'Introduction'},
-  {department: 'Mathematics', number: 22, title: 'Linear Algebra'},
-  {department: 'Wizardry', number: 17, title: 'Care of Magical Creatures'},
-  {department: 'Wizardry', number: 43, title: 'Defence Against the Dark Arts'}])
+  {department: 'COSC', number: 5, title: 'Introduction'},
+  {department: 'MATH', number: 22, title: 'Linear Algebra'},
+  {department: 'WIZD', number: 17, title: 'Care of Magical Creatures'},
+  {department: 'WIZD', number: 43, title: 'Defense Against the Dark Arts'}])
 
 users = User.create([{name: "Octavius Ott"}, {name: "Cindy Ott"}, {name: "John Ledyard"}])
 

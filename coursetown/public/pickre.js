@@ -3,7 +3,8 @@ var dept_abbrevs = null;
 var titles = null;
 var empty_rows = 0;
 var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
-var search_query_url = 'search_json';
+//TODO: delete the above when we're fully transitioned off of couch
+var search_query_url = '/search_json';
 
 function show_error(e) {
     //console.log(e);
@@ -22,8 +23,8 @@ function sort_results(data) {
     switch(sortby) {
         case "course":
             f = function(a,b) {
-                var keya = a['Department'];
-                var keyb = b['Department'];
+                var keya = a['department'];
+                var keyb = b['department'];
                 if (keya < keyb) {
                     return -1;
                 }
@@ -96,145 +97,161 @@ function show_results(results) {
     for (key in results) {
         result = results[key];
         if (!result) continue;
-        result_div = $('<div class="result"></div>');
-
-        // title
-        title = $('<span class="dept_num_title">' + result['Department'] + ' ' + result['Number'] + ': ' + result['title'] + '</span>');
-        // crn
-        crn = $('<span class="crn">CRN ' + result['CRN'] + '</span>');
-        title.append(crn);
-        result_div.append(title);
-
-        // Course guide link
-        var deptnum = get_department_number(result['Department']);
-        var link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['Number']+'&prof=&action=selectcourses2&dept='+deptnum
-        var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
-        result_div.append(cglink_div);
-
-        // term
-        term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
-        result_div.append(term);
-
-        // profs
-        profs_div = $('<span class="profs"></span>');
-        if (result['Professors'].length <= 1) {
-			profs_div.append($('<span class="fieldname">prof </span>'));
-        }
-        else {
-			profs_div.append($('<span class="fieldname">profs </span>'));
-        }
-        if (result['Professors'].length > 0) {
-            var first = true;
-            var html = '';
-            for (key in result['Professors']) {
-                if (!first) {
-                    html += ', ';
-                }
-                first = false;
-		var prof = result['Professors'][key];
-                //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
-                html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
-            }
-            profs_div.append(html);
-        }
-        else {
-            profs_div.append($('<span class="notfound">none listed</span>'));
-        }
-        result_div.append(profs_div);
-
-        // Period
-        time = $('<span class="time"><span class="fieldname">period </span>' + result['period'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
-        result_div.append(time);
-
-
-		// Distribs
-        distrib = $('<span class="distrib"><span class="fieldname">distrib </span></span>');
-        if(result['dist'] && result['dist'].length > 0){
-            var first = true;
-            var html = '';
-            // TODO at the moment we bundle distribs together into a string
-            // so this is unnecessary
-            for (key in result['dist']) {
-                if (!first) {
-                    html += ', ';
-                }
-                first = false;
-                html += result['dist'][key];
-            }
-            distrib.append(html);
-        }
-        else{
-            distrib.append($('<span class="notfound">none</span>'));
-        }
-        result_div.append(distrib);
-
-        // WCULT
-        wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
-        if(result['wc']){
-            wcult.append(result['wc']);
-        }
-        else{
-            wcult.append($('<span class="notfound">none</span>'));
-        }
-        result_div.append(wcult);
-
-        // Can NRO?
-        nro = $('<span class="nro"><span class="fieldname">nro </span></span>');
-        if(result['nro'] == 'true'){
-            nro.append($('<span>yes</span>')); // TODO why is this not displaying w/o <span>?
-        }
-        else if(result['nro'] == 'false'){
-            nro.append($('<span class="notfound">no</span>'));
-        }
-        result_div.append(nro);
-
-        // Median
-        var median_div = $('<span class="median"><span class="fieldname">avg median </span></span>');
-        if (result['avg_median']) {
-            var avg = result['avg_median'].toFixed(2);
-            median_div.append($('<span>' + avg + '</span>'));
-        }
-        else {
-            median_div.append($('<span class="notfound">not available</span>'));
-        }
-        result_div.append(median_div);
-
-
-        //ORC STUFF
-        // Header
-        if (result['note'] || result['offered'] || result['description']) {
-            var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + result['Department'] + '.html"> ' + result['Department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
-        result_div.append(orc_header_div);
-        }
-        // Link to ORC
-        else{
-        var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+result['Department']+'.html">' + result['Department'] + ' ORC</a<</span>');
-        result_div.append(dept_orc_div);
-        }
-
-        // Note
-        if (result['note']) {
-            var note_div = $('<span class="note"><span class="fieldname">note </span>'+result['note']+'</span>');
-            result_div.append(note_div);
-        }
-
-        // offered
-        if (result['offered']) {
-            offered = $('<span class="offered"><span class="fieldname">offered </span>' + result['offered'] + '</span>');
-            result_div.append(offered);
-        }
-
-        // Description
-        if (result['description']) {
-            var description_div = $('<span class="description"><span class="fieldname">description </span>'+ result['description'].replace(/\n/g, '<br />') +'</span>');
-            result_div.append(description_div);
-        }
-
-
-        
+        result_div = generate_result_div(result);
         the_results_div.append(result_div);
     }
     last_result = results;
+}
+
+// in: a json object representing a single result (one offering)
+// out: a jquery DOM object of that result
+function generate_result_div(result) {
+    result_div = $('<div class="result"></div>');
+
+    // title
+    title = $('<span class="dept_num_title">' + result['department'] + ' ' + result['number'] + ': ' + result['title'] + '</span>');
+    // crn
+    if(result['crn']){
+        crn = $('<span class="crn">CRN ' + result['CRN'] + '</span>');
+        title.append(crn);
+    }
+    result_div.append(title);
+
+    // Course guide link
+    var deptnum = get_department_number(result['department']);
+    var link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
+    var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
+    result_div.append(cglink_div);
+
+    // term
+    term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
+    result_div.append(term);
+
+    /*
+    // profs
+    profs_div = $('<span class="profs"></span>');
+    if (result['Professors'].length <= 1) {
+        profs_div.append($('<span class="fieldname">prof </span>'));
+    }
+    else {
+        profs_div.append($('<span class="fieldname">profs </span>'));
+    }
+    if (result['Professors'].length > 0) {
+        var first = true;
+        var html = '';
+        for (key in result['Professors']) {
+            if (!first) {
+                html += ', ';
+            }
+            first = false;
+    var prof = result['Professors'][key];
+            //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
+            html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
+        }
+        profs_div.append(html);
+    }
+    else {
+        profs_div.append($('<span class="notfound">none listed</span>'));
+    }
+    result_div.append(profs_div);
+    */
+
+    // Period
+    time = $('<span class="time"><span class="fieldname">period </span>' + result['period'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
+    result_div.append(time);
+
+
+    /*
+    // Distribs
+    distrib = $('<span class="distrib"><span class="fieldname">distrib </span></span>');
+    if(result['dist'] && result['dist'].length > 0){
+        var first = true;
+        var html = '';
+        // TODO at the moment we bundle distribs together into a string
+        // so this is unnecessary
+        for (key in result['dist']) {
+            if (!first) {
+                html += ', ';
+            }
+            first = false;
+            html += result['dist'][key];
+        }
+        distrib.append(html);
+    }
+    else{
+        distrib.append($('<span class="notfound">none</span>'));
+    }
+    result_div.append(distrib);
+    */
+
+    /*
+    // WCULT
+    wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
+    if(result['wc']){
+        wcult.append(result['wc']);
+    }
+    else{
+        wcult.append($('<span class="notfound">none</span>'));
+    }
+    result_div.append(wcult);
+
+    // Can NRO?
+    nro = $('<span class="nro"><span class="fieldname">nro </span></span>');
+    if(result['nro'] == 'true'){
+        nro.append($('<span>yes</span>')); // TODO why is this not displaying w/o <span>?
+    }
+    else if(result['nro'] == 'false'){
+        nro.append($('<span class="notfound">no</span>'));
+    }
+    result_div.append(nro);
+    */
+
+    /*
+    // Median
+    var median_div = $('<span class="median"><span class="fieldname">avg median </span></span>');
+    if (result['avg_median']) {
+        var avg = result['avg_median'].toFixed(2);
+        median_div.append($('<span>' + avg + '</span>'));
+    }
+    else {
+        median_div.append($('<span class="notfound">not available</span>'));
+    }
+    result_div.append(median_div);
+    */
+
+
+    /*
+    //ORC STUFF
+    // Header
+    if (result['note'] || result['offered'] || result['description']) {
+        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + result['department'] + '.html"> ' + result['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
+    result_div.append(orc_header_div);
+    }
+    // Link to ORC
+    else{
+    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+result['department']+'.html">' + result['department'] + ' ORC</a<</span>');
+    result_div.append(dept_orc_div);
+    }
+
+    // Note
+    if (result['note']) {
+        var note_div = $('<span class="note"><span class="fieldname">note </span>'+result['note']+'</span>');
+        result_div.append(note_div);
+    }
+
+    // offered
+    if (result['offered']) {
+        offered = $('<span class="offered"><span class="fieldname">offered </span>' + result['offered'] + '</span>');
+        result_div.append(offered);
+    }
+
+    // Description
+    if (result['description']) {
+        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ result['description'].replace(/\n/g, '<br />') +'</span>');
+        result_div.append(description_div);
+    }
+    */
+    return result_div;
 }
 
 // course guide defines depts by number
@@ -397,7 +414,7 @@ function add_search_row_if_we_need_one() {
                 //autoFill: true,
                 selectFirst: false
             });
-    $('input[name="Department"]').autocomplete(dept_abbrevs,
+    $('input[name="department"]').autocomplete(dept_abbrevs,
             {
                 //autoFill: true,
                 multiple: true,
@@ -445,7 +462,7 @@ function do_search(form_params) {
 
     queries = [];
     for (key in form_params) {
-        if (form_params[key]['name'] == 'Department' && form_params[key]['value'] != '') {
+        if (form_params[key]['name'] == 'department' && form_params[key]['value'] != '') {
             var vals = form_params[key]['value'].split(',');
 
             depts = [];
@@ -467,7 +484,7 @@ function do_search(form_params) {
             }
 
             i = {}; //hash needs to be built at runtime
-            i['Department'] = depts.join(' OR ');
+            i['department'] = depts.join(' OR ');
             queries.push({
                 "field": i
             });
@@ -597,22 +614,12 @@ function do_search(form_params) {
     $.ajax({
         dataType: "json",
         type: "POST",
-        url: query_url,
+        url: search_query_url,
         //when we're ready to query the new database, uncomment the below
         //url: search_query_url,
         data: JSON.stringify(search_params),
         success: function (data) {
-            //we only want the juicy part of the data
             //console.log(JSON.stringify(data));
-            data = data['hits']['hits'];
-            for (key in data) {
-                data[key] = data[key]["_source"];
-                if (!data[key]) continue;
-                //pull the Department, number, section info out of the "names" field
-                data[key]['Department'] = data[key]["names"][0]["Department"];
-                data[key]['Number'] = data[key]["names"][0]["Number"];
-                data[key]['Section'] = data[key]["names"][0]["Section"];
-            }
             show_results(data);
         },
         error: function (e) {
@@ -668,7 +675,7 @@ var search_options = {
     },
     'department': {
         'long_name': 'Department',
-        'input_field': '<input type="text" name="Department" id="dept" value=""/>'
+        'input_field': '<input type="text" name="department" id="dept" value=""/>'
     },
     'Number': {
         'long_name': 'Course Number',
@@ -764,7 +771,6 @@ $().ready(function () {
     }
 
     row1 = insert_search_row_dom_element();
-    console.log(row1);
     row1 = $(row1);
 
     row1.find("select option:selected").removeAttr('selected');

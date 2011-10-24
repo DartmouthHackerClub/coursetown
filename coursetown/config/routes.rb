@@ -61,8 +61,8 @@ Coursetown::Application.routes.draw do
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
   root :to => "application#index"
-  match "/search" => "courses#search"
-  match "/search_json" => "courses#search_results"
+  match "/search" => "offerings#search"
+  match "/search_json" => "offerings#search_results"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.

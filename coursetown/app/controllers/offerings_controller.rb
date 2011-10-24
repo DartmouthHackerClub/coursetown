@@ -1,4 +1,16 @@
 class OfferingsController < ApplicationController
+
+  def search_results
+    @offerings= Offering.joins(:course).select('*')
+    render :json => @offerings
+  end
+
+  def search
+    respond_to do |format|
+      format.html # search.html.erb
+    end
+  end
+
   # GET /offerings
   # GET /offerings.xml
   def index
