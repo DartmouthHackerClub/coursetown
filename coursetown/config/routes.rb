@@ -1,7 +1,10 @@
 Coursetown::Application.routes.draw do
   get "schedule/index"
 
-  resources :users
+  resources :users do
+    # GET users/:id/schedule
+    get 'schedule' => 'users#show_schedule', :on => :member
+  end
 
   resources :offerings
 

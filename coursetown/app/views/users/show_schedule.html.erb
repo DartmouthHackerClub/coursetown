@@ -1,0 +1,46 @@
+<h1><%= "#{@user.name}'s Wishlist & Schedule"%></h1>
+
+<h2><%= "YEARS: #{@start_year} - #{@end_year}"%></h2>
+
+<% if @wishlist_offerings.size == 0 && @schedule_offerings.size == 0 %>
+	<p>You have no courses in your wishlist</p>
+<% else %>
+  <% @years.each do |year| %>
+    <% @terms.each do |term| %>
+      <% 
+		key = "#{year}#{term}" 
+		sched = @schedule_offerings[key] || []
+		wish = @wishlist_offerings[key] || []
+		%>
+      <% if sched.length + wish.length > 0 %>
+        <h2><%= key %></h2>
+        <table>
+			<tr>
+		        <th>Dept.</th>
+		        <th>Title</th>
+		        <th>Prof.</th>
+			    <th>Time</th>
+		    </tr>
+            <% sched.each do |offering| %>
+			  <tr class="schedule" style="background-color: red;">
+				<td><%= offering.department %></td>
+				<td><%= offering.title %></td>
+				<td><%= offering.professor %></td>
+				<td><%= offering.time %></td>
+			  </tr>
+		    <% end %>
+			<% wish.each do |offering| %>
+			  <tr class="wishlist" style="background-color: green;">
+				<td><%= offering.department %></td>
+				<td><%= offering.title %></td>
+				<td><%= offering.professor %></td>
+				<td><%= offering.time %></td>
+			  </tr>
+		    <% end %>
+	    </table>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<br />
