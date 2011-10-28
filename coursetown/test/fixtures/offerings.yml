@@ -1,15 +1,25 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  course: 
   year: 1
-  season: MyString
-  professor: MyString
-  time: 2011-09-30 17:58:28
+  term: MyString
+  time: MyString
+  median_grade: 1.5
+  specific_title: MyString
+  wc: MyString
+  desc: MyString
+  unconfirmed: false
+  crn: MyString
+  section: 1
 
 two:
-  course: 
   year: 1
-  season: MyString
-  professor: MyString
-  time: 2011-09-30 17:58:28
+  term: MyString
+  time: MyString
+  median_grade: 1.5
+  specific_title: MyString
+  wc: MyString
+  desc: MyString
+  unconfirmed: false
+  crn: MyString
+  section: 1

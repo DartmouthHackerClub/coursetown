@@ -17,6 +17,8 @@ users = User.create([{name: "Octavius Ott"}, {name: "Cindy Ott"}, {name: "John L
 offerings = Offering.create([
   {course_id: courses.first.id, year: 2011, term: 'F', professor: 'Scott Drysdale', time: "10A"},
   {course_id: courses.first.id, year: 2011, term: 'W', professor: 'Chris Bailey-Kellogg', time: "2"},
+  {course_id: courses[1].id, year: 2011, term: 'F', professor: 'Mathface McMath', time: "2"},
+  {course_id: courses[1].id, year: 2011, term: 'F', professor: 'Shelly Algebra', time: "10"},
   {course_id: courses[2].id, year: 2011, term: 'F', professor: 'Hagrid', time: "8"},
   {course_id: courses[2].id, year: 2011, term: 'W', professor: 'Hagrid', time: "8"}])
 
