@@ -460,7 +460,7 @@ function do_search(form_params) {
     periods = [];
     distribs = [];
 
-    queries = [];
+    queries = {};
     for (key in form_params) {
         if (form_params[key]['name'] == 'department' && form_params[key]['value'] != '') {
             var vals = form_params[key]['value'].split(',');
@@ -483,28 +483,19 @@ function do_search(form_params) {
                 depts.push(val);
             }
 
-            i = {}; //hash needs to be built at runtime
-            i['department'] = depts.join(' OR ');
-            queries.push({
-                "field": i
-            });
+            queries['department'] = depts;
         }
         else if (form_params[key]['name'] == 'description' && form_params[key]['value'] != '') {
             var val = form_params[key]['value'];
             splits = val.split(' ');
-            joinme = [];
+            words = [];
             for (s in splits) {
                 if (splits[s] != '')
-                    joinme.push(splits[s]);
+                    words.push(splits[s]);
             }
-            val = joinme.join(' AND ');
-
-            i = {}; //hash needs to be built at runtime
-            i['description'] = val;
-            queries.push({
-                "field": i
-            });
+            queries['description'] = words;
         }
+        /*
         else if (form_params[key]['name'] == 'Professors' && form_params[key]['value'] != '') {
             var val = form_params[key]['value'];
             splits = val.split(' ');
@@ -587,6 +578,7 @@ function do_search(form_params) {
                 "field": i
             });
         }
+        */
     }
 
     if (periods.length > 0) {
@@ -606,18 +598,17 @@ function do_search(form_params) {
         queries.push(i);
     }
     search_params = {
-        "size": 9000,
-        "query": {"bool": { "must":  queries}}
+        "queries": queries
     };
     //console.log(JSON.stringify(search_params));
     $('#results_container').html('<h1>Loading...</h1>');
     $.ajax({
         dataType: "json",
-        type: "POST",
+        type: "GET",
         url: search_query_url,
         //when we're ready to query the new database, uncomment the below
         //url: search_query_url,
-        data: JSON.stringify(search_params),
+        data: search_params,
         success: function (data) {
             //console.log(JSON.stringify(data));
             show_results(data);

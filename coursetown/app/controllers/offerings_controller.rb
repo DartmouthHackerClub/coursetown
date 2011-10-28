@@ -1,6 +1,9 @@
 class OfferingsController < ApplicationController
 
   def search_results
+    logger.debug "==================================="
+    logger.debug params[:queries]
+    logger.debug "==================================="
     @offerings= Offering.joins(:course).select('*')
     render :json => @offerings
   end
