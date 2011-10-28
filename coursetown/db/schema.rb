@@ -11,22 +11,49 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111021214556) do
+ActiveRecord::Schema.define(:version => 20111028214317) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
     t.integer  "number"
-    t.string   "title"
+    t.string   "short_title"
+    t.string   "long_title"
+    t.text     "desc"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "offerings", :force => true do |t|
-    t.integer  "course_id"
     t.integer  "year"
-    t.string   "term",       :limit => 1
-    t.string   "professor"
+    t.string   "term"
     t.string   "time"
+    t.float    "median_grade"
+    t.string   "specific_title"
+    t.string   "wc"
+    t.string   "desc"
+    t.boolean  "unconfirmed"
+    t.string   "crn"
+    t.integer  "section"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "offerings_courses", :force => true do |t|
+    t.integer  "course_id"
+    t.integer  "offering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "offerings_professors", :force => true do |t|
+    t.integer  "professor_id"
+    t.integer  "offering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "professors", :force => true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

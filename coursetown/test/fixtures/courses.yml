@@ -1,9 +1,15 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
   department: MyString
   number: 1
+  short_title: MyString
+  long_title: MyString
+  desc: MyText
 
 two:
   department: MyString
   number: 1
+  short_title: MyString
+  long_title: MyString
+  desc: MyText
