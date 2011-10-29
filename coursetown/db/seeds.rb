@@ -6,25 +6,30 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+def professorize(prof_names)
+  return prof_names.map{|x| Professor.find_or_create_by_name(x)}
+end
+
 courses = Course.create([
-  {department: 'COSC', number: 5, title: 'Introduction'},
-  {department: 'MATH', number: 22, title: 'Linear Algebra'},
-  {department: 'WIZD', number: 17, title: 'Care of Magical Creatures'},
-  {department: 'WIZD', number: 43, title: 'Defense Against the Dark Arts'}])
+  {department: 'COSC', number: 5, long_title: 'Introduction'},
+  {department: 'MATH', number: 22, long_title: 'Linear Algebra'},
+  {department: 'WIZD', number: 17, long_title: 'Care of Magical Creatures'},
+  {department: 'WIZD', number: 43, long_title: 'Defense Against the Dark Arts'}])
 
 users = User.create([{name: "Octavius Ott"}, {name: "Cindy Ott"}, {name: "John Ledyard"}])
 
 offerings = Offering.create([
-  {course_id: courses.first.id, year: 2011, term: 'F', professor: 'Scott Drysdale', time: "10A"},
-  {course_id: courses.first.id, year: 2011, term: 'W', professor: 'Chris Bailey-Kellogg', time: "2"},
-  {course_id: courses[1].id, year: 2011, term: 'F', professor: 'Mathface McMath', time: "2"},
-  {course_id: courses[1].id, year: 2011, term: 'F', professor: 'Shelly Algebra', time: "10"},
-  {course_id: courses[2].id, year: 2011, term: 'F', professor: 'Hagrid', time: "8"},
-  {course_id: courses[2].id, year: 2011, term: 'W', professor: 'Hagrid', time: "8"}])
+  {courses: [courses.first], year: 2011, term: 'F', professors: professorize(['Scott Drysdale']), time: "10A"},
+  {courses: [courses.first], year: 2011, term: 'W', professors: professorize(['Chris Bailey-Kellogg']), time: "2"},
+  {courses: [courses[1]], year: 2011, term: 'F', professors: professorize(['Mathface McMath']), time: "2"},
+  {courses: [courses[1]], year: 2011, term: 'F', professors: professorize(['Shelly Algebra']), time: "10"},
+  {courses: [courses[2]], year: 2011, term: 'F', professors: professorize(['Haggar the Horrible']), time: "8"},
+  {courses: [courses[2]], year: 2011, term: 'W', professors: professorize(['Haggar the Horrible']), time: "8"}])
 
 Wishlist.create([
-  {user_id: users[0].id, course_id: courses[1].id}, {user_id: users[0].id, course_id: courses[3].id},
-  {user_id: users[2].id, course_id: courses[1].id}])
+  {user: users[0], course: courses[1]},
+  {user: users[0], course: courses[3]},
+  {user: users[2], course: courses[1]}])
 
 Schedule.create([
   {user_id: users[0].id, offering_id: offerings[0].id}, {user_id: users[0].id, offering_id: offerings[2].id},
