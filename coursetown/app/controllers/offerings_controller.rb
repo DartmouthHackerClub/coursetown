@@ -7,11 +7,11 @@ class OfferingsController < ApplicationController
     @offering_hashes= Offering.includes(:courses, :professors).select('*').map {
                   |offering|
                   hash = offering.attributes
-                  hash[:professor] = offering.professors.map(&:name)
-                  # TODO do the same thing for courses, but w/ a little more detail
+                  hash[:professors] = offering.professors.map(&:attributes)
+                  hash[:courses] = offering.courses.map(&:attributes)
                   hash
                   }
-    render :json => @offerings
+    render :json => @offering_hashes
   end
 
   def search
