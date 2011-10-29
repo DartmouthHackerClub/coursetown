@@ -4,7 +4,13 @@ class OfferingsController < ApplicationController
     logger.debug "==================================="
     logger.debug params[:queries]
     logger.debug "==================================="
-    @offerings= Offering.joins(:courses).select('*')
+    @offering_hashes= Offering.includes(:courses, :professors).select('*').map {
+                  |offering|
+                  hash = offering.attributes
+                  hash[:professor] = offering.professors.map(&:name)
+                  # TODO do the same thing for courses, but w/ a little more detail
+                  hash
+                  }
     render :json => @offerings
   end
 
