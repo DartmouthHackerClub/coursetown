@@ -109,7 +109,7 @@ function generate_result_div(result) {
     result_div = $('<div class="result"></div>');
 
     // title
-    title = $('<span class="dept_num_title">' + result['department'] + ' ' + result['number'] + ': ' + result['title'] + '</span>');
+    title = $('<span class="dept_num_title">' + result['department'] + ' ' + result['number'] + ': ' + result['long_title'] + '</span>');
     // crn
     if(result['crn']){
         crn = $('<span class="crn">CRN ' + result['CRN'] + '</span>');
@@ -127,24 +127,23 @@ function generate_result_div(result) {
     term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
     result_div.append(term);
 
-    /*
     // profs
     profs_div = $('<span class="profs"></span>');
-    if (result['Professors'].length <= 1) {
+    if (result['professors'].length <= 1) {
         profs_div.append($('<span class="fieldname">prof </span>'));
     }
     else {
         profs_div.append($('<span class="fieldname">profs </span>'));
     }
-    if (result['Professors'].length > 0) {
+    if (result['professors'].length > 0) {
         var first = true;
         var html = '';
-        for (key in result['Professors']) {
+        for (key in result['professors']) {
             if (!first) {
                 html += ', ';
             }
             first = false;
-    var prof = result['Professors'][key];
+    var prof = result['professors'][key];
             //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
             html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
         }
@@ -154,10 +153,9 @@ function generate_result_div(result) {
         profs_div.append($('<span class="notfound">none listed</span>'));
     }
     result_div.append(profs_div);
-    */
 
     // Period
-    time = $('<span class="time"><span class="fieldname">period </span>' + result['period'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
+    time = $('<span class="time"><span class="fieldname">period </span>' + result['time'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
     result_div.append(time);
 
 
