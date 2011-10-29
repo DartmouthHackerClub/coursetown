@@ -7,7 +7,7 @@ one:
   median_grade: 1.5
   specific_title: MyString
   wc: MyString
-  desc: MyString
+  specific_desc: MyText
   unconfirmed: false
   crn: MyString
   section: 1
@@ -19,7 +19,7 @@ two:
   median_grade: 1.5
   specific_title: MyString
   wc: MyString
-  desc: MyString
+  specific_desc: MyText
   unconfirmed: false
   crn: MyString
   section: 1

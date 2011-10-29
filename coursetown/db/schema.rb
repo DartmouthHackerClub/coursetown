@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111028214317) do
+ActiveRecord::Schema.define(:version => 20111029185044) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -23,6 +23,20 @@ ActiveRecord::Schema.define(:version => 20111028214317) do
     t.datetime "updated_at"
   end
 
+  create_table "offering_courses", :force => true do |t|
+    t.integer  "course_id"
+    t.integer  "offering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "offering_professors", :force => true do |t|
+    t.integer  "professor_id"
+    t.integer  "offering_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "offerings", :force => true do |t|
     t.integer  "year"
     t.string   "term"
@@ -30,24 +44,10 @@ ActiveRecord::Schema.define(:version => 20111028214317) do
     t.float    "median_grade"
     t.string   "specific_title"
     t.string   "wc"
-    t.string   "desc"
+    t.text     "specific_desc"
     t.boolean  "unconfirmed"
     t.string   "crn"
     t.integer  "section"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "offerings_courses", :force => true do |t|
-    t.integer  "course_id"
-    t.integer  "offering_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "offerings_professors", :force => true do |t|
-    t.integer  "professor_id"
-    t.integer  "offering_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

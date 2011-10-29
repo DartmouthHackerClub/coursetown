@@ -7,7 +7,7 @@ class CreateOfferings < ActiveRecord::Migration
       t.float :median_grade
       t.string :specific_title
       t.string :wc
-      t.string :desc
+      t.text :specific_desc
       t.boolean :unconfirmed
       t.string :crn
       t.integer :section
