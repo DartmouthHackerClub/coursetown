@@ -462,8 +462,13 @@ function do_search(form_params) {
 
     queries = {};
     for (key in form_params) {
-        if (form_params[key]['name'] == 'department' && form_params[key]['value'] != '') {
-            var vals = form_params[key]['value'].split(',');
+        name = form_params[key]['name'];
+        val = form_params[key]['value'];
+        if (val == '' || !val){
+            continue;
+        }
+        if (name == 'department') {
+            var vals = val.split(',');
 
             depts = [];
             for (var k in vals) {
@@ -485,7 +490,7 @@ function do_search(form_params) {
 
             queries['department'] = depts;
         }
-        else if (form_params[key]['name'] == 'description' && form_params[key]['value'] != '') {
+        else if (name == 'description') {
             var val = form_params[key]['value'];
             splits = val.split(' ');
             words = [];
@@ -495,107 +500,62 @@ function do_search(form_params) {
             }
             queries['description'] = words;
         }
-        /*
-        else if (form_params[key]['name'] == 'Professors' && form_params[key]['value'] != '') {
+        else if (name == 'Professors') {
             var val = form_params[key]['value'];
             splits = val.split(' ');
-            joinme = [];
+            profs = [];
             for (s in splits) {
                 if (splits[s] != '')
-                    joinme.push(splits[s]);
+                    profs.push(splits[s]);
             }
-            val = joinme.join(' AND ');
-
-            i = {}; //hash needs to be built at runtime
-            i['Professors'] = val;
-            queries.push({
-                "field": i
-            });
+            queries['professors'] = profs;
         }
-        else if (form_params[key]['name'] == 'title' && form_params[key]['value'] != '') {
+        else if (name == 'title') {
             var val = form_params[key]['value'];
             splits = val.split(' ');
-            joinme = [];
+            title_words = [];
             for (s in splits) {
                 if (splits[s] != '')
-                    joinme.push(splits[s]);
+                    title_words.push(splits[s]);
             }
-            val = joinme.join(' AND ');
 
-            i = {}; //hash needs to be built at runtime
-            i['title'] = val;
-            queries.push({
-                "field": i
-            });
+            queries['title'] = title_words;
         }
-        else if (form_params[key]['name'] == 'Number' && form_params[key]['value'] != '') {
+        else if (name == 'Number') {
             var val = parseInt(form_params[key]['value']);
-            if (isNaN(val))
-                continue;
-
-            // course numbers are length 3, padded by 0s
-            var pad = val+'';
-            while (pad.length < 3) {
-                pad = '0'+pad;
-            }
-
-            i = {}; //hash needs to be built at runtime
-            i['Number'] = pad;
-            queries.push({
-                "field": i
-            });
+            queries['number'] = val;
         }
-        else if (form_params[key]['name'] == 'avg_median' && form_params[key]['value'] != '') {
+        else if (name == 'avg_median') {
             var val = parseFloat(form_params[key]['value']);
-            i = {}; //hash needs to be built at runtime
-            i['avg_median'] = pad;
-            // http://www.elasticsearch.org/guide/reference/query-dsl/range-query.html
-            queries.push({
-                    "range": {
-                        "avg_median": {
-                            "from": val,
-                            "to": 5
-                        }
-                    }
-            });
+            queries['avg_median'] = val;
         }
-        else if (form_params[key]['name'] == 'criteria') {
-            continue;
-        } else if (form_params[key]['name'].substring(0, 7) == 'period_') {
+        else if (name.substring(0, 7) == 'period_') {
             // grab the period param
-            if (form_params[key]['value'] == '1') {
-                periods.push(form_params[key]['name'].substring(7));
+            if (val == '1') {
+                periods.push(name.substring(7));
             }
-        } else if (form_params[key]['name'].substring(0, 8) == 'distrib_') {
-            // grab the distrib param
-            if (form_params[key]['value'] == '1') {
-                distribs.push(form_params[key]['name'].substring(8));
-            }
-        }  else if(form_params[key]['value'] && form_params[key]['value'] != ''){
-            i = {}; //hash needs to be built at runtime
-            i[form_params[key]['name']] = form_params[key]['value'];
-            queries.push({
-                "field": i
-            });
         }
-        */
+        else if (name.substring(0, 8) == 'distrib_') {
+            // grab the distrib param
+            if (val == '1') {
+                distribs.push(name.substring(8));
+            }
+        }
+        // don't pass our dummy dropdown thing!
+        else if (name == 'criteria') {
+            continue;
+        }
+        // for fields that don't require any special manipulation, like year
+        else {
+            queries[name] = val;
+        }
     }
 
     if (periods.length > 0) {
-    	i = {
-            "field": {
-                "period": periods.join(' ')
-            }
-       };
-        queries.push(i);
+        queries['periods'] = periods;
     }
     if (distribs.length > 0) {
-    	i = {
-            "field": {
-                "dist": distribs.join(' ')
-            }
-       };
-        queries.push(i);
+        queries['distribs'] = distribs;
     }
     search_params = {
         "queries": queries
@@ -606,11 +566,8 @@ function do_search(form_params) {
         dataType: "json",
         type: "GET",
         url: search_query_url,
-        //when we're ready to query the new database, uncomment the below
-        //url: search_query_url,
         data: search_params,
         success: function (data) {
-            //console.log(JSON.stringify(data));
             show_results(data);
         },
         error: function (e) {
