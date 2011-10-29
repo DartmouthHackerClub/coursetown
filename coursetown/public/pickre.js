@@ -106,13 +106,14 @@ function show_results(results) {
 // in: a json object representing a single result (one offering)
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
+    canonical_course = result['courses'][0]
     result_div = $('<div class="result"></div>');
 
     // title
-    title = $('<span class="dept_num_title">' + result['department'] + ' ' + result['number'] + ': ' + result['title'] + '</span>');
+    title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_course['long_title'] + '</span>');
     // crn
     if(result['crn']){
-        crn = $('<span class="crn">CRN ' + result['CRN'] + '</span>');
+        crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
         title.append(crn);
     }
     result_div.append(title);
@@ -127,25 +128,23 @@ function generate_result_div(result) {
     term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
     result_div.append(term);
 
-    /*
     // profs
     profs_div = $('<span class="profs"></span>');
-    if (result['Professors'].length <= 1) {
+    if (result['professors'].length <= 1) {
         profs_div.append($('<span class="fieldname">prof </span>'));
     }
     else {
         profs_div.append($('<span class="fieldname">profs </span>'));
     }
-    if (result['Professors'].length > 0) {
+    if (result['professors'].length > 0) {
         var first = true;
         var html = '';
-        for (key in result['Professors']) {
+        for (key in result['professors']) {
             if (!first) {
                 html += ', ';
             }
             first = false;
-    var prof = result['Professors'][key];
-            //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
+            var prof = result['professors'][key]['name'];
             html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
         }
         profs_div.append(html);
@@ -154,10 +153,9 @@ function generate_result_div(result) {
         profs_div.append($('<span class="notfound">none listed</span>'));
     }
     result_div.append(profs_div);
-    */
 
     // Period
-    time = $('<span class="time"><span class="fieldname">period </span>' + result['period'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
+    time = $('<span class="time"><span class="fieldname">period </span>' + result['time'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
     result_div.append(time);
 
 
@@ -184,7 +182,6 @@ function generate_result_div(result) {
     result_div.append(distrib);
     */
 
-    /*
     // WCULT
     wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
     if(result['wc']){
@@ -195,6 +192,7 @@ function generate_result_div(result) {
     }
     result_div.append(wcult);
 
+    /*
     // Can NRO?
     nro = $('<span class="nro"><span class="fieldname">nro </span></span>');
     if(result['nro'] == 'true'){
@@ -218,7 +216,6 @@ function generate_result_div(result) {
     }
     result_div.append(median_div);
     */
-
 
     /*
     //ORC STUFF
