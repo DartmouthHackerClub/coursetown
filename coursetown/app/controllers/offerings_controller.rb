@@ -2,9 +2,17 @@ class OfferingsController < ApplicationController
 
   def search_results
     logger.debug "==================================="
-    logger.debug params[:queries]
+    queries = params[:queries]
+    logger.debug queries
     logger.debug "==================================="
-    @offering_hashes= Offering.includes(:courses, :professors).select('*').map {
+    where_clause = {}
+    if not queries
+    elsif queries.has_key? "periods"
+        where_clause[:time] = queries["periods"] 
+    end
+    @offering_hashes= Offering.includes(:courses, :professors).where(
+                where_clause
+                ).select('*').map {
                   |offering|
                   hash = offering.attributes
                   hash[:professors] = offering.professors.map(&:attributes)
