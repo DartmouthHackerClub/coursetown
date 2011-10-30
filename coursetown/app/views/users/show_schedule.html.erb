@@ -5,16 +5,18 @@
 <% if @wishlist_offerings.size == 0 && @schedule_offerings.size == 0 %>
 	<p>You have no courses in your wishlist</p>
 <% else %>
+  <table class="schedule">
   <% @years.each do |year| %>
+	<tr>
     <% @terms.each do |term| %>
       <% 
 		key = "#{year}#{term}" 
 		sched = @schedule_offerings[key] || []
 		wish = @wishlist_offerings[key] || []
 		%>
-      <% if sched.length + wish.length > 0 %>
+		<td>
         <h2><%= key %></h2>
-        <table>
+        <table class="single_term_table">
 			<tr>
 		        <th>Dept.</th>
 		        <th>Title</th>
@@ -38,9 +40,10 @@
 			  </tr>
 		    <% end %>
 	    </table>
-      <% end %>
+		</td>
     <% end %>
+	</tr>
   <% end %>
+  </table>
 <% end %>
-
 <br />
