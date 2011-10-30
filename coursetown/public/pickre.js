@@ -275,16 +275,15 @@ function get_or_create_results_div() {
 }
 
 function generate_input_field_quarter() {
-    quarters = ['Fall', 'Winter', 'Spring', 'Summer'];
     date = new Date();
     this_year = date.getFullYear();
     years = [this_year, this_year+1]
     var html = '';
     html += '<select name="term">';
-    for (key in quarters) {
-        quarter = quarters[key];
-        html += '<option value="' + quarter + '">' + quarter + '</option>';
-    }
+    html += '<option value="F">Fall</option>';
+    html += '<option value="W">Winter</option>';
+    html += '<option value="S">Spring</option>';
+    html += '<option value="X">Summer</option>';
     html += '</select>';
     html += '<select name="year">';
     for (key in years) {
