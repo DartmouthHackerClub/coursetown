@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111104211602) do
+ActiveRecord::Schema.define(:version => 20111104222916) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20111104211602) do
     t.integer  "section"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "nroable",        :default => true
   end
 
   create_table "professors", :force => true do |t|
