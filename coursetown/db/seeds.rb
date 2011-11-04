@@ -16,7 +16,7 @@ courses = Course.create([
   {department: 'WIZD', number: 17, long_title: 'Care of Magical Creatures'},
   {department: 'WIZD', number: 43, long_title: 'Defense Against the Dark Arts'}])
 
-users = User.create([{name: "Octavius Ott"}, {name: "Cindy Ott"}, {name: "John Ledyard"}])
+users = User.create([{name: "Octavius Ott", year: 2012}, {name: "Cindy Ott", year: 2013}, {name: "John Ledyard", year: 2014}])
 
 offerings = Offering.create([
   {courses: [courses.first], year: 2011, term: 'F', professors: professorize(['Scott Drysdale']), time: "10A"},
