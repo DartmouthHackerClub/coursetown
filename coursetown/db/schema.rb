@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(:version => 20111104213928) do
     t.integer  "section"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "nroable",        :default => true
   end
 
   create_table "professors", :force => true do |t|
@@ -77,6 +78,7 @@ ActiveRecord::Schema.define(:version => 20111104213928) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "year"
   end
 
   create_table "wishlists", :force => true do |t|
