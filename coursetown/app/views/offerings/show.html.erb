@@ -2,7 +2,7 @@
 
 <p>
   <b>Course:</b>
-  <%= @offering.course %>
+  <%= @offering.courses.map{|course|"#{course.department} #{course.number}" }.join(", ")  + ": " + @offering.courses.first.long_title%>
 </p>
 
 <p>
@@ -12,17 +12,22 @@
 
 <p>
   <b>Season:</b>
-  <%= @offering.season %>
+  <%= @offering.term %>
 </p>
 
 <p>
   <b>Professor:</b>
-  <%= @offering.professor %>
+  <%= @offering.professors.map(&:name).join(", ") %>
 </p>
 
 <p>
   <b>Time:</b>
   <%= @offering.time %>
+</p>
+
+<p>
+  <b>Distrib:</b>
+  <%= @offering.distribs.map(&:distrib_name).join(", ") %>
 </p>
 
 
