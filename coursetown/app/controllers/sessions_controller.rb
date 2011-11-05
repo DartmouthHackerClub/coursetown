@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
   def destroy
     reset_session
     app = 'CourseTown'
-    url = 'http://localhost:4000' # THIS IS BAD!
+    url = 'http://localhost:3000' # THIS IS BAD!
     redirect_to "https://login.dartmouth.edu/logout.php?app=#{app}&url=#{url}"
   end
   
