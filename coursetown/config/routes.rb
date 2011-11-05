@@ -2,7 +2,6 @@ Coursetown::Application.routes.draw do
   get "schedule/index"
 
   resources :users do
-    # GET users/:id/schedule
     get 'schedule' => 'users#show_schedule', :on => :member
   end
 
@@ -13,6 +12,14 @@ Coursetown::Application.routes.draw do
   resources :wishlists
   
   resources :schedules
+
+  root :to => "splash#index"
+  
+  match "/search" => "offerings#search"
+  match "/search_json" => "offerings#search_results"
+
+  match "/auth/:provider/callback" => "sessions#create"  
+  match "/signout" => "sessions#destroy", :as => :signout
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -63,12 +70,7 @@ Coursetown::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "application#index"
-  match "/search" => "offerings#search"
-  match "/search_json" => "offerings#search_results"
 
-  match "/auth/:provider/callback" => "sessions#create"  
-  match "/signout" => "sessions#destroy", :as => :signout
 
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
