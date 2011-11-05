@@ -19,8 +19,8 @@ courses = Course.create([
 users = User.create([{name: "Octavius Ott", year: 2012}, {name: "Cindy Ott", year: 2013}, {name: "John Ledyard", year: 2014}])
 
 offerings = Offering.create([
-  {courses: [courses.first], year: 2011, term: 'F', professors: professorize(['Scott Drysdale']), time: "10A"},
-  {courses: [courses.first], year: 2011, term: 'W', professors: professorize(['Chris Bailey-Kellogg']), time: "2"},
+  {courses: [courses[0]], year: 2011, term: 'F', professors: professorize(['Scott Drysdale']), time: "10A"},
+  {courses: [courses[0]], year: 2011, term: 'W', professors: professorize(['Chris Bailey-Kellogg']), time: "2"},
   {courses: [courses[1]], year: 2011, term: 'F', professors: professorize(['Mathface McMath']), time: "2"},
   {courses: [courses[1]], year: 2011, term: 'F', professors: professorize(['Shelly Algebra']), time: "10"},
   {courses: [courses[2]], year: 2011, term: 'F', professors: professorize(['Haggar the Horrible']), time: "8"},
@@ -34,3 +34,8 @@ Wishlist.create([
 Schedule.create([
   {user_id: users[0].id, offering_id: offerings[0].id}, {user_id: users[0].id, offering_id: offerings[2].id},
   {user_id: users[2].id, offering_id: offerings[1].id}, {user_id: users[2].id, offering_id: offerings[3].id}])
+
+Distrib.create([
+  {:offering_id => 1, :distrib_name => "Literature", :distrib_abbr => "Lit"},
+  {:offering_id => 3, :distrib_name => "Sociology", :distrib_abbr => "Soc"}
+])
