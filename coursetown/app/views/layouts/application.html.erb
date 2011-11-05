@@ -42,11 +42,6 @@
 			</a>
 		</div>
 		<div id="content">
-		  <% if @current_user.present? %>
-  		  <h1>HI, <%= @current_user.name %></h1>
-  		  <h2>btw, I have all your info :) <%= @current_user.netid %></h2>
-		  <% end %>
-		  
       <%= yield %>
 		</div>
 	</body>

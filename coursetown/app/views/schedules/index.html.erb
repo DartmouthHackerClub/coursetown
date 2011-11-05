@@ -1,4 +1,8 @@
-<h1><%= "#{@user.name}'s Schedule" %></h1>
+<% if @current_user.nil? %>
+  <p>login to create to create your schedule!</p>
+  <%= link_to "Login", "auth/cas" %>
+<% else %>
+<h1><%= "#{@current_user.name}'s Schedule" %></h1>
 
 <% if @offerings.empty? %>
   Your schedule is empty.
@@ -6,14 +10,17 @@
   <table>
     <% @offerings.each do |offering| %>
       <tr>
-        <td><%= offering.department %></td>
-        <td><%= offering.number %></td>
-        <td><%= offering.name %></td>
+        <td><%= offering.courses.first.department %></td>
+        <td><%= offering.courses.first.number %></td>
+        <td><%= offering.specific_title %></td>
+        <td><%= "#{offering.year}#{offering.term}"%></td>
+        <td><%= offering.time %></td>
+        
         <td><%= link_to 'Details', offering %></td>
         <td><%= link_to 'Remove', offering, :confirm => 'Are you sure?', :method => :delete %></td>
       </tr>
     <% end %>
   </table>
-<%end%>
+<% end %>
 <br />
-
+<% end %>

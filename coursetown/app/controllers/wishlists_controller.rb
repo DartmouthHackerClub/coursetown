@@ -1,8 +1,8 @@
 class WishlistsController < ApplicationController
   # GET /index
   def index
-    @user_id = params[:uid]
-    @courses = Wishlist.find_all_by_user_id(@user_id).map(&:course)
-    @user = User.find(@user_id)
+    if @current_user.present?
+      @courses = Wishlist.find_all_by_user_id(@current_user.id).map(&:course)
+    end
   end
 end
