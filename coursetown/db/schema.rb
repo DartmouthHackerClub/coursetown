@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111104213928) do
+ActiveRecord::Schema.define(:version => 20111105195319) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -19,13 +19,6 @@ ActiveRecord::Schema.define(:version => 20111104213928) do
     t.string   "short_title"
     t.string   "long_title"
     t.text     "desc"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "distribs", :force => true do |t|
-    t.integer  "offering_id"
-    t.string   "distrib_name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -71,7 +64,6 @@ ActiveRecord::Schema.define(:version => 20111104213928) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "course_id"
   end
 
   create_table "users", :force => true do |t|
@@ -79,6 +71,7 @@ ActiveRecord::Schema.define(:version => 20111104213928) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "year"
+    t.string   "netid"
   end
 
   create_table "wishlists", :force => true do |t|

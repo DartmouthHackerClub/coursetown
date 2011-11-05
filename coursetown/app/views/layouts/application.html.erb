@@ -32,14 +32,20 @@
 	</head>
 	<body>
 		<div id="header">
-            <a id="login" href="">
-                login
-            </a>
+		    <% if @current_user.present? %>
+          <%= link_to "Logout",  signout_path %>
+        <% else %>
+          <%= link_to "Login", "/auth/cas", :style => "color:red" %>
+        <% end %>
 			<a id="logo" href="http://hacktown.cs.dartmouth.edu">
             <%= image_tag "pickr_logo.png" %>
 			</a>
 		</div>
 		<div id="content">
+		  <% if @current_user.present? %>
+  		  <h1>HI, <%= @current_user.name %></h1>
+  		  <h2>btw, I have all your info :) <%= @current_user.netid %></h2>
+		  <% end %>
             <%= yield %>
 		</div>
 	</body>
