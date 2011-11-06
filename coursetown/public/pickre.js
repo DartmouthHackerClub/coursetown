@@ -398,6 +398,8 @@ function add_search_row_if_we_need_one() {
         left_side.find("select").change();
         left_side.parent().hide();
     });
+    /*
+    TODO: commenting out for now because for some reason it's giving us an error. i don't know why.
     $('input[name="Professors"]').autocomplete(profs,
             {
                 matchContains: true,
@@ -416,6 +418,7 @@ function add_search_row_if_we_need_one() {
                 multiple: true,
                 selectFirst: false
             });
+    */
 }
 
 function make_search_row_dom_element() {
@@ -722,7 +725,8 @@ $().ready(function () {
     row1.find("select").change();
 
     //show_favorites();
-    $("form#search_form input[type='submit']").click(function () {
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
     	try{
             the_form = $('#search_form');
             form_params = the_form.serializeArray();
