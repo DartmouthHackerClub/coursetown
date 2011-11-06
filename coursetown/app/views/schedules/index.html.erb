@@ -16,7 +16,6 @@
         <td><%= "#{offering.year}#{offering.term}"%></td>
         <td><%= offering.time %></td>
         <td><%= offering.distribs.map(&:distrib_abbr).join " - " %> </td>
-        
         <td><%= link_to 'Details', offering %></td>
         <td><%= link_to 'Remove', offering, :confirm => 'Are you sure?', :method => :delete %></td>
       </tr>

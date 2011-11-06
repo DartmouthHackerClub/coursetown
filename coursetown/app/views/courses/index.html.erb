@@ -2,38 +2,23 @@
   
 <table>
   <tr>
-    <% if @user.present? %>
-    <th>Wishlist</th>
+    <% if @current_user.present? %>
+    <th width="50px"></th>
     <% end %>
-    <th>Department</th>
-    <th>Number</th>
-    <th></th>
-    <th></th>
+    <th width="30px"></th>
     <th></th>
   </tr>
-<%= form_tag do %>
+
   <% @courses.each do |course| %>
-    <tr>
-      <% if @user.present? %>
+    <tr course_id=<%= course.id.inspect %>>
+      <% if @current_user.present? %>
         <td>
-          <%= check_box_tag 'course[#{course.id}][wishlist]', true.to_s, @wishlist.include?(course) %>
+          <%= check_box_tag "course[#{course.id}][wishlist]", true.to_s, @wishlist && @wishlist.any? {|w| w.course_id == course.id}  %>
         </td>
       <% end %>
-      <td><%= course.department %></td>
       <td><%= course.number %></td>
+      <td><%= course.department %></td>
       <td><c></td>
-      <td><%= link_to 'Show', course %></td>
-      <td><%= link_to 'Edit', edit_course_path(course) %></td>
-      <td><%= link_to 'Destroy', course, :confirm => 'Are you sure?', :method => :delete %></td>
     </tr>
   <% end %>
 </table>
-  
-  <input name="commit" type="submit" value="Update Wishlist" />
-  
-<% end %>
-
-
-<br />
-
-<%= link_to 'New Course', new_course_path %>
