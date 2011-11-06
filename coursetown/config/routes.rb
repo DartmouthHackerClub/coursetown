@@ -1,24 +1,23 @@
 Coursetown::Application.routes.draw do
   get "schedule/index"
 
-  resources :users do
-    get 'schedule' => 'users#show_schedule', :on => :member
-  end
+  resources :users
+  match "/my_schedule" => "users#show_schedule"
 
   resources :offerings
 
   resources :courses
-  
+
   resources :wishlists
-  
+
   resources :schedules
 
   root :to => "splash#index"
-  
+
   match "/search" => "offerings#search"
   match "/search_json" => "offerings#search_results"
 
-  match "/auth/:provider/callback" => "sessions#create"  
+  match "/auth/:provider/callback" => "sessions#create"
   match "/signout" => "sessions#destroy", :as => :signout
 
   # The priority is based upon order of creation:

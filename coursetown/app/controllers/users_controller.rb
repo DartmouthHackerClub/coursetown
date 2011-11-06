@@ -83,27 +83,42 @@ class UsersController < ApplicationController
 
   # GET /users/1/schedule
   def show_schedule
-    @user = User.find(params[:id])
-    @start_year = params[:start] ? params[:start] : (Time.new.year - 2)
-    @end_year   = params[:end]   ? params[:end]   : @start_year + 4
+    @now = Time.now.year
+    @start_year = params[:start] || (@now - 2)
+    @end_year   = params[:end]   || (@start_year + 4)
+    min_year = @now < @start_year
 
-    @years = @start_year..@end_year
+    @years = @start_year...@end_year
     @terms = [:F,:W,:S,:X]
 
-    fields = "number, department, title, professor, year, term, time"
-
-    @wishlist_offerings = @user.wishlists.
-      joins(:course => :offerings).
+    # build a list of [course, offering] pairs w/ professor preloaded
+    @wishlist_offerings = @current_user.wishlists.
+      includes(:course => {:offerings => :professors}).
       where("offerings.year" => @years).
-      select(fields).
-      group_by {|course| "#{course.year}#{course.term}"}
+      collect_concat{
+        |w| w.course.offerings.map{ |offering| [w.course, offering] } }.
+      group_by {|pair| "#{pair[1].year}#{pair[1].term}"}
 
-    @schedule_offerings = @user.schedules.
-      joins(:offering => :course).
+    # build a hash of schedule objects w/ course, offering, professor all preloaded
+    @schedule_offerings = @current_user.schedules.
+      includes(:course, :offering => :professors).
       where("offerings.year" => @years).
-      select(fields).
-      group_by {|course| "#{course.year}#{course.term}"}
+      group_by {|s| "#{s.offering.year}#{s.offering.term}"}
 
-    # TODO: figure out which distribs are met/not met by SCHEDULE
+    # bundle wcult & distribs in one array
+    distribs = %w{W NW CI ART LIT TMV INT SOC QDS SCI SLA TAS TLA}.each_with_object({}){|k,h| h[k]=0}
+    @schedule_offerings.each{|sched|
+      if distribs[sched.offering.wc.upper] then distribs[sched.offering.wc.upper] += 1 end
+      sched.offering.distribs.each{|d| distribs[d.distrib_abbr.upper] += 1}
+    }
+    # FIXME this currently over-counts distribs (really, an offering can have multiple
+    # distribs but it can only COUNT for one)
+    distribs["SOC"] -= 1 # subtract 1 from soc & sci/sla b/c they require 2
+    distribs["SCI/SLA"] = distribs["SCI"] + distribs["SLA"] - 1
+    distribs["TAS/TLA"] = distribs["TAS"] + distribs["TLA"]
+    distribs["LAB"] = distribs["TLA"] + distribs["SLA"]
+    %w{SCI SLA TAS TLA}.each{|k| distribs.delete(k)}
+    @missing_distribs = distribs.keys.find_all{|k| distribs[k] <= 0}
   end
 end
+
