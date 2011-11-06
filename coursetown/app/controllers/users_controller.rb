@@ -105,6 +105,20 @@ class UsersController < ApplicationController
       where("offerings.year" => @years).
       group_by {|s| "#{s.offering.year}#{s.offering.term}"}
 
-    # TODO: figure out which distribs are met/not met by SCHEDULE
+    # bundle wcult & distribs in one array
+    distribs = %w{W NW CI ART LIT TMV INT SOC QDS SCI SLA TAS TLA}.each_with_object({}){|k,h| h[k]=0}
+    @schedule_offerings.each{|sched|
+      if distribs[sched.offering.wc.upper] then distribs[sched.offering.wc.upper] += 1 end
+      sched.offering.distribs.each{|d| distribs[d.distrib_abbr.upper] += 1}
+    }
+    # FIXME this currently over-counts distribs (really, an offering can have multiple
+    # distribs but it can only COUNT for one)
+    distribs["SOC"] -= 1 # subtract 1 from soc & sci/sla b/c they require 2
+    distribs["SCI/SLA"] = distribs["SCI"] + distribs["SLA"] - 1
+    distribs["TAS/TLA"] = distribs["TAS"] + distribs["TLA"]
+    distribs["LAB"] = distribs["TLA"] + distribs["SLA"]
+    %w{SCI SLA TAS TLA}.each{|k| distribs.delete(k)}
+    @missing_distribs = distribs.keys.find_all{|k| distribs[k] <= 0}
   end
 end
+
