@@ -17,7 +17,7 @@ class WishlistsController < ApplicationController
   
   def destroy
     if @current_user.present?
-      course_id = params["course_id"]
+      course_id = params["id"]
       Wishlist.find_by_course_id_and_user_id(course_id, @current_user.id).try(:destroy)
     end
     render :nothing => true
