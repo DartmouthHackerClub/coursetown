@@ -1,8 +1,35 @@
 namespace :scrape do
+  task :orc => :environment do
+    filename = '../scrapers/orc/course_set.json'
+    File.open(filename, 'r') do |f|
+      puts "loading the ORC JSON..."
+      data = JSON.parse(f.read)
+      puts "done."
+      data['courses'].each do |course|
+        course_info = {
+          :department => course["subject"],
+          :number => course['number'],
+          }
+        c = Course.find(:first, :conditions => course_info) || Course.create(course_info) 
+        c.desc = course["description"]
+        c.long_title = course["title"]
+        c.save()
+        # unused:
+        #   course["instances"]
+        #   course["section"]
+        #   course["offered"] #ex: "11W: 10 12W: 10A"
+        #   course["distribs"] #ex: ["LIT"]
+        #   course["wcults"] #ex["NW"] 
+        #   course["profs"] #ex [["Rodolfo A. Franconi"],["Beatriz Pastor","11W"],["Buéno"]
+        #   course["note"] #ex "Identical to Latin American  and Caribbean Studies 4"
+        
+      end
+    end
+  end
   task :timetable => :environment do
     filename = '../scrapers/timetable/timetable.json'
     File.open(filename, 'r') do |f|
-      puts "loading the JSON..."
+      puts "loading the timetable JSON..."
       data = JSON.parse(f.read)
       puts "done."
       data.each do |offering|
@@ -26,10 +53,10 @@ namespace :scrape do
           :time => offering['Period'],
           :wc => offering['WC'],
           :section => offering['Sec'],
-          #:building => offering['Building'],
-          #:room => offering['Room'],
-          #:enrollment_cap => offering['Lim']
-          #:enrolled => offering['Enrl']
+          :building => offering['Building'],
+          :room => offering['Room'],
+          :enrollment_cap => offering['Lim'],
+          :enrolled => offering['Enrl'],
           }
         # Unused fields:
         #   offering['Status'] ex: "IP" for "In Progress"
