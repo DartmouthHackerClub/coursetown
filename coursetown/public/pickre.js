@@ -108,9 +108,16 @@ function show_results(results) {
 function generate_result_div(result) {
     canonical_course = result['courses'][0]
     result_div = $('<div class="result"></div>');
+    canonical_title = '';
+    if(canonical_course['long_title']){
+        canonical_title = canonical_course['long_title']
+    }
+    else if(canonical_course['short_title']){
+        canonical_title = canonical_course['short_title']
+    }
 
     // title
-    title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_course['long_title'] + '</span>');
+    title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
     // crn
     if(result['crn']){
         crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
