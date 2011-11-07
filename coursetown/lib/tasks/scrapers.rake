@@ -27,9 +27,11 @@ namespace :scrape do
           :wc => offering['WC'],
           :section => offering['Sec'],
         }
-        o = Offering.find(:first, :conditions => offering_info) || Offering.create(offering_info) 
-        o.courses << c
-        o.save()
+        if not c.offerings.find(:first, :conditions => offering_info)
+          o = Offering.create(offering_info) 
+          o.courses << c
+          o.save()
+        end
       end
     end
   end

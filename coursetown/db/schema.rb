@@ -70,7 +70,6 @@ ActiveRecord::Schema.define(:version => 20111105212103) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "course_id"
   end
 
   create_table "users", :force => true do |t|
