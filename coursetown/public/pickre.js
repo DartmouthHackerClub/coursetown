@@ -224,16 +224,15 @@ function generate_result_div(result) {
     result_div.append(median_div);
     */
 
-    /*
     //ORC STUFF
     // Header
     if (result['note'] || result['offered'] || result['description']) {
-        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + result['department'] + '.html"> ' + result['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
+        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + canonical_course['department'] + '.html"> ' + canonical_course['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
     result_div.append(orc_header_div);
     }
     // Link to ORC
     else{
-    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+result['department']+'.html">' + result['department'] + ' ORC</a<</span>');
+    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+canonical_course['department']+'.html">' + canonical_course['department'] + ' ORC</a<</span>');
     result_div.append(dept_orc_div);
     }
 
@@ -250,11 +249,10 @@ function generate_result_div(result) {
     }
 
     // Description
-    if (result['description']) {
-        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ result['description'].replace(/\n/g, '<br />') +'</span>');
+    if (canonical_course['desc']) {
+        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ canonical_course['desc'].replace(/\n/g, '<br />') +'</span>');
         result_div.append(description_div);
     }
-    */
     return result_div;
 }
 
