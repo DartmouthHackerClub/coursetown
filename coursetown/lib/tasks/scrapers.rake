@@ -1,8 +1,9 @@
 namespace :scrape do
   task :timetable => :environment do
     filename = '../scrapers/timetable/timetable.json'
-    File.open(filename, 'r') do |f|
-      puts "loading the JSON..."
+    Offering.transaction do 
+    File.open(filename, 'r')do |f|
+      puts "loading the JSON..." 
       data = JSON.parse(f.read)
       puts "done."
       data.each do |offering|
@@ -83,5 +84,6 @@ namespace :scrape do
         end
       end
     end
+    end	
   end
 end  

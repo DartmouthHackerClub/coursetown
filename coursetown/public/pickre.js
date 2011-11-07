@@ -558,7 +558,7 @@ function do_search(form_params) {
     }
 
     if (periods.length > 0) {
-        queries['periods'] = periods;
+        queries['time'] = periods;
     }
     if (distribs.length > 0) {
         queries['distribs'] = distribs;
