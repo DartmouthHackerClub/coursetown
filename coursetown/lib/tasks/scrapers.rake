@@ -10,7 +10,7 @@ namespace :scrape do
           :department => offering['Subj'],
           :number => offering['Num'],
           :short_title => offering['Title']
-         }
+          }
         c = Course.find(:first, :conditions => course_info) || Course.create(course_info) 
         c.save()
         month_quarter_mappings = {
@@ -18,7 +18,7 @@ namespace :scrape do
           '09' => 'F',
           '03' => 'S',
           '06' => 'X',
-        }
+          }
         offering_info = {
           :year => offering['Term'][0,4],
           :term => month_quarter_mappings[offering['Term'][4,6]],
@@ -26,11 +26,27 @@ namespace :scrape do
           :time => offering['Period'],
           :wc => offering['WC'],
           :section => offering['Sec'],
-        }
-        if not c.offerings.find(:first, :conditions => offering_info)
+          #:building => offering['Building'],
+          #:room => offering['Room'],
+          #:enrollment_cap => offering['Lim']
+          #:enrolled => offering['Enrl']
+          }
+        # Unused fields:
+        #   offering['Status'] ex: "IP" for "In Progress"
+        #   offering['Xlist'] ex: "WGST 034 02"
+        o = c.offerings.find(:first, :conditions => offering_info)
+        if not o
           o = Offering.create(offering_info) 
           o.courses << c
           o.save()
+        end
+        professor_names = offering['Instructor'].split(', ')
+        professor_names.each do |professor_name|
+          prof_info = {:name => professor_name}
+          p = Professor.find(:first, :conditions => prof_info) || Professor.create(prof_info)
+          if not o.professors.index(p) ##there's probably a better way to do this...
+            o.professors << p
+          end
         end
       end
     end
