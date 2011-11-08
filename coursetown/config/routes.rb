@@ -2,7 +2,8 @@ Coursetown::Application.routes.draw do
   get "schedule/index"
 
   resources :users
-  match "/my_schedule" => "users#show_schedule"
+
+  get "planner" => "planner#show"
 
   resources :offerings
 
