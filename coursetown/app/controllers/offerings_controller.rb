@@ -5,45 +5,14 @@ class OfferingsController < ApplicationController
     queries = params[:queries]
     logger.debug queries
     logger.debug "==================================="
-    where_clause = {}
-    if queries
-        if queries.has_key? "periods"
-            where_clause[:time] = queries["periods"] 
-        end
-        if queries.has_key? "term"
-            where_clause[:term] = queries["term"] 
-        end
-        if queries.has_key? "year"
-            where_clause[:year] = queries["year"] 
-        end
-        if queries.has_key? "title"
-            where_clause["courses.long_title"] = queries["title"] 
-        end
-        if queries.has_key? "department"
-            where_clause["courses.department"] = queries["department"] 
-        end
-        if queries.has_key? "number"
-            where_clause["courses.number"] = queries["number"] 
-        end
-        if queries.has_key? "professors"
-            where_clause["professors.name"] = queries["professors"] 
-        end
-        if queries.has_key? "description"
-            where_clause["courses.desc"] = queries["description"] 
-        end
-        if queries.has_key? "wc"
-            where_clause[:wc] = queries["wc"] 
-        end
-        #TODO: distrib, wcult, avg median, can nro
-    end
-    @offering_hashes= Offering.includes(:courses, :professors).where(where_clause).select('*').map {
-                  |offering|
+   
+    render :json => Offering.search_by_query(queries).map {
+                 |offering|
                   hash = offering.attributes
                   hash[:professors] = offering.professors.map(&:attributes)
                   hash[:courses] = offering.courses.map(&:attributes)
                   hash
                   }
-    render :json => @offering_hashes
   end
 
   def search
