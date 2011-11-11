@@ -26,12 +26,14 @@ class PlannerController < ApplicationController
       includes(:course, :offering => :professors).
       where("offerings.year" => @years).
       group_by {|s| "#{s.offering.year}#{s.offering.term}"}
-
+    
     # bundle wcult & distribs in one array
     distribs = %w{W NW CI ART LIT TMV INT SOC QDS SCI SLA TAS TLA}.each_with_object({}){|k,h| h[k]=0}
-    @schedule_offerings.each{|sched|
-      if distribs[sched.offering.wc.upper] then distribs[sched.offering.wc.upper] += 1 end
-      sched.offering.distribs.each{|d| distribs[d.distrib_abbr.upper] += 1}
+    @schedule_offerings.each{|term,scheds|
+      scheds.each do |sched|
+        if distribs[sched.offering.wc.try(:upcase)] then distribs[sched.offering.wc.try(:upcase)] += 1 end
+        sched.offering.distribs.each{|d| distribs[d.distrib_abbr.try(:upcase)] += 1}
+      end
     }
     # FIXME this currently over-counts distribs (really, an offering can have multiple
     # distribs but it can only COUNT for one)
