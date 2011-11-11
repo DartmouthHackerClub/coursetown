@@ -6,8 +6,7 @@ class OfferingsController < ApplicationController
     logger.debug queries
     logger.debug "==================================="
    
-    render :json => Offering.search_by_query(queries).map {
-                 |offering|
+    render :json => Offering.search_by_query(queries).map { |offering|
                   hash = offering.attributes
                   hash[:professors] = offering.professors.map(&:attributes)
                   hash[:courses] = offering.courses.map(&:attributes)

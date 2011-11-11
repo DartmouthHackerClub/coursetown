@@ -151,6 +151,7 @@ function generate_result_div(result) {
                 html += ', ';
             }
             first = false;
+            //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
             var prof = result['professors'][key]['name'];
             html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
         }
