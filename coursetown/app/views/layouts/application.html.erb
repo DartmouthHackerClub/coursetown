@@ -8,7 +8,8 @@
         <%= javascript_include_tag "/json-sans-eval.js" %>
         <%= javascript_include_tag "/pickre.js" %>
         <%= javascript_include_tag "/utils/utils.js" %>
-
+        <%= javascript_include_tag "application" %>        
+        
         <%= stylesheet_link_tag    "/stylesheets/compiled/application.css" %>
         <%= stylesheet_link_tag "/jquery-autocomplete/jquery.autocomplete.css" %>
         <%= csrf_meta_tags %>
@@ -32,15 +33,17 @@
 	</head>
 	<body>
 		<div id="header">
-            <a id="login" href="">
-                login
-            </a>
+		    <% if @current_user.present? %>
+          <%= link_to "Logout",  signout_path %>
+        <% else %>
+          <%= link_to "Login", "/auth/cas", :style => "color:red" %>
+        <% end %>
 			<a id="logo" href="http://hacktown.cs.dartmouth.edu">
             <%= image_tag "pickr_logo.png" %>
 			</a>
 		</div>
 		<div id="content">
-            <%= yield %>
+      <%= yield %>
 		</div>
 	</body>
 </html>

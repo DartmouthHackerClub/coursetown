@@ -2,10 +2,17 @@ class OfferingsController < ApplicationController
 
   def search_results
     logger.debug "==================================="
-    logger.debug params[:queries]
+    queries = params[:queries]
+    logger.debug queries
     logger.debug "==================================="
-    @offerings= Offering.joins(:course).select('*')
-    render :json => @offerings
+   
+    render :json => Offering.search_by_query(queries).map {
+                 |offering|
+                  hash = offering.attributes
+                  hash[:professors] = offering.professors.map(&:attributes)
+                  hash[:courses] = offering.courses.map(&:attributes)
+                  hash
+                  }
   end
 
   def search

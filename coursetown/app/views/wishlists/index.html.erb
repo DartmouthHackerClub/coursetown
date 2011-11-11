@@ -1,6 +1,10 @@
-<h1><%= "#{@user.name}'s Wishlist" %></h1>
 
-<%= "hello" %>
+<% if @current_user.nil? %>
+<p>Login and create your wishlist!</p>
+<%= link_to "Login", "/auth/cas"%>
+<% else %>
+
+<h1><%= "#{@current_user.name}'s Wishlist" %></h1>
 
 <% if @courses.empty? %>
   You have no courses on your wishlist.
@@ -10,7 +14,7 @@
       <tr>
         <td><%= course.department %></td>
         <td><%= course.number %></td>
-        <td><%= course.name %></td>
+        <td><%= course.long_title %></td>
         <td><%= link_to 'Details', course %></td>
         <td><%= link_to 'Remove', course, :confirm => 'Are you sure?', :method => :delete %></td>
       </tr>
@@ -19,3 +23,4 @@
 <%end%>
 <br />
 
+<% end %>

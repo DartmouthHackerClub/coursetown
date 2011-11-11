@@ -1,0 +1,43 @@
+<h1><%= "#{@current_user.name}'s Wishlist & Schedule"%></h1>
+
+<% if @wishlist_offerings.size == 0 && @schedule_offerings.size == 0 %>
+  <p>You have no courses in your wishlist</p>
+<% else %>
+  <table class="schedule">
+  <% @years.each do |year| %>
+  <tr>
+    <% @terms.each do |term| %>
+      <%
+    key = "#{year}#{term}"
+    sched = @schedule_offerings[key] || []
+    wish = @wishlist_offerings[key] || []
+    %>
+    <td>
+        <h2><%= key %></h2>
+        <table class="single_term_table">
+        <% sched.each do |s| course = s.course; offering = s.offering %>
+        <tr class="schedule" style="background-color: #ecc;">
+        <td><%= course.department %></td>
+        <td><%= course.long_title %></td>
+        <td><%= offering.professors.map(&:name).join(", ") %></td>
+        <td><%= offering.time %></td>
+        </tr>
+        <% end %>
+        <% wish.each do |pair| course = pair[0]; offering = pair[1] %>
+        <tr class="wishlist" style="background-color: #cec;">
+        <td><%= course.department %></td>
+        <td><%= course.long_title %></td>
+        <td><%= offering.professors.map(&:name).join(", ") %></td>
+        <td><%= offering.time %></td>
+        </tr>
+        <% end %>
+      </table>
+    </td>
+    <% end %>
+  </tr>
+  <% end %>
+  </table>
+  <h2>Unfulfilled Requirements</h2>
+  <%= @missing_distribs.empty? ? "You meet all your requirements!" : @missing_distribs.join(", ") %>
+<% end %>
+<br />

@@ -80,30 +80,4 @@ class UsersController < ApplicationController
       format.xml  { head :ok }
     end
   end
-
-  # GET /users/1/schedule
-  def show_schedule
-    @user = User.find(params[:id])
-    @start_year = params[:start] ? params[:start] : (Time.new.year - 2)
-    @end_year   = params[:end]   ? params[:end]   : @start_year + 4
-
-    @years = @start_year..@end_year
-    @terms = [:F,:W,:S,:X]
-
-    fields = "number, department, title, professor, year, term, time"
-
-    @wishlist_offerings = @user.wishlists.
-      joins(:course => :offerings).
-      where("offerings.year" => @years).
-      select(fields).
-      group_by {|course| "#{course.year}#{course.term}"}
-
-    @schedule_offerings = @user.schedules.
-      joins(:offering => :course).
-      where("offerings.year" => @years).
-      select(fields).
-      group_by {|course| "#{course.year}#{course.term}"}
-
-    # TODO: figure out which distribs are met/not met by SCHEDULE
-  end
 end

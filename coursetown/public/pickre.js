@@ -106,13 +106,21 @@ function show_results(results) {
 // in: a json object representing a single result (one offering)
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
+    canonical_course = result['courses'][0]
     result_div = $('<div class="result"></div>');
+    canonical_title = '';
+    if(canonical_course['long_title']){
+        canonical_title = canonical_course['long_title']
+    }
+    else if(canonical_course['short_title']){
+        canonical_title = canonical_course['short_title']
+    }
 
     // title
-    title = $('<span class="dept_num_title">' + result['department'] + ' ' + result['number'] + ': ' + result['long_title'] + '</span>');
+    title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
     // crn
     if(result['crn']){
-        crn = $('<span class="crn">CRN ' + result['CRN'] + '</span>');
+        crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
         title.append(crn);
     }
     result_div.append(title);
@@ -143,8 +151,8 @@ function generate_result_div(result) {
                 html += ', ';
             }
             first = false;
-    var prof = result['professors'][key];
             //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
+            var prof = result['professors'][key]['name'];
             html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
         }
         profs_div.append(html);
@@ -182,7 +190,6 @@ function generate_result_div(result) {
     result_div.append(distrib);
     */
 
-    /*
     // WCULT
     wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
     if(result['wc']){
@@ -193,6 +200,7 @@ function generate_result_div(result) {
     }
     result_div.append(wcult);
 
+    /*
     // Can NRO?
     nro = $('<span class="nro"><span class="fieldname">nro </span></span>');
     if(result['nro'] == 'true'){
@@ -217,17 +225,15 @@ function generate_result_div(result) {
     result_div.append(median_div);
     */
 
-
-    /*
     //ORC STUFF
     // Header
     if (result['note'] || result['offered'] || result['description']) {
-        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + result['department'] + '.html"> ' + result['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
+        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + canonical_course['department'] + '.html"> ' + canonical_course['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
     result_div.append(orc_header_div);
     }
     // Link to ORC
     else{
-    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+result['department']+'.html">' + result['department'] + ' ORC</a<</span>');
+    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+canonical_course['department']+'.html">' + canonical_course['department'] + ' ORC</a<</span>');
     result_div.append(dept_orc_div);
     }
 
@@ -244,11 +250,10 @@ function generate_result_div(result) {
     }
 
     // Description
-    if (result['description']) {
-        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ result['description'].replace(/\n/g, '<br />') +'</span>');
+    if (canonical_course['desc']) {
+        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ canonical_course['desc'].replace(/\n/g, '<br />') +'</span>');
         result_div.append(description_div);
     }
-    */
     return result_div;
 }
 
@@ -276,16 +281,15 @@ function get_or_create_results_div() {
 }
 
 function generate_input_field_quarter() {
-    quarters = ['Fall', 'Winter', 'Spring', 'Summer'];
     date = new Date();
     this_year = date.getFullYear();
     years = [this_year, this_year+1]
     var html = '';
     html += '<select name="term">';
-    for (key in quarters) {
-        quarter = quarters[key];
-        html += '<option value="' + quarter + '">' + quarter + '</option>';
-    }
+    html += '<option value="F">Fall</option>';
+    html += '<option value="W">Winter</option>';
+    html += '<option value="S">Spring</option>';
+    html += '<option value="X">Summer</option>';
     html += '</select>';
     html += '<select name="year">';
     for (key in years) {
@@ -400,6 +404,8 @@ function add_search_row_if_we_need_one() {
         left_side.find("select").change();
         left_side.parent().hide();
     });
+    /*
+    TODO: commenting out for now because for some reason it's giving us an error. i don't know why.
     $('input[name="Professors"]').autocomplete(profs,
             {
                 matchContains: true,
@@ -418,6 +424,7 @@ function add_search_row_if_we_need_one() {
                 multiple: true,
                 selectFirst: false
             });
+    */
 }
 
 function make_search_row_dom_element() {
@@ -550,7 +557,7 @@ function do_search(form_params) {
     }
 
     if (periods.length > 0) {
-        queries['periods'] = periods;
+        queries['time'] = periods;
     }
     if (distribs.length > 0) {
         queries['distribs'] = distribs;
@@ -724,7 +731,8 @@ $().ready(function () {
     row1.find("select").change();
 
     //show_favorites();
-    $("form#search_form input[type='submit']").click(function () {
+    $("#search_form").submit(function(event) {
+        event.preventDefault();
     	try{
             the_form = $('#search_form');
             form_params = the_form.serializeArray();
