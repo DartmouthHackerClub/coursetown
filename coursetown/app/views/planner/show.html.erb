@@ -15,9 +15,9 @@
     <td>
         <h2><%= key %></h2>
         <table class="single_term_table">
-      <tr>
-        </tr>
-        <% sched.each do |s| course = s.course; offering = s.offering %>
+        <% sched.each do |s| %>
+        <% course, offering = s.course, s.offering %>
+        <% next if course.nil? or offering.nil? %>
         <tr class="schedule" style="background-color: #ecc;">
         <td><%= course.department %></td>
         <td><%= course.long_title %></td>
@@ -25,7 +25,8 @@
         <td><%= offering.time %></td>
         </tr>
         <% end %>
-        <% wish.each do |pair| course = pair[0]; offering = pair[1] %>
+        <% wish.each do |pair| %>
+        <% course, offering = pair %>
         <tr class="wishlist" style="background-color: #cec;">
         <td><%= course.department %></td>
         <td><%= course.long_title %></td>
