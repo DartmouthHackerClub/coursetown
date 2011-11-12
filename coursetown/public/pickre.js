@@ -104,6 +104,37 @@ function show_results(results) {
     last_result = results;
 }
 
+function favorite_checkbox_onclick(evt){
+    event.preventDefault();
+
+    var $checkbox, data, type, url;
+    $checkbox = $(this);
+    console.log($checkbox);
+
+    data = {};
+    data["course_id"] = $checkbox.attr('value');
+    d1 = $checkbox;
+
+    type = $checkbox.attr('course_in_wishlist') === "true" ? "delete" : "post";
+    url = "/wishlists/";
+    if (type == "delete") {
+        url += data["course_id"];
+    }
+    console.log($checkbox, type, data);
+    $.ajax({
+        url: url,
+        data: data,
+        type: type,
+        success: function() {
+          $checkbox.toggleCheckbox();
+          $checkbox.attr('course_in_wishlist', !$checkbox.attr('course_in_wishlist'));
+          return true;
+          //return $checkbox.attr('course_in_wishlist', !attr('course_in_wishlist'));
+        }
+    });
+    return false;
+}
+
 // in: a json object representing a single result (one offering)
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
@@ -119,26 +150,7 @@ function generate_result_div(result) {
 
     // title
     title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
-    //wishlist
-    favorite_link = $('<a href="#">favorite</a>')
-    favorite_link.click(function(event){
-        d1 = event;
-        event.preventDefault();
-        ajax_params = {};
-        $.ajax({
-            dataType: "json",
-            type: "POST",
-            url: '/wishilists',
-            data: ajax_params,
-            success: function (data) {
-                alert('favorited!!!');
-            },
-            error: function (e) {
-                show_error(e);
-            }
-        });
-        return False;
-    });
+
     // crn
     if(result['crn']){
         crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
@@ -153,8 +165,15 @@ function generate_result_div(result) {
     result_div.append(cglink_div);
 
     // favorite
-    checked = 'checked="checked"'
-    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label><input type="checkbox"' + checked + '/></span>');
+    checked = 'course_in_wishlist="false"';
+    //TODO: the server doesn't actually pass us this "favorited" field yet
+    if(result['favorited']){
+        checked = 'checked="checked" course_in_wishlist="true"';
+    }
+    checkbox = $('<input type="checkbox"' + checked + '/>');
+    checkbox.click(favorite_checkbox_onclick);
+    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
+    favorited.append(checkbox);
     result_div.append(favorited);
 
     // term
