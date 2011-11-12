@@ -30,7 +30,7 @@ namespace :scrape do
     filename = '../scrapers/timetable/timetable.json'
     Offering.transaction do 
     File.open(filename, 'r')do |f|
-      puts "loading the JSON..." 
+      puts "loading timetable JSON..." 
       data = JSON.parse(f.read)
       puts "done."
       data.each do |offering|

@@ -5,6 +5,7 @@ var empty_rows = 0;
 var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
 //TODO: delete the above when we're fully transitioned off of couch
 var search_query_url = '/search_json';
+var d1 = null; //for debugging
 
 function show_error(e) {
     //console.log(e);
@@ -118,6 +119,26 @@ function generate_result_div(result) {
 
     // title
     title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
+    //wishlist
+    favorite_link = $('<a href="#">favorite</a>')
+    favorite_link.click(function(event){
+        d1 = event;
+        event.preventDefault();
+        ajax_params = {};
+        $.ajax({
+            dataType: "json",
+            type: "POST",
+            url: '/wishilists',
+            data: ajax_params,
+            success: function (data) {
+                alert('favorited!!!');
+            },
+            error: function (e) {
+                show_error(e);
+            }
+        });
+        return False;
+    });
     // crn
     if(result['crn']){
         crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
