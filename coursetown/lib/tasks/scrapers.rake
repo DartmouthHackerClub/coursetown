@@ -27,53 +27,56 @@ namespace :scrape do
     }
   end
   task :timetable => :environment do
-    filename = '../scrapers/timetable/timetable.json'
-    Offering.transaction do 
-    File.open(filename, 'r')do |f|
+    filename = '../scrapers/timetable/timetable_test_data.json'
+    #TODO: DEBUG
+    #filename = '../scrapers/timetable/timetable.json'
+    File.open(filename, 'r') do |f|
       puts "loading timetable JSON..." 
       data = JSON.parse(f.read)
       puts "done."
-      data.each do |offering|
+      data.each { |offering|
         course_info = {
           #:department => offering['Subj'],
           #:number => offering['Num'],
           :short_title => offering['Title']
-          }
-          c = Course.find_or_create_by_department_and_number(offering['Subj'], offering['Num'])
-          c.update_attributes(course_info)
-          c.save()
-          ### THE OFFERING
-          month_quarter_mappings = {
-            '01' => 'W',
-            '09' => 'F',
-            '03' => 'S',
-            '06' => 'X',
-          }
-          offering_info = {
-            :time => offering['Period'],
-            :wc => offering['WC'],
-            :building => offering['Building'],
-            :room => offering['Room'],
-            :enrollment_cap => offering['Lim'],
-            :enrolled => offering['Enrl'],
-          }
-          year = offering['Term'][0,4]
-          term = month_quarter_mappings[offering['Term'][4,6]]
-          # Unused fields:
-          #   offering['Status'] ex: "IP" for "In Progress"
-          #   offering['Xlist'] ex: "WGST 034 02"
-          o = c.offerings.find_or_create_by_year_and_term_and_section(year, term, offering['Sec'])
-          o.update_attributes(offering_info)
-          distribs = offering['Dist'].strip.upcase.split(' OR ')
-          distribs.each {|d| o.distribs.find_or_create_by_distrib_abbr(d)}
-          professor_names = offering['Instructor'].split(', ')
-          professor_names.each { |professor_name|
-            o.professors.find_or_create_by_name(professor_name)
-          }
-          o.save()
         }
+        c = Course.find_or_create_by_department_and_number(offering['Subj'], offering['Num'])
+        c.update_attributes(course_info)
+        c.save()
+        ### THE OFFERING
+        month_quarter_mappings = {
+          '01' => 'W',
+          '09' => 'F',
+          '03' => 'S',
+          '06' => 'X',
+        }
+        offering_info = {
+          :time => offering['Period'],
+          :wc => offering['WC'],
+          :building => offering['Building'],
+          :room => offering['Room'],
+          :enrollment_cap => offering['Lim'],
+          :enrolled => offering['Enrl']
+        }
+        year = offering['Term'][0,4]
+        term = month_quarter_mappings[offering['Term'][4,6]]
+        # Unused fields:
+        #   offering['Status'] ex: "IP" for "In Progress"
+        #   offering['Xlist'] ex: "WGST 034 02"
+        o = c.offerings.find_or_create_by_year_and_term_and_section(year, term, offering['Sec'])
+        o.courses << c
+        o.update_attributes(offering_info)
+        distribs = offering['Dist'].strip.upcase.split(' OR ')
+        distribs.each {|d| o.distribs.find_or_create_by_distrib_abbr(d)}
+        professor_names = offering['Instructor'].split(', ')
+        professor_names.each { |professor_name|
+          p = o.professors.find_or_create_by_name(professor_name)
+          p.offerings << o
+          p.save()
+        }
+        o.save()
       }
-    }
+    end
   end
 #  task :nro => :environment {
 #    year = 2011

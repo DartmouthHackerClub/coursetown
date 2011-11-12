@@ -6,7 +6,7 @@ class Offering < ActiveRecord::Base
   has_many :distribs
   has_many :schedules
   def self.search_by_query(queries)
-    where_clause = queries.slice(:periods, :term, :year, :wc, :time)
+    where_clause = queries.slice(:period, :term, :year, :wc, :time)
     # courses long_title is given as title. Should be a LIKE
     # descr as well ? 
     # 
