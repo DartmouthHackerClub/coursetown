@@ -5,13 +5,7 @@ class OfferingsController < ApplicationController
     queries = params[:queries]
     logger.debug queries
     logger.debug "==================================="
-<<<<<<< HEAD
-    render :json => Offering.search_by_query(queries).map {
-                 |offering|
-=======
-   
     render :json => Offering.search_by_query(queries).map { |offering|
->>>>>>> 8aed65389a3a97f5784c22da61ce178b7e9b01b5
                   hash = offering.attributes
                   hash[:professors] = offering.professors.map(&:attributes)
                   hash[:courses] = offering.courses.map(&:attributes)
