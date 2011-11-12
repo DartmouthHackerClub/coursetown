@@ -152,6 +152,11 @@ function generate_result_div(result) {
     var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
     result_div.append(cglink_div);
 
+    // favorite
+    checked = 'checked="checked"'
+    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label><input type="checkbox"' + checked + '/></span>');
+    result_div.append(favorited);
+
     // term
     term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
     result_div.append(term);
