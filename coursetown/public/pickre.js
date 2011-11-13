@@ -104,30 +104,32 @@ function show_results(results) {
     last_result = results;
 }
 
-function favorite_checkbox_onclick(evt){
+function favorite_checkbox_onclick(event){
     event.preventDefault();
 
     var $checkbox, data, type, url;
     $checkbox = $(this);
-    console.log($checkbox);
 
     data = {};
     data["course_id"] = $checkbox.attr('value');
-    d1 = $checkbox;
 
     type = $checkbox.attr('course_in_wishlist') === "true" ? "delete" : "post";
     url = "/wishlists/";
     if (type == "delete") {
         url += data["course_id"];
     }
-    console.log($checkbox, type, data);
     $.ajax({
         url: url,
         data: data,
         type: type,
-        success: function() {
+        error: function(e){
+          console.log(e);
+        },
+        success: function(retval) {
           $checkbox.toggleCheckbox();
-          $checkbox.attr('course_in_wishlist', !$checkbox.attr('course_in_wishlist'));
+          course_in_wishlist = $checkbox.attr('course_in_wishlist') === 'true' ? 'false' : 'true';
+          $checkbox.attr('course_in_wishlist', course_in_wishlist);
+          console.log(retval)
           return true;
           //return $checkbox.attr('course_in_wishlist', !attr('course_in_wishlist'));
         }
@@ -170,7 +172,7 @@ function generate_result_div(result) {
     if(result['favorited']){
         checked = 'checked="checked" course_in_wishlist="true"';
     }
-    checkbox = $('<input type="checkbox"' + checked + '/>');
+    checkbox = $('<input type="checkbox"' + checked + ' value=' + canonical_course['id'] + '/>');
     checkbox.click(favorite_checkbox_onclick);
     favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
     favorited.append(checkbox);
