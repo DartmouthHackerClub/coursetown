@@ -5,6 +5,7 @@ var empty_rows = 0;
 var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
 //TODO: delete the above when we're fully transitioned off of couch
 var search_query_url = '/search_json';
+var d1 = null; //for debugging
 
 function show_error(e) {
     //console.log(e);
@@ -103,6 +104,39 @@ function show_results(results) {
     last_result = results;
 }
 
+function favorite_checkbox_onclick(event){
+    event.preventDefault();
+
+    var $checkbox, data, type, url;
+    $checkbox = $(this);
+
+    data = {};
+    data["course_id"] = $checkbox.attr('value');
+
+    type = $checkbox.attr('course_in_wishlist') === "true" ? "delete" : "post";
+    url = "/wishlists/";
+    if (type == "delete") {
+        url += data["course_id"];
+    }
+    $.ajax({
+        url: url,
+        data: data,
+        type: type,
+        error: function(e){
+          console.log(e);
+        },
+        success: function(retval) {
+          $checkbox.toggleCheckbox();
+          course_in_wishlist = $checkbox.attr('course_in_wishlist') === 'true' ? 'false' : 'true';
+          $checkbox.attr('course_in_wishlist', course_in_wishlist);
+          console.log(retval)
+          return true;
+          //return $checkbox.attr('course_in_wishlist', !attr('course_in_wishlist'));
+        }
+    });
+    return false;
+}
+
 // in: a json object representing a single result (one offering)
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
@@ -118,6 +152,7 @@ function generate_result_div(result) {
 
     // title
     title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
+
     // crn
     if(result['crn']){
         crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
@@ -130,6 +165,18 @@ function generate_result_div(result) {
     var link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
     var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
     result_div.append(cglink_div);
+
+    // favorite
+    checked = 'course_in_wishlist="false"';
+    //TODO: the server doesn't actually pass us this "favorited" field yet
+    if(result['favorited']){
+        checked = 'checked="checked" course_in_wishlist="true"';
+    }
+    checkbox = $('<input type="checkbox"' + checked + ' value=' + canonical_course['id'] + '/>');
+    checkbox.click(favorite_checkbox_onclick);
+    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
+    favorited.append(checkbox);
+    result_div.append(favorited);
 
     // term
     term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
@@ -151,6 +198,7 @@ function generate_result_div(result) {
                 html += ', ';
             }
             first = false;
+            //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
             var prof = result['professors'][key]['name'];
             html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
         }

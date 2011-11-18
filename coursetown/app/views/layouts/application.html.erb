@@ -35,6 +35,7 @@
 		<div id="header">
 		    <% if @current_user.present? %>
           <%= link_to "Logout",  signout_path %>
+          <%= link_to "My planner",  "/planner" %>
         <% else %>
           <%= link_to "Login", "/auth/cas", :style => "color:red" %>
         <% end %>
