@@ -6,6 +6,7 @@ namespace :scrape do
         puts "loading the ORC JSON..."
         data = JSON.parse(f.read)
         puts "done."
+        puts "importing data into db..."
         data['courses'].each { |course|
           course_info = {
             :desc => course["description"],
@@ -25,6 +26,7 @@ namespace :scrape do
         }
       }
     }
+    puts "done: import finished."
   end
   task :timetable => :environment do
     filename = '../scrapers/timetable/timetable_test_data.json'
@@ -34,6 +36,7 @@ namespace :scrape do
       puts "loading timetable JSON..." 
       data = JSON.parse(f.read)
       puts "done."
+      puts "importing data into db..."
       data.each { |offering|
         course_info = {
           #:department => offering['Subj'],
@@ -76,6 +79,7 @@ namespace :scrape do
         }
         o.save()
       }
+      puts "done: import finished."
     end
   end
 #  task :nro => :environment {
