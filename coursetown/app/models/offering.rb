@@ -5,6 +5,8 @@ class Offering < ActiveRecord::Base
   has_many :professors, :through => :offering_professors
   has_many :distribs
   has_many :schedules
+  has_many :reviews
+
   def self.search_by_query(queries)
     where_clause = queries.slice(:period, :term, :year, :wc, :time)
     # courses long_title is given as title. Should be a LIKE

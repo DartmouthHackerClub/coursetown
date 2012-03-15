@@ -1,0 +1,58 @@
+<%# HEADER %>
+
+<% if @review.offering %>
+	<% courses = @review.courses %>
+	<h1><%= "New Review for #{courses.first.compact_title}" %></h1>
+	<% if courses.length > 1 %>
+		<h3><%= "Cross-listed as: " + courses.map(&compact_title).join(', ') %></h3>
+	<% end %>
+<% else %>
+<h1>New Review</h1>
+<% end %>
+
+<%# COURSE INFO %>
+
+<div id="course_info">
+	<% if @review.offering %>
+		<%# TODO make names link to their actual pages %>
+		<% professors = @review.professors %>
+		<%= (professors.length == 1 ? "Instructor: " : "Instructors: ") %>
+		<%=	raw professors.map{|prof| 
+			link_to(prof.name, prof_reviews_path(:id => prof.id))}.join(', ') %>
+		<br/>
+
+		<%# "11F @ 9L" %>
+		<%= "#{@review.offering.year}#{@review.offering.term} @ #{@review.offering.time}" %>
+		<%# TODO [not when you took this course?] button %>
+	<% else %>
+		Please select a course offering to review.
+	<% end %>
+</div>
+
+<%# REVIEW %>
+
+<div>
+	<%= form_for @review do |f| %>
+	  <%= f.label "Grade" %>
+	  <%= f.select :grade, grade_list.reverse %>
+	  <br/>
+
+	  <%= f.label "Professor Rating"%>
+	  <%= star_rating f, :professor_rating %>
+	  <br/>
+
+	  <%= f.label "Course Rating" %>
+	  <%= star_rating f, :course_rating %>
+	  <br/>
+
+	  <%= f.label "Comments" %>
+	  <br/>
+	  <%= f.text_area :comment, :rows => 6, :cols => 50 %>
+	  <br/>
+
+	  <%= f.hidden_field :offering_id %>
+	  
+	  <%= f.submit "Submit" %>
+	<% end %>
+	<%# TODO cancel button? %>
+</div>

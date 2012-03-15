@@ -1,16 +1,19 @@
 class OfferingsController < ApplicationController
 
+  # returns json, to be rendered via ajax
   def search_results
     logger.debug "==================================="
     queries = params[:queries]
     logger.debug queries
     logger.debug "==================================="
+    if queries.nil? then render :json => {} end
+
     render :json => Offering.search_by_query(queries).map { |offering|
-                  hash = offering.attributes
-                  hash[:professors] = offering.professors.map(&:attributes)
-                  hash[:courses] = offering.courses.map(&:attributes)
-                  hash
-                  }
+      hash = offering.attributes
+      hash[:professors] = offering.professors.map(&:attributes)
+      hash[:courses] = offering.courses.map(&:attributes)
+      hash
+    }
   end
 
   def search

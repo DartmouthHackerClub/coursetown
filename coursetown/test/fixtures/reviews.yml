@@ -1,0 +1,13 @@
+one:
+  user_id: 1
+  grade: 12
+  professor_rating: 4
+  course_rating: 3
+  comment: Ok class I guess...
+
+two:
+  user_id: 1
+  grade: 10
+  professor_rating: 1
+  course_rating: 5
+  comment: Good class bad prof

@@ -1,15 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  department: MyString
-  number: 1
-  short_title: MyString
-  long_title: MyString
-  desc: MyText
+  department: COSC
+  number: 69
+  short_title: Smartphones
+  long_title: Smartphones Sensing and Analysis
+  desc: with Campbell
 
 two:
-  department: MyString
-  number: 1
-  short_title: MyString
-  long_title: MyString
-  desc: MyText
+  department: MATH
+  number: 63
+  short_title: Real Analysis
+  long_title: Real Analysis LONGTITLE
+  desc: mathymathmath

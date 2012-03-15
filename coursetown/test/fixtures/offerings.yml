@@ -1,25 +1,25 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
 one:
-  year: 1
-  term: MyString
-  time: MyString
-  median_grade: 1.5
-  specific_title: MyString
-  wc: MyString
-  specific_desc: MyText
+  year: 2012
+  term: W
+  time: 11
+  median_grade: 3.5
+  specific_title:
+  wc:
+  specific_desc:
   unconfirmed: false
-  crn: MyString
+  crn: 9000
   section: 1
 
 two:
-  year: 1
-  term: MyString
-  time: MyString
-  median_grade: 1.5
-  specific_title: MyString
-  wc: MyString
-  specific_desc: MyText
+  year: 2012
+  term: W
+  time: 9L
+  median_grade: 3.0
+  specific_title:
+  wc:
+  specific_desc:
   unconfirmed: false
-  crn: MyString
+  crn: 90001
   section: 1
