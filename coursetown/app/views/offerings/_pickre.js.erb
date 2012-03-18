@@ -563,11 +563,11 @@ function do_search(form_params) {
         }
         else if (name == 'Professors') {
             var val = form_params[key]['value'];
-            splits = val.split(' ');
+            splits = val.split(',');
             profs = [];
             for (s in splits) {
                 if (splits[s] != '')
-                    profs.push(splits[s]);
+                    profs.push($.trim(splits[s]));
             }
             queries['professors'] = profs;
         }

@@ -71,7 +71,7 @@ namespace :scrape do
         #   offering['Xlist'] ex: "WGST 034 02"
 
         # TODO it'd be great to be able to say:
-        #   o = c.offerings.fin_or_create_by_year_and_term_and_section(year,term,offering['Sec'])
+        #   o = c.offerings.find_or_create_by_year_and_term_and_section(year,term,offering['Sec'])
         #   o.update_attributes(offering_info)
         # but that creates duplicates! so let's be explicit
         o = c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
