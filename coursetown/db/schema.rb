@@ -69,6 +69,17 @@ ActiveRecord::Schema.define(:version => 20120205001618) do
     t.datetime "updated_at"
   end
 
+  create_table "reviews", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "offering_id"
+    t.integer  "grade"
+    t.integer  "prof_rating"
+    t.integer  "course_rating"
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "schedules", :force => true do |t|
     t.integer  "offering_id"
     t.integer  "user_id"
@@ -88,17 +99,6 @@ ActiveRecord::Schema.define(:version => 20120205001618) do
   create_table "wishlists", :force => true do |t|
     t.integer  "course_id"
     t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "reviews", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "offering_id"
-    t.integer  "grade"
-    t.integer  "professor_rating"
-    t.integer  "course_rating"
-    t.text     "comment"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

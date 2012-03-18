@@ -33,16 +33,13 @@ class ReviewsController < ApplicationController
     end
 
     @review = Review.new
+
     # TODO make this check mandatory!
-    if (params.has_key? :offering_id)
-      if (o = Offering.find_by_id(params[:offering_id])
-        @review.offering = o
-      else
-        # TODO be more helpful than this
-        render :status => 404
-        return
-      end
-    else
+    @review.offering = Offering.find_by_id(params[:offering_id]) if params.has_key? :offering_id
+
+    if @review.offering.nil?
+      render :status => 404
+      return
       # TODO redirect user to a course selection page (maybe)
     end
   end

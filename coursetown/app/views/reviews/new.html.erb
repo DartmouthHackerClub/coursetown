@@ -1,13 +1,17 @@
 <%# HEADER %>
 
 <% if @review.offering %>
-	<% courses = @review.courses %>
-	<h1><%= "New Review for #{courses.first.compact_title}" %></h1>
+	<% courses = @review.offering.courses %>
+	<% if courses.empty? || !(courses.first.is_a? Course)%>
+		<h1>"New Review for UNKNOWN COURSE"</h1>
+	<% else %>
+		<h1><%= "New Review for #{courses.first.compact_title}" %></h1>
+	<% end %>
 	<% if courses.length > 1 %>
 		<h3><%= "Cross-listed as: " + courses.map(&compact_title).join(', ') %></h3>
 	<% end %>
 <% else %>
-<h1>New Review</h1>
+	<h1>New Review</h1>
 <% end %>
 
 <%# COURSE INFO %>

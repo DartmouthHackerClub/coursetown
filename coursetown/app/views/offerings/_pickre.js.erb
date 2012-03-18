@@ -137,6 +137,8 @@ function favorite_checkbox_onclick(event){
     return false;
 }
 
+// note: this is a sloppy substitute for an .erb partial, but this needs to happen
+//       client-side so that the results can be re-sorted
 // in: a json object representing a single result (one offering)
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
@@ -165,6 +167,13 @@ function generate_result_div(result) {
     var link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
     var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
     result_div.append(cglink_div);
+
+    // TODO
+    // FIXME this shouldn't be hard-coded. use ERB magic
+    // Write review link
+    var offering_id = canonical_course['id'];
+    var review_div = $('<a class="cglink" href="../../reviews/new?offering_id=' + offering_id + '" target="_blank">write review</a>')
+    result_div.append(review_div);
 
     // favorite
     checked = 'course_in_wishlist="false"';

@@ -6,7 +6,7 @@ namespace :scrape do
         puts "loading the ORC JSON..."
         data = JSON.parse(f.read)
         puts "done."
-        puts "importing data into db..."
+        puts "importing data into db (#{data['courses'].count} courses)..."
         data['courses'].each { |course|
           course_info = {
             :desc => course["description"],
@@ -20,32 +20,35 @@ namespace :scrape do
           #   course["distribs"] #ex: ["LIT"]
           #   course["wcults"] #ex["NW"] 
           #   course["profs"] #ex [["Rodolfo A. Franconi"],["Beatriz Pastor","11W"],["Buéno"]
-          c = Course.find_or_create_by_department_and_number(course['subject'], course['number'])
+          c = Course.find_or_initialize_by_department_and_number(course['subject'], course['number'])
           c.update_attributes(course_info)
-          c.save()
         }
       }
     }
-    puts "done: import finished."
+    puts "done: import finished. (#{Course.count} courses total)"
   end
   task :timetable => :environment do
     filename = '../scrapers/timetable/timetable_test_data.json'
     #TODO: DEBUG
     #filename = '../scrapers/timetable/timetable.json'
+
     File.open(filename, 'r') do |f|
       puts "loading timetable JSON..." 
       data = JSON.parse(f.read)
       puts "done."
-      puts "importing data into db..."
+      puts "importing data into db (#{data.size} offerings)..."
       data.each { |offering|
         course_info = {
           #:department => offering['Subj'],
           #:number => offering['Num'],
           :short_title => offering['Title']
         }
-        c = Course.find_or_create_by_department_and_number(offering['Subj'], offering['Num'])
-        c.update_attributes(course_info)
-        c.save()
+
+        c = Course.find_or_initialize_by_department_and_number(offering['Subj'], offering['Num'])
+        if !c.update_attributes(course_info) # saves to DB
+          puts "Course [#{c.compact_title}] is invalid!"
+        end
+
         ### THE OFFERING
         month_quarter_mappings = {
           '01' => 'W',
@@ -66,20 +69,29 @@ namespace :scrape do
         # Unused fields:
         #   offering['Status'] ex: "IP" for "In Progress"
         #   offering['Xlist'] ex: "WGST 034 02"
-        o = c.offerings.find_or_create_by_year_and_term_and_section(year, term, offering['Sec'])
-        o.courses << c
-        o.update_attributes(offering_info)
+
+        # TODO it'd be great to be able to say:
+        #   o = c.offerings.fin_or_create_by_year_and_term_and_section(year,term,offering['Sec'])
+        #   o.update_attributes(offering_info)
+        # but that creates duplicates! so let's be explicit
+        o = c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+        if o.nil?
+          o = Offering.new(offering_info)
+          o.year = year
+          o.term = term
+          o.section = offering['Sec']
+          o.save
+          c.offerings << o
+        else
+          o.update_attributes(offering_info)
+        end
+
         distribs = offering['Dist'].strip.upcase.split(' OR ')
         distribs.each {|d| o.distribs.find_or_create_by_distrib_abbr(d)}
         professor_names = offering['Instructor'].split(', ')
-        professor_names.each { |professor_name|
-          p = o.professors.find_or_create_by_name(professor_name)
-          p.offerings << o
-          p.save()
-        }
-        o.save()
+        professor_names.each { |name| p = o.professors.find_or_create_by_name(name) }
       }
-      puts "done: import finished."
+      puts "done: import finished. (#{Offering.count} offerings total)"
     end
   end
 #  task :nro => :environment {
