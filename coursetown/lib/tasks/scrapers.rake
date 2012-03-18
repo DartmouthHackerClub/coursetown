@@ -89,7 +89,11 @@ namespace :scrape do
         distribs = offering['Dist'].strip.upcase.split(' OR ')
         distribs.each {|d| o.distribs.find_or_create_by_distrib_abbr(d)}
         professor_names = offering['Instructor'].split(', ')
-        professor_names.each { |name| p = o.professors.find_or_create_by_name(name) }
+        professor_names.each { |name|
+          if o.professors.find_by_name(name).nil?
+            o.professors << Professor.find_or_create_by_name(name)
+          end
+        }
       }
       puts "done: import finished. (#{Offering.count} offerings total)"
     end
