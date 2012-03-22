@@ -9,31 +9,37 @@
 <h2><%= "taught by: #{@review.professors.map(&:name).join(', ')}"%></h2>
 
 <!-- offering info -->
-<table id="offering_info">
+<table id="offering">
 	<tr>
-		<td>Term:</td>
+		<td>Term</td>
 		<td><%="#{@review.offering.year}#{@review.offering.term}"%></td>
 	</tr>
 	<tr>
-		<td>Time:</td>
-		<td><%="#{@review.offering.time}"%>
+		<td>Time</td>
+		<td><%="#{@review.offering.time}"%></td>
 	</tr>
 	<%# TODO add distribs, etc%>
 </table>
 
+<br/>
+
 <!-- review info -->
-<table>
+<table id="review">
 	<tr>
-		<td>Grade:</td>
+		<td>Grade</td>
 		<td><%= grade(@review.grade) %></td>
 	</tr>
 	<tr>
-		<td>Professor:</td>
+		<td>Professor</td>
 		<td><%= star_count(@review.prof_rating) %></td>
 	</tr>
 	<tr>
-		<td>Course:</td>
+		<td>Course</td>
 		<td><%= star_count(@review.course_rating) %></td>
+	</tr>
+	<tr>
+		<td>Comment</td>
+		<td><%= @review.comment %></td>
 	</tr>
 </table>
 
