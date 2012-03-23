@@ -1,13 +1,32 @@
+
 one:
-  user_id: 1
-  grade: 12
-  professor_rating: 4
-  course_rating: 3
-  comment: Ok class I guess...
+  user_id: <%= users(:bob).id %>
+  offering_id: <%= offerings(:cs69).id %>
+  grade: 8
+  professor_rating: 2
+  course_rating: 2
+  comment: Meh.
 
 two:
-  user_id: 1
-  grade: 10
+  user_id: <%= users(:alice).id %>
+  offering_id: <%= offerings(:m63).id %>
+  grade: 9
+  professor_rating: 5
+  course_rating: 4
+  comment:
+  
+cs50review1:
+  user_id: <%= users(:alice).id %>
+  offering_id: <%= offerings(:cs50_1).id %>
+  grade: 12
   professor_rating: 1
   course_rating: 5
   comment: Good class bad prof
+
+cs50review2:
+  user_id: <%= users(:bob).id %>
+  offering_id: <%= offerings(:cs50_2).id %>
+  grade: 10
+  professor_rating: 5
+  course_rating: 1
+  comment: Good prof bad class
