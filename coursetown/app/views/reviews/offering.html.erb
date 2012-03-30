@@ -1,0 +1,73 @@
+<% courses = @offering.courses %>
+<% course = courses.first %>
+<% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
+
+<h1><%= "#{course.department} #{course.number}: #{@offering.specific_title || course.long_title}"%></h1>
+<% if x_listings %>
+	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
+<% end %>
+<h2><%= "taught by: #{@offering.professors.map(&:name).join(', ')}"%></h2>
+
+<!-- offering info -->
+<table id="offering">
+	<tr>
+		<td>Term</td>
+		<td><%="#{@offering.year}#{@offering.term}"%></td>
+	</tr>
+	<tr>
+		<td>Time</td>
+		<td><%="#{@offering.time}"%></td>
+	</tr>
+	<%# TODO add distribs, etc%>
+</table>
+
+<br/>
+
+<!-- review info -->
+<table id="review_avgs">
+	<tr>
+		<td>Grade</td>
+		<td><%= grade(@avgs[:grade]) %></td>
+	</tr>
+	<tr>
+		<td>Professor</td>
+		<td><%= star_count(@avgs[:prof_rating]) %></td>
+	</tr>
+	<tr>
+		<td>Course</td>
+		<td><%= star_count(@avgs[:course_rating]) %></td>
+	</tr>
+</table>
+
+<%# if other profs offer the same class, compare them! %>
+<% if !reviews_by_prof.empty? %>
+	<br/>
+	<h2>Compare Professors</h2>
+	<table id="prof_comparisons">
+		<tr>
+			<th>Prof(s)</th>
+			<th>Course Rating</th>
+			<th>Prof. Rating</th>
+			<th>Workload</th>
+			<th></th>
+		</tr>
+		<tr id="prof_comparison_this_course">
+			<td><%= @profs.map(&:name).sort.join(', ') %></td>
+			<td><%= star_count @avgs[:course_rating] %></td>
+			<td><%= star_count @avgs[:prof_rating] %></td>
+			<td><%= star_count @avgs[:workload] %></td>
+			<td><%= "#{@avgs[:num_reviews]} reviews" %></td>
+		</tr>
+		<% @reviews_by_prof.sort_by {|k1,v1,k2,v2| 
+			v2[:course_rating] <=> v1[:course_rating]}.each do |key,avgs| %>
+			<tr>
+				<td><%= key %></td>
+				<td><%= star_count avgs[:course_rating] %></td>
+				<td><%= star_count avgs[:prof_rating] %></td>
+				<td><%= star_count avgs[:workload] %></td>
+				<td><%= "#{avgs[:num_reviews]} reviews" %></td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>
+

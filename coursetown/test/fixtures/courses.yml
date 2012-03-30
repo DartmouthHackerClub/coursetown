@@ -1,13 +1,20 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
+cs69:
   department: COSC
   number: 69
   short_title: Smartphones
   long_title: Smartphones Sensing and Analysis
-  desc: with Campbell
+  desc: a class with Campbell
 
-two:
+cs50:
+  department: COSC
+  number: 50
+  short_title: Software Design
+  long_title: Software Design and Implementation
+  desc: another class with Campbell
+
+m63:
   department: MATH
   number: 63
   short_title: Real Analysis

@@ -1,2 +1,14 @@
-<h1>Review#prof</h1>
-<p>Find me in app/views/review/prof.html.erb</p>
+<h1><%= @prof.name %></h1>
+<%# TODO department %>
+<%# TODO number of ratings %>
+
+<table>
+	<tr>
+		<td>Avg. Rating</td>
+		<td><%= @avgs[:prof_rating] %></td>
+	</tr>
+	<tr>
+		<td>Avg. Course Rating</td>
+		<td><%= @avgs[:course_rating] %></td>
+	</tr>
+</table>

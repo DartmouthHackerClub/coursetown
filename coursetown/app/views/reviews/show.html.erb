@@ -1,32 +1,45 @@
-<h1><%= "#{@review.course.department} #{@review.course.number}: #{@review.course.long_title}"%></h1>
-<h2><%= "taught by: #{@review.offering.professors.map(&:name).join(', ')}"%></h2>
+<% courses = @review.courses %>
+<% course = courses.first %>
+<% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
+
+<h1><%= "#{course.department} #{course.number}: #{@review.offering.specific_title || course.long_title}"%></h1>
+<% if x_listings %>
+	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
+<% end %>
+<h2><%= "taught by: #{@review.professors.map(&:name).join(', ')}"%></h2>
 
 <!-- offering info -->
-<table id="offering_info">
+<table id="offering">
 	<tr>
-		<td>Term:</td>
-		<td><%="#{@review.offering.year}%{@review.offering.term}"%></td>
+		<td>Term</td>
+		<td><%="#{@review.offering.year}#{@review.offering.term}"%></td>
 	</tr>
 	<tr>
-		<td>Time:</td>
-		<td><%="#{@review.offering.time}"%>
+		<td>Time</td>
+		<td><%="#{@review.offering.time}"%></td>
 	</tr>
 	<%# TODO add distribs, etc%>
 </table>
 
+<br/>
+
 <!-- review info -->
-<div>
+<table id="review">
 	<tr>
-		<td>Grade:</td>
+		<td>Grade</td>
 		<td><%= grade(@review.grade) %></td>
 	</tr>
 	<tr>
-		<td>Professor:</td>
-		<td><%= star_count(@review.professor_rating) %></td>
+		<td>Professor</td>
+		<td><%= star_count(@review.prof_rating) %></td>
 	</tr>
 	<tr>
-		<td>Course:</td>
+		<td>Course</td>
 		<td><%= star_count(@review.course_rating) %></td>
 	</tr>
-</div>
+	<tr>
+		<td>Comment</td>
+		<td><%= @review.comment %></td>
+	</tr>
+</table>
 

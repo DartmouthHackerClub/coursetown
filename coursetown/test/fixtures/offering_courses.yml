@@ -1,9 +1,12 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
 
-one:
-  course_id: 1
-  offering_id: 1
+<% [[:cs69,:cs69],
+	[:cs50,:cs50_1],
+	[:cs50,:cs50_2],
+	[:m63,:m63],
+	].each do |course, offering| %>
+<%= "#{course}_x_#{offering}" %>:
+  course_id: <%= courses(course).id %>
+  offering_id: <%= offerings(offering).id %>
 
-two:
-  course_id: 1
-  offering_id: 1
+ <% end %>

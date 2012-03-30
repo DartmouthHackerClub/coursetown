@@ -6,6 +6,8 @@ class User < ActiveRecord::Base
   has_many :schedules
   has_many :schedule_offerings, :through => :schedules, :source => :offering
 
+  has_many :reviews
+
   def self.create_with_omniauth(auth)  
     create! do |user|
       user.name = auth["extra"]["name"]
