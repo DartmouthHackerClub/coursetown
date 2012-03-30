@@ -25,7 +25,7 @@ Coursetown::Application.routes.draw do
     # aggregate pages
     collection do
       get 'prof/:id' => 'reviews#prof', :as => :prof
-      get 'course/:course_id/prof/:prof_id' => 'reviews#course_prof', :as => :course_prof
+      get 'offering/:id' => 'reviews#offering', :as => :offering
       get 'course/:id' => 'reviews#course', :as => :course
 
       get 'new_batch'

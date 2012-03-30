@@ -12,7 +12,7 @@ module ReviewHelper
   def grade (raw_grade, median = 8)
     # if 'raw_grade' is a number, first turn it into a string
     if raw_grade.kind_of? Fixnum
-      return @grades[raw_grade]
+      return @@grade_to_letter[raw_grade]
     elsif raw_grade.kind_of? String
       return raw_grade
     end
