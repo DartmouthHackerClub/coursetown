@@ -7,4 +7,11 @@ class ApplicationController < ActionController::Base
     @current_user = User.find(session[:user_id]) if session[:user_id].present?
   end
 
+  # doesn't do anything smart to figure out the term
+  def current_year_and_term
+    now = Time.now
+    terms = %w{W S X F}
+    return now.year, terms[(now.month - 1) / 3]
+  end
+
 end

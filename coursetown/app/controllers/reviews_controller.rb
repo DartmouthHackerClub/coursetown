@@ -44,7 +44,7 @@ class ReviewsController < ApplicationController
       @description = nil
     end
 
-    # TODO if user has taken this course, get which offering they took
+    # TODO if user has taken this course, get which offering(s) they took
     @schedule_offerings = nil
     if (user = logged_in_user)
       @schedule_offerings = Schedule.where(:user_id => user.id,
@@ -52,9 +52,22 @@ class ReviewsController < ApplicationController
         :include => :offering).map(&:offering)
     end
 
+    # TODO don't hard-code this!
+    _year, _term = current_year_and_term
+    puts "YEAR/TERM: #{_year} #{_term}"
+
+    # get offerings (for the other_offerings box)
+    terms = Hash[%w{W S X F}.each_with_index.to_a]
     @prof_str = @offering.professors.map(&:name).sort.join(', ')
     all_offerings = @offering.other_offerings(:include => :reviews)
-    @other_offerings = all_offerings.select{ |x| x != @offering }
+    # TODO filter out to just current & future offerings
+    @other_offerings = all_offerings.select { |x| x != @offering }
+    in_past = Proc.new do |o|
+      o.year < _year || ((o.year == _year) && (terms[o.term] < terms[_term]))
+    end
+    @future_offerings = all_offerings.select { |o| !in_past.call(o) }
+    @past_offerings = all_offerings.select { |o| in_past.call(o) }
+
     all_reviews = all_offerings.map(&:reviews).flatten.uniq
     # all_reviews = @offering.courses.map(&:reviews).flatten.uniq
     @reviews_by_profs = all_reviews.group_by do |review|

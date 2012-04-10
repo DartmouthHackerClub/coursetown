@@ -34,13 +34,46 @@
 <% end %>
 
 <div id="course_info">
+
 	<div id="offerings">
 		<h2>Offerings</h2>
 		<%# if logged-in, give wishlist & schedule buttons %>
-		Add to my schedule: <%= "#{@offering.year}#{@offering.term} @ #{@offering.time}" %>
-		<br/>
-		I already took this class!
+
+		<% if !@future_offerings || @future_offerings.empty? %>
+			We don't know of any future offerings
+		<% else %>
+			Add to your schedule:
+			<ul>
+			<% @future_offerings.each do |offering| %>
+				<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+			<% end %>
+			</ul>
+		<% end %>
+		<br/><br/>
+
+		<% if @schedule_offerings && !@schedule_offerings.empty? %>
+			You took this class:
+			<ul>
+				<% @schedule_offerings.each do |offering| %>
+					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+				<% end %>
+			</ul>
+			<br/><br/>
+		<% end %>
+
+		<% if !@past_offerings || @past_offerings.empty? %>
+			We don't know of any past offerings
+		<% else %>
+			Review this class:
+			<ul>
+				<% @past_offerings.each do |offering| %>
+					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+				<% end %>
+			</ul>
+		<% end %>
+
 	</div>
+
 	<div id="description">
 		<h2>Course Description</h2>
 		<% if @description %>
@@ -70,7 +103,7 @@
 			<th>Workload</th>
 			<th></th>
 		</tr>
-		<% @reviews_by_prof.sort_by {|k1,v1,k2,v2| 
+		<% @reviews_by_prof.sort_by {|k1,v1,k2,v2|
 			v2[:course_rating] <=> v1[:course_rating]}.each do |key,avgs| %>
 			<tr>
 				<td><%= key %></td>
