@@ -1,3 +1,68 @@
-// Place all the styles related to the Review controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+$contrast_background: rgb(30,120,30);
+$subtle_background: #d0d0d0;
+
+$label_color: #050; // green (pops)
+$label2: #666; // grey (fades into background)
+
+$pop_in: inset 1px 1px 1px 0;
+$pop_out: 1px 1px 1px 0;
+$glow: 0 0 10px 0;
+
+#summary_box, #summary_box_fail {
+  background-color: #fff;
+  width: 100%;
+  padding: 5px;
+  margin: 10px 0;
+  border-radius: 7px;
+  box-shadow: 1px 1px 1px 0px rgba(0,0,0,0.15);
+
+  text-align: center;
+
+  td {
+    width: 25%;
+    text-align: center;
+  }
+}
+
+.not_found {
+  font-style: italic;
+}
+
+tr.labels, h1 {
+  font-weight: bold;
+  color: $label_color;
+  font-style: normal;
+}
+
+h2 {
+  font-weight: normal;
+  color: $label2;
+}
+
+#course_info {
+  #offerings, #description {
+    margin:5px;
+    padding:0px 5px 20px 10px;
+    border-radius: 5px;
+    float: left;
+    width: 305px;
+  }
+
+  #description {
+    background-color: #ddd;
+    box-shadow: $pop_in rgba(0,0,0,0.1);
+
+    .distrib_tag, .wc_tag {
+      font-weight: bold;
+      color: white;
+      background-color: #191;
+      border-radius: 10px;
+      padding: 2px 7px;
+      box-shadow: $pop_out rgba(0,0,0,0.2);
+    }
+
+    .wc_tag {
+      background-color: #060;
+    }
+  }
+}

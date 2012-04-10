@@ -9,35 +9,8 @@ module ReviewHelper
   end
 
   # TODO format grade according to above/below/at median
-  def grade (raw_grade, median = 8)
-    # if 'raw_grade' is a number, first turn it into a string
-    if raw_grade.kind_of? Fixnum
-      return @@grade_to_letter[raw_grade]
-    elsif raw_grade.kind_of? String
-      return raw_grade
-    end
-  end
-
-  # grades_table = { E => 0, ..., A => 12 }
-  # TODO is it impossible to get a 1?
-  @@grade_to_letter = %w{E na na D na C- C C+ B- B B+ A- A}
-  @@letter_to_grade = Hash[@@grade_to_letter.each_with_index.to_a]
-  # account for 'na's
-  [1,2,4].each do |i| @@grade_to_letter[i] = nil end
-  @@letter_to_grade.delete('na')
-  @@grade_list = @@letter_to_grade.to_a
-
-  # convert from number_grade in 0..12 to letter grade
-  def letter_grade # getter
-    @@grade_to_letter[grade]
-  end
-  def letter_grade= (value) # setter
-    g = @@letter_to_grade[value]
-    grade = g if g
-  end
-  
-  def grade_list
-    return @@grade_list
+  def letter_grade (raw_grade, median = 8)
+    Review.letter_grade(raw_grade)
   end
 
 end

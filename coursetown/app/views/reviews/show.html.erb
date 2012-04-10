@@ -2,7 +2,8 @@
 <% course = courses.first %>
 <% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
 
-<h1><%= "#{course.department} #{course.number}: #{@review.offering.specific_title || course.long_title}"%></h1>
+<h1><%= "#{course.department} #{course.number}: \
+	#{@review.offering.specific_title || course.long_title}"%></h1>
 <% if x_listings %>
 	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
 <% end %>
@@ -27,7 +28,7 @@
 <table id="review">
 	<tr>
 		<td>Grade</td>
-		<td><%= grade(@review.grade) %></td>
+		<td><%= @review.letter_grade %></td>
 	</tr>
 	<tr>
 		<td>Professor</td>

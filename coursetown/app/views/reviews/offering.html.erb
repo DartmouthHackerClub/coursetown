@@ -1,49 +1,68 @@
+<%= stylesheet_link_tag "review" %>
+
 <% courses = @offering.courses %>
 <% course = courses.first %>
 <% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
 
-<h1><%= "#{course.department} #{course.number}: #{@offering.specific_title || course.long_title}"%></h1>
+<h1><%= "#{course.department} #{course.number}: #{@offering.specific_title || course.long_title || course.short_title}"%></h1>
 <% if x_listings %>
 	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
 <% end %>
-<h2><%= "taught by: #{@offering.professors.map(&:name).join(', ')}"%></h2>
+<h2><%= "#{@offering.professors.length > 1 ? 'Instructors' : 'Instructor'}: " <<
+	"#{@offering.professors.map(&:name).join(', ')}"%></h2>
 
-<!-- offering info -->
-<table id="offering">
-	<tr>
-		<td>Term</td>
-		<td><%="#{@offering.year}#{@offering.term}"%></td>
-	</tr>
-	<tr>
-		<td>Time</td>
-		<td><%="#{@offering.time}"%></td>
-	</tr>
-	<%# TODO add distribs, etc%>
-</table>
-
-<br/>
-
-<!-- review info -->
-<table id="review_avgs">
-	<tr>
-		<td>Grade</td>
-		<td><%= grade(@avgs[:grade]) %></td>
-	</tr>
-	<tr>
-		<td>Professor</td>
-		<td><%= star_count(@avgs[:prof_rating]) %></td>
-	</tr>
-	<tr>
+<% if @reviews && !@reviews.empty? %>
+<!-- review summary -->
+<table id="summary_box">
+	<tr class="labels">
+		<td>Median</td>
 		<td>Course</td>
-		<td><%= star_count(@avgs[:course_rating]) %></td>
+		<td>Prof</td>
+		<td>Workload</td>
+	</tr>
+	<tr>
+		<td><%= letter_grade @avgs[:grade] %></td>
+		<td><%= star_count @avgs[:prof_rating] %></td>
+		<td><%= star_count @avgs[:course_rating] %></td>
+		<td>Coming soon</td>
 	</tr>
 </table>
+<% else %>
+<div id="summary_box_fail">
+	There aren't enough reviews to display the results.
+</div>
+<% end %>
+
+<div id="course_info">
+	<div id="offerings">
+		<h2>Offerings</h2>
+		<%# if logged-in, give wishlist & schedule buttons %>
+		Add to my schedule: <%= "#{@offering.year}#{@offering.term} @ #{@offering.time}" %>
+		<br/>
+		I already took this class!
+	</div>
+	<div id="description">
+		<h2>Course Description</h2>
+		<% if @description %>
+			<%= @description %>
+		<% else %>
+			<span class="not_found">None available.</span>
+		<% end %>
+		<%= (raw "<br/><br/>") if !@offering.distribs.empty? %>
+		<% @offering.distribs.each do |distrib| %>
+			<span class="distrib_tag"><%= "#{distrib.distrib_abbr}" %></span>
+		<% end %>
+		<% if @offering.wc %>
+			<span class="wc_tag"><%= "#{@offering.wc}" %></span>
+		<% end %>
+	</div>
+</div>
 
 <%# if other profs offer the same class, compare them! %>
-<% if !reviews_by_prof.empty? %>
+<% if !@avgs_by_profs.empty? %>
 	<br/>
 	<h2>Compare Professors</h2>
-	<table id="prof_comparisons">
+	<table id="compare_profs">
 		<tr>
 			<th>Prof(s)</th>
 			<th>Course Rating</th>
@@ -51,21 +70,18 @@
 			<th>Workload</th>
 			<th></th>
 		</tr>
-		<tr id="prof_comparison_this_course">
-			<td><%= @profs.map(&:name).sort.join(', ') %></td>
-			<td><%= star_count @avgs[:course_rating] %></td>
-			<td><%= star_count @avgs[:prof_rating] %></td>
-			<td><%= star_count @avgs[:workload] %></td>
-			<td><%= "#{@avgs[:num_reviews]} reviews" %></td>
-		</tr>
 		<% @reviews_by_prof.sort_by {|k1,v1,k2,v2| 
 			v2[:course_rating] <=> v1[:course_rating]}.each do |key,avgs| %>
 			<tr>
 				<td><%= key %></td>
-				<td><%= star_count avgs[:course_rating] %></td>
-				<td><%= star_count avgs[:prof_rating] %></td>
-				<td><%= star_count avgs[:workload] %></td>
-				<td><%= "#{avgs[:num_reviews]} reviews" %></td>
+				<% if @num_reviews_by_profs[key] > 0 %>
+					<td><%= star_count avgs[:course_rating] %></td>
+					<td><%= star_count avgs[:prof_rating] %></td>
+					<td><%= star_count avgs[:workload] %></td>
+					<td ><%= "#{avgs[:num_reviews]} reviews" %></td>
+				<% else %>
+					<td colspan=4 class="no_reviews">No reviews</td>
+				<% end %>
 			</tr>
 		<% end %>
 	</table>
