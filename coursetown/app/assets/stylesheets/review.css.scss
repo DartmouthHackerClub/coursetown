@@ -8,7 +8,8 @@ $pop_in: inset 1px 1px 1px 0;
 $pop_out: 1px 1px 1px 0;
 $glow: 0 0 10px 0;
 
-#summary_box, #summary_box_fail {
+#summary_box, #summary_box_fail,
+#course_detail_header, #prof_detail_header, #workload_detail_header {
   background-color: #fff;
   width: 100%;
   padding: 5px;
@@ -22,6 +23,14 @@ $glow: 0 0 10px 0;
     width: 25%;
     text-align: center;
   }
+}
+
+#course_detail_header, #prof_detail_header, #workload_detail_header {
+  color: $label_color;
+  font-weight: bold;
+  text-align: left;
+  padding: 5px 15px;
+  width: auto;
 }
 
 .not_found {
@@ -41,16 +50,23 @@ h2 {
 
 #course_info {
   #offerings, #description {
-    margin:5px;
-    padding:0px 5px 20px 10px;
+    /*padding: 0px 5px 20px 10px;*/
+    margin: 5px;
+    padding: 10px;
     border-radius: 5px;
     float: left;
     width: 305px;
+    vertical-align: top;
   }
 
   #description {
     background-color: #ddd;
     box-shadow: $pop_in rgba(0,0,0,0.1);
+
+    #description_tags {
+      margin-top: 20px;
+      vertical-align: bottom;
+    }
 
     .distrib_tag, .wc_tag {
       font-weight: bold;

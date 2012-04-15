@@ -38,24 +38,32 @@
 <div>
 	<%= form_for @review do |f| %>
 	  <%= f.label "Grade" %>
-	  <%= f.select :grade, grade_list.reverse %>
+	  <%= f.select :grade, Review.grade_list.reverse %>
 	  <br/>
 
-	  <%= f.label "Professor Rating"%>
-	  <%= star_rating f, :prof_rating %>
-	  <br/>
-
-	  <%= f.label "Course Rating" %>
+	  <%= f.label "Course" %>
 	  <%= star_rating f, :course_rating %>
 	  <br/>
-
-	  <%= f.label "Comments" %>
+	  <%= f.text_area(:course_comment, :rows => 6, :cols => 50,
+	  :placeholder => "How interesting, well-paced, and useful was the course? Would you recommend it?") %>
 	  <br/>
-	  <%= f.text_area :comment, :rows => 6, :cols => 50 %>
+
+	  <%= f.label "Professor"%>
+	  <%= star_rating f, :prof_rating %>
+	  <br/>
+	  <%= f.text_area(:prof_comment, :rows => 6, :cols => 50,
+	  :placeholder => "How helpful, knowledgeable, and fair #{@review.professors.size > 1 ? 'were the professors' : 'was the professor'}?") %>
+	  <br/>
+
+	  <%= f.label "Workload" %>
+	  <%= star_rating f, :workload_rating %>
+	  <br/>
+	  <%= f.text_area(:workload_comment, :rows => 6, :cols => 50,
+	  :placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?") %>
 	  <br/>
 
 	  <%= f.hidden_field :offering_id %>
-	  
+
 	  <%= f.submit "Submit" %>
 	<% end %>
 	<%# TODO cancel button? %>

@@ -33,62 +33,108 @@
 </div>
 <% end %>
 
-<div id="course_info">
+<table id="course_info">
+	<tr>
+		<td id="offerings">
+			<h2>Offerings</h2>
+			<%# if logged-in, give wishlist & schedule buttons %>
 
-	<div id="offerings">
-		<h2>Offerings</h2>
-		<%# if logged-in, give wishlist & schedule buttons %>
-
-		<% if !@future_offerings || @future_offerings.empty? %>
-			We don't know of any future offerings
-		<% else %>
-			Add to your schedule:
-			<ul>
-			<% @future_offerings.each do |offering| %>
-				<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+			<% if !@future_offerings || @future_offerings.empty? %>
+				We don't know of any future offerings
+			<% else %>
+				Add to your schedule:
+				<ul>
+				<% @future_offerings.each do |offering| %>
+					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+				<% end %>
+				</ul>
 			<% end %>
-			</ul>
-		<% end %>
-		<br/><br/>
-
-		<% if @schedule_offerings && !@schedule_offerings.empty? %>
-			You took this class:
-			<ul>
-				<% @schedule_offerings.each do |offering| %>
-					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
-				<% end %>
-			</ul>
 			<br/><br/>
-		<% end %>
 
-		<% if !@past_offerings || @past_offerings.empty? %>
-			We don't know of any past offerings
-		<% else %>
-			Review this class:
-			<ul>
-				<% @past_offerings.each do |offering| %>
-					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+			<% if @schedule_offerings && !@schedule_offerings.empty? %>
+				You took this class:
+				<ul>
+					<% @schedule_offerings.each do |offering| %>
+						<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+					<% end %>
+				</ul>
+				<br/><br/>
+			<% end %>
+
+			<% if !@past_offerings || @past_offerings.empty? %>
+				We don't know of any past offerings
+			<% else %>
+				Review this class:
+				<ul>
+					<% @past_offerings.each do |offering| %>
+						<li><%= link_to "#{offering.year}#{offering.term} @ #{offering.time}", new_reviews_path(offering.id) %>
+					<% end %>
+				</ul>
+			<% end %>
+		</td>
+
+		<td id="description">
+			<h2>Course Description</h2>
+			<% if @description %>
+				<%= @description %>
+			<% else %>
+				<span class="not_found">None available.</span>
+			<% end %>
+			<div id="description_tags">
+				<% @offering.distribs.each do |distrib| %>
+					<span class="distrib_tag"><%= "#{distrib.distrib_abbr}" %></span>
 				<% end %>
-			</ul>
-		<% end %>
+				<% if @offering.wc %>
+					<span class="wc_tag"><%= "#{@offering.wc}" %></span>
+				<% elsif @offering.distribs.empty? %>
+					<%# if no tags, say so %>
+					No distribs or wcult
+				<% end %>
+			</div>
+		</td>
+	</tr>
+</table>
 
-	</div>
+<h2 id="course_detail_header">Course</h2>
+<div id="course_detail">
+	<% if @course_comments && !@course_comments.empty? %>
+		<%= render :partial => 'comments',
+			:locals => {
+				:reviews => @course_comments,
+				:rating_field => :course_rating,
+				:comment_field => :course_comment,
+			} %>
+	<% else %>
+		No comments yet.
+	<% end %>
+</div>
 
-	<div id="description">
-		<h2>Course Description</h2>
-		<% if @description %>
-			<%= @description %>
-		<% else %>
-			<span class="not_found">None available.</span>
-		<% end %>
-		<%= (raw "<br/><br/>") if !@offering.distribs.empty? %>
-		<% @offering.distribs.each do |distrib| %>
-			<span class="distrib_tag"><%= "#{distrib.distrib_abbr}" %></span>
-		<% end %>
-		<% if @offering.wc %>
-			<span class="wc_tag"><%= "#{@offering.wc}" %></span>
-		<% end %>
-	</div>
+<h2 id="prof_detail_header">Professor</h2>
+<div id='prof_detail'>
+	<% if @prof_comments && !@prof_comments.empty? %>
+		<%= render :partial => 'comments',
+			:locals => {
+				:reviews => @prof_comments,
+				:rating_field => :prof_rating,
+				:comment_field => :prof_comment,
+			} %>
+	<% else %>
+		No comments yet.
+	<% end %>
+</div>
+
+<h2 id="workload_detail_header">Workload</h2>
+<div id="workload_detail">
+	<% if @workload_comments && !@workload_comments.empty? %>
+		<%= render :partial => 'comments',
+			:locals => {
+				:reviews => @workload_comments,
+				:rating_field => :workload_rating,
+				:comment_field => :workload_comment,
+			} %>
+	<% else %>
+		No comments yet.
+	<% end %>
 </div>
 
 <%# if other profs offer the same class, compare them! %>

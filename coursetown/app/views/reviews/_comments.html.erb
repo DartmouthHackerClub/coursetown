@@ -1,0 +1,23 @@
+<%# vars:
+# @reviews: list of all reviews w/ comments
+# @comment_field: name of comment field (e.g. prof_comment)
+# @rating_field: name of relevant rating field (e.g. prof_rating)
+# %>
+<div class="comments_box">
+
+  <%= "#{@reviews.size} total comments" %>
+
+  <% @reviews.each do |review| %>
+    <% review_attributes = review.attributes %>
+    <div class="comment_bubble">
+      <div class="comment">
+        <%= review_attributes[@comment_field] %>
+      </div>
+      <div class="author_details">
+        <%= letter_grade review.grade %>
+        <%= star_count review_attributes[@rating_field] %>
+      </div>
+    </div>
+  <% end %>
+
+</div>

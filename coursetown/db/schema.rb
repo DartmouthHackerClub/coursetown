@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120205001618) do
+ActiveRecord::Schema.define(:version => 20120410070202) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -75,9 +75,17 @@ ActiveRecord::Schema.define(:version => 20120205001618) do
     t.integer  "grade"
     t.integer  "prof_rating"
     t.integer  "course_rating"
-    t.text     "comment"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "course_comment"
+    t.text     "prof_comment"
+    t.text     "workload_comment"
+    t.integer  "workload_rating"
+    t.boolean  "for_interest"
+    t.boolean  "for_prof"
+    t.boolean  "for_major"
+    t.boolean  "for_distrib"
+    t.boolean  "for_easy_a"
   end
 
   create_table "schedules", :force => true do |t|

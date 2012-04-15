@@ -14,4 +14,15 @@ class ApplicationController < ActionController::Base
     return now.year, terms[(now.month - 1) / 3]
   end
 
+  # TODO
+  def not_found
+    raise ActiveRecord::RoutingError.new(:not_found)
+  end
+
+  # TODO
+  def force_login
+    # redirect to a login page
+    render :file => "public/401.html", :status => :unauthorized
+  end
+
 end
