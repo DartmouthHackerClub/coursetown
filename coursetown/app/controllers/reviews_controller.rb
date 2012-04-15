@@ -118,7 +118,7 @@ class ReviewsController < ApplicationController
     #   it, because users can take some classes multiple times)
 
     # TODO direct them to a login page (or, better yet, a lightbox/pop-over)
-    force_login && return if @current_user.nil?
+    force_login(request.fullpath) && return if @current_user.nil?
 
     @review = Review.new
 

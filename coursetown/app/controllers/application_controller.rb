@@ -19,10 +19,12 @@ class ApplicationController < ActionController::Base
     raise ActiveRecord::RoutingError.new(:not_found)
   end
 
-  # TODO
-  def force_login
+  def force_login (callback_uri = nil)
     # redirect to a login page
-    render :file => "public/401.html", :status => :unauthorized
+    # NOTE: hacky way of building a uri, but it's because /auth/cas
+    #   doesn't exist in a Rails-y way.
+    uri = callback_uri ? "/auth/cas?callback_uri=#{callback_uri}" : '/auth/cas'
+    redirect_to uri, :alert => 'You need to log in to do that.'
   end
 
 end

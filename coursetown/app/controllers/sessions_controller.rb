@@ -8,10 +8,9 @@ class SessionsController < ApplicationController
     # try to send them back to the page they came from, else send to splash page
     # TODO this method is a callback from "auth/cas", so :back won't work like
     #   we want it to... need to embed back_url in auth/cas url
-    begin
-      redirect_to :back, :notice => "Signed in!"
-    rescue ActionController::RedirectBackError
-      puts "Redirect error. Sending user back to splash page."
+    if params[:callback_uri]
+      redirect_to params[:callback_uri], :notice => "Signed in!"
+    else
       redirect_to root_url, :notice => "Signed in!"
     end
   end
