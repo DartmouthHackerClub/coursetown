@@ -3,21 +3,67 @@
 # @comment_field: name of comment field (e.g. prof_comment)
 # @rating_field: name of relevant rating field (e.g. prof_rating)
 # %>
+
+<% # for some reason, locals aren't being passed correctly...
+  reviews = local_assigns[:reviews]
+  comment_field = local_assigns[:comment_field]
+  rating_field = local_assigns[:rating_field]
+  %>
+
 <div class="comments_box">
 
-  <%= "#{@reviews.size} total comments" %>
+  <% filtered_reviews = reviews.select do |r|
+      comment = r.attributes[comment_field]
+      comment && !comment.empty?
+    end
 
-  <% @reviews.each do |review| %>
-    <% review_attributes = review.attributes %>
-    <div class="comment_bubble">
-      <div class="comment">
-        <%= review_attributes[@comment_field] %>
+    # bucketize the reviews so the two columns are
+    # about even in height
+    # NOTE: this is really hacky. should be done in JS on client's machine
+    # also, should sort reviews by height, add longer reviews first, then shuffle columns AFTER, to get the best fit
+    left_col, right_col = [], []
+    left_lines, right_lines = 0, 0
+    threshold = 47
+    # sorts comments by length (in reverse order) so it allocates big
+    #   comments first, small last. this results in more balanced sides
+    #   but should really be done in JS
+    filtered_reviews.sort_by { |x|
+      -x.attributes[comment_field].length
+    }.each do |r|
+      comment = r.attributes[comment_field]
+      lines = 3 + comment.length / threshold
+      if left_lines < right_lines
+        left_col << r
+        left_lines += lines
+      else
+        right_col << r
+        right_lines += lines
+      end
+    end
+    right_col = right_col.shuffle
+    left_col = left_col.shuffle
+     %>
+
+  <%# column-printing subroutine %>
+  <% print_column = Proc.new do |rs| %>
+    <% rs.each do |review| %>
+      <% review_attributes = review.attributes %>
+      <div class="comment_bubble">
+        <div class="comment">
+          <%= review_attributes[comment_field] %>
+        </div>
+        <div class="author_details">
+          <div class="grade">
+            <%= letter_grade review.grade %>
+          </div>
+          <div class="rating">
+            <%= star_count review_attributes[rating_field] %>
+          </div>
+        </div>
       </div>
-      <div class="author_details">
-        <%= letter_grade review.grade %>
-        <%= star_count review_attributes[@rating_field] %>
-      </div>
-    </div>
+    <% end %>
   <% end %>
+  <div class="left_column"><% print_column.call(left_col) %></div>
+  <div class="right_column"><% print_column.call(right_col) %></div>
 
 </div>

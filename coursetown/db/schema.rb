@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120410070202) do
+ActiveRecord::Schema.define(:version => 20120415214446) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -86,6 +86,7 @@ ActiveRecord::Schema.define(:version => 20120410070202) do
     t.boolean  "for_major"
     t.boolean  "for_distrib"
     t.boolean  "for_easy_a"
+    t.boolean  "for_prereq"
   end
 
   create_table "schedules", :force => true do |t|

@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
-  validates :offering, :presence => true
-  validates :user, :presence => true
+  validates_presence_of :offering
+  validates_presence_of :user
   validates :grade, :inclusion => 0..12
   validates :prof_rating, :inclusion => 1..5
   validates :course_rating, :inclusion => 1..5
@@ -18,7 +18,9 @@ class Review < ActiveRecord::Base
   # account for 'na's
   [1,2,4].each do |i| @grade_to_letter[i] = nil end
   @letter_to_grade.delete('na')
-  @grade_list = @letter_to_grade.each_key.to_a
+  # letter-grade/number pairs: for use in <select> menus
+  @grade_number_pairs = @grade_to_letter.each_with_index. \
+    select{|letter, index| letter}.to_a.reverse
 
   # convert from number_grade in 0..12 to letter grade
   def letter_grade # getter
@@ -34,7 +36,7 @@ class Review < ActiveRecord::Base
   end
 
   # TODO
-  def self.grade_list
-    return @grade_list
+  def self.grade_number_pairs
+    return @grade_number_pairs
   end
 end

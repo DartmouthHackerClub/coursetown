@@ -1,4 +1,5 @@
 <%# HEADER %>
+<%= stylesheet_link_tag "review" %>
 
 <% if @review.offering %>
 	<% courses = @review.offering.courses %>
@@ -21,7 +22,7 @@
 		<%# TODO make names link to their actual pages %>
 		<% professors = @review.professors %>
 		<%= (professors.length == 1 ? "Instructor: " : "Instructors: ") %>
-		<%=	raw professors.map{|prof| 
+		<%=	raw professors.map{|prof|
 			link_to(prof.name, prof_reviews_path(:id => prof.id))}.join(', ') %>
 		<br/>
 
@@ -37,29 +38,52 @@
 
 <div>
 	<%= form_for @review do |f| %>
-	  <%= f.label "Grade" %>
-	  <%= f.select :grade, Review.grade_list.reverse %>
+
+		<div id='review_motivations'>
+
+			<h4>Why did you take this class? (pick at least one)</h4>
+			<table>
+				<% [{:for_interest => 'Interest', :for_prof => 'Prof',
+					:for_easy_a => 'Easy A'}, {:for_distrib => 'Distrib/WC',
+					:for_major => 'Major/Minor', :for_prereq => "Prereqs"}].each do |h| %>
+					<tr>
+					<% h.each do |tag, title| %>
+						<td>
+							<%= f.check_box tag %>
+							<%= f.label tag, title %>
+						</td>
+					<% end %>
+					</tr>
+				<% end %>
+			</table>
+		</div>
+
+	  <%= f.label 'Grade' %>
+	  <%= f.select :grade, Review.grade_number_pairs %>
 	  <br/>
 
-	  <%= f.label "Course" %>
+	  <%= f.label 'Course' %>
 	  <%= star_rating f, :course_rating %>
 	  <br/>
 	  <%= f.text_area(:course_comment, :rows => 6, :cols => 50,
-	  :placeholder => "How interesting, well-paced, and useful was the course? Would you recommend it?") %>
+			:class => 'new_review_textarea',
+			:placeholder => "How interesting, well-paced, and useful was the course? Would you recommend it?") %>
 	  <br/>
 
 	  <%= f.label "Professor"%>
 	  <%= star_rating f, :prof_rating %>
 	  <br/>
 	  <%= f.text_area(:prof_comment, :rows => 6, :cols => 50,
-	  :placeholder => "How helpful, knowledgeable, and fair #{@review.professors.size > 1 ? 'were the professors' : 'was the professor'}?") %>
+	  	:class => 'new_review_textarea',
+	  	:placeholder => "#{@review.professors.size > 1 ? 'Were the professors' : 'Was the professor'} helpful? Knowledgeable? Fair? How were the lectures/discussions?") %>
 	  <br/>
 
 	  <%= f.label "Workload" %>
 	  <%= star_rating f, :workload_rating %>
 	  <br/>
 	  <%= f.text_area(:workload_comment, :rows => 6, :cols => 50,
-	  :placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?") %>
+	  	:class => 'new_review_textarea',
+	  	:placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?") %>
 	  <br/>
 
 	  <%= f.hidden_field :offering_id %>

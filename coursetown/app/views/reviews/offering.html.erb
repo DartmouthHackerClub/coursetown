@@ -8,11 +8,12 @@
 <% if x_listings %>
 	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
 <% end %>
-<h2><%= "#{@offering.professors.length > 1 ? 'Instructors' : 'Instructor'}: " <<
+<h2><%= "#{@offering.professors.length > 1 ? 'Professors' : 'Professor'}: " <<
 	"#{@offering.professors.map(&:name).join(', ')}"%></h2>
 
 <% if @reviews && !@reviews.empty? %>
 <!-- review summary -->
+<%= "#{@reviews.count} reviews" %>
 <table id="summary_box">
 	<tr class="labels">
 		<td>Median</td>
@@ -24,7 +25,7 @@
 		<td><%= letter_grade @avgs[:grade] %></td>
 		<td><%= star_count @avgs[:prof_rating] %></td>
 		<td><%= star_count @avgs[:course_rating] %></td>
-		<td>Coming soon</td>
+		<td><%= star_count @avgs[:workload_rating] %></td>
 	</tr>
 </table>
 <% else %>
@@ -97,44 +98,32 @@
 
 <h2 id="course_detail_header">Course</h2>
 <div id="course_detail">
-	<% if @course_comments && !@course_comments.empty? %>
-		<%= render :partial => 'comments',
-			:locals => {
-				:reviews => @course_comments,
-				:rating_field => :course_rating,
-				:comment_field => :course_comment,
-			} %>
-	<% else %>
-		No comments yet.
-	<% end %>
+	<%= render :partial => 'comments',
+		:locals => {
+			:reviews => @reviews,
+			:rating_field => 'course_rating',
+			:comment_field => 'course_comment',
+		} %>
 </div>
 
 <h2 id="prof_detail_header">Professor</h2>
 <div id='prof_detail'>
-	<% if @prof_comments && !@prof_comments.empty? %>
-		<%= render :partial => 'comments',
-			:locals => {
-				:reviews => @prof_comments,
-				:rating_field => :prof_rating,
-				:comment_field => :prof_comment,
-			} %>
-	<% else %>
-		No comments yet.
-	<% end %>
+	<%= render :partial => 'comments',
+		:locals => {
+			:reviews => @reviews,
+			:rating_field => 'prof_rating',
+			:comment_field => 'prof_comment',
+		} %>
 </div>
 
 <h2 id="workload_detail_header">Workload</h2>
 <div id="workload_detail">
-	<% if @workload_comments && !@workload_comments.empty? %>
-		<%= render :partial => 'comments',
-			:locals => {
-				:reviews => @workload_comments,
-				:rating_field => :workload_rating,
-				:comment_field => :workload_comment,
-			} %>
-	<% else %>
-		No comments yet.
-	<% end %>
+	<%= render :partial => 'comments',
+		:locals => {
+			:reviews => @reviews,
+			:rating_field => 'workload_rating',
+			:comment_field => 'workload_comment',
+		} %>
 </div>
 
 <%# if other profs offer the same class, compare them! %>

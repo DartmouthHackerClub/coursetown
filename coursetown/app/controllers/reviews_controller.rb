@@ -1,3 +1,16 @@
+# Knuth shuffle
+class Array
+  def shuffle
+    a = Array.new(size)
+    (0...size).each do |i|
+      r = rand(i)
+      a[i] = a[r]
+      a[r] = self[i]
+    end
+    a
+  end
+end
+
 class ReviewsController < ApplicationController
 
   def show
@@ -75,19 +88,6 @@ class ReviewsController < ApplicationController
       review.professors.map(&:name).sort.join(", ")
     end
 
-    # get comments, randomize their order
-    # TODO display a smarter selection of comments
-    # TODO display comments about class w/ other prof, prof w/ other class
-    @prof_comments = all_reviews.select { |x|
-      x.prof_comment && !x.prof_comment.empty?
-    }.shuffle!
-    @course_comments = all_reviews.select { |x|
-      x.course_comment && !x.course_comment.empty?
-    }.shuffle!
-    @workload_comments = all_reviews.select { |x|
-      x.workload_comment && !x.workload_comment.empty?
-    }.shuffle!
-
     # avg by prof
     @avgs_by_profs = {}
     @reviews_by_profs.each do |key, reviews|
@@ -136,6 +136,8 @@ class ReviewsController < ApplicationController
   # TODO route & view
   # pulls grades from transcript, then prepopulates field with them
   def new_batch
+    force_login(request.fullpath) && return if @current_user.nil?
+
     # TODO
   end
 
@@ -154,7 +156,7 @@ class ReviewsController < ApplicationController
 
     # add course to user's schedule (if it's not there yet)
     if !(@current_user.schedule_offerings.include? @review.offering)
-      sched = Schedule.new(:offering => @review.offering, :user => current_user)
+      sched = Schedule.new(:offering => @review.offering, :user => @current_user)
       sched.save!
       @current_user.schedules << sched # TODO no need to save?
     end
@@ -180,7 +182,7 @@ class ReviewsController < ApplicationController
 
   # note: dimensions have to be _attributes_ of the review object
   #   so :user doesn't work, but :user_id does.
-  def avg_reviews(reviews, dimensions = [:course_rating, :prof_rating, :workload, :grade])
+  def avg_reviews(reviews, dimensions = [:course_rating, :prof_rating, :workload_rating, :grade])
     sum, count = {}, {}
     dimensions.each { |dim| sum[dim] = count[dim] = 0 }
     reviews.each do |review|
@@ -194,14 +196,5 @@ class ReviewsController < ApplicationController
     # turn sum into avg
     sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key] : 0 }
     return sum, count
-  end
-end
-
-# the Knuth shuffle
-# citation: http://snippets.dzone.com/posts/show/2994
-class Array
-  def shuffle!
-    size.downto(1) {|i| push(delete(rand(i)))}
-    self
   end
 end
