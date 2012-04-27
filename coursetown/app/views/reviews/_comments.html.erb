@@ -13,9 +13,8 @@
 <div class="comments_box">
 
   <% filtered_reviews = reviews.select do |r|
-      comment = r.attributes[comment_field]
-      comment && !comment.empty?
-    end
+    !r.attributes[comment_field].blank?
+  end
 
     # bucketize the reviews so the two columns are
     # about even in height

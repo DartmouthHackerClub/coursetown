@@ -160,3 +160,48 @@ h2 {
   @include pop_in;
   background-color: white;
 }
+
+/* ------------ view: new_batch --------------- */
+
+table#batch_reviews {
+  @include pop_out;
+  width: 100%;
+  border-spacing: 0;
+
+  .dark {
+    background-color: #ddd;
+  }
+
+  th {
+    font-weight: normal;
+    font-style: italic;
+    text-align: left;
+  }
+
+  tr {
+    margin: 7px 0px;
+
+    .full_review {
+      a {
+        float: right;
+        color: green;
+        font-style: italic;
+        text-decoration: none;
+        font-size: 90%;
+      }
+    }
+
+    td {
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+
+    .title {
+      width: 100px;
+    }
+    .rating {
+      width: 80px;
+    }
+  }
+}

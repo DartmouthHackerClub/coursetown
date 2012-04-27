@@ -117,28 +117,19 @@ class ReviewsController < ApplicationController
     #   offering, and suggest they review the other time slot (but don't force
     #   it, because users can take some classes multiple times)
 
-    # TODO direct them to a login page (or, better yet, a lightbox/pop-over)
     force_login(request.fullpath) && return if @current_user.nil?
 
-    @review = Review.new
-
-    # TODO make this check mandatory!
-    @review.offering = Offering.find(params[:id]) if params.has_key? :id
+    @review = Review.find_by_user_id_and_offering_id(@current_user.id, params[:id])
+    if @review.nil?
+      @review = Review.new
+      @review.offering = Offering.find(params[:id])
+    end
 
     if @review.nil? || @review.offering.nil?
       render :status => 404
       return
       # TODO redirect user to a course selection page (maybe)
     end
-  end
-
-
-  # TODO route & view
-  # pulls grades from transcript, then prepopulates field with them
-  def new_batch
-    force_login(request.fullpath) && return if @current_user.nil?
-
-    # TODO
   end
 
 
@@ -150,9 +141,11 @@ class ReviewsController < ApplicationController
     end
 
     @review = Review.new(params[:review])
-    @review.user = @current_user
     # TODO wrap everything after this point in one DB transaction?
     @review.save!
+    schedule = Schedule.find_by_user_id_and_offering_id(@current_user.id, @review.offering.id)
+    schedule.review = @review
+    schedule.save!
 
     # add course to user's schedule (if it's not there yet)
     if !(@current_user.schedule_offerings.include? @review.offering)
@@ -162,6 +155,31 @@ class ReviewsController < ApplicationController
     end
   end
 
+
+  # TODO route & view
+  # pulls grades from transcript, then prepopulates field with them
+  def new_batch
+    force_login(request.fullpath) && return if @current_user.nil?
+    @schedules = @current_user.schedules(:include => [:review, :course, {:offering => :courses}])
+  end
+
+
+  def create_batch
+    if @current_user.nil? # unauthorized
+      # TODO 401
+    end
+
+    puts "PARAMS: #{params}"
+
+    successes = []
+    params[:offerings].each do |offering_id, r_hash|
+      reasons = r_hash.delete(:reasons)
+      if reasons
+        r_hash[reasons] = true
+        r = Review.new(r_hash)
+      end
+    end
+  end
 
   def update
     # TODO

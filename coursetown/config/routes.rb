@@ -29,7 +29,8 @@ Coursetown::Application.routes.draw do
       get 'offering/:id/new' => 'reviews#new', :as => :new
       get 'course/:id' => 'reviews#course', :as => :course
 
-      get 'new_batch'
+      get 'batch' => 'reviews#new_batch', :as => :new_batch
+      post 'batch' => 'reviews#create_batch', :as => :create_batch
     end
   end
 
