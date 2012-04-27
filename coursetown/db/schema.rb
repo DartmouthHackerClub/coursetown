@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120424044409) do
+ActiveRecord::Schema.define(:version => 20120427205259) do
 
   create_table "courses", :force => true do |t|
     t.string   "department"
@@ -62,6 +62,52 @@ ActiveRecord::Schema.define(:version => 20120424044409) do
     t.integer  "enrollment_cap"
     t.integer  "enrolled"
   end
+
+  create_table "old_reviews", :force => true do |t|
+    t.integer   "course"
+    t.integer   "coverall",          :limit => 2
+    t.integer   "cpace",             :limit => 2
+    t.integer   "cwork",             :limit => 2
+    t.integer   "cinterest",         :limit => 2
+    t.integer   "hlearn",            :limit => 2
+    t.integer   "hhard",             :limit => 2
+    t.integer   "hinterest",         :limit => 2
+    t.integer   "efair",             :limit => 2
+    t.integer   "ehard",             :limit => 2
+    t.integer   "loverall",          :limit => 2
+    t.integer   "lhard",             :limit => 2
+    t.integer   "ledvalue",          :limit => 2
+    t.integer   "ctas",              :limit => 2
+    t.string    "rmajor",            :limit => 0
+    t.string    "rneed",             :limit => 0,        :default => "No"
+    t.integer   "reffort",           :limit => 2
+    t.string    "roffice",           :limit => 0
+    t.integer   "rattend",           :limit => 2
+    t.string    "title"
+    t.text      "creview",           :limit => 16777215
+    t.text      "lreview",           :limit => 16777215
+    t.text      "fsreview",          :limit => 16777215
+    t.string    "approved",          :limit => 0,        :default => "No"
+    t.string    "modified",          :limit => 0,        :default => "No"
+    t.string    "note"
+    t.integer   "reviewer"
+    t.integer   "rterm",             :limit => 2
+    t.datetime  "date"
+    t.timestamp "modifiedat",                                              :null => false
+    t.string    "rnotify",           :limit => 0,        :default => "No"
+    t.integer   "ltas",              :limit => 2
+    t.integer   "interpretas",       :limit => 2
+    t.string    "rhappygrade",       :limit => 0
+    t.integer   "cmatchorc",         :limit => 2
+    t.string    "ip",                :limit => 18
+    t.string    "hostname",          :limit => 200
+    t.integer   "ryear"
+    t.timestamp "lastviewedforedit",                                       :null => false
+    t.integer   "cdiversity",        :limit => 2
+  end
+
+  add_index "old_reviews", ["lastviewedforedit"], :name => "lastviewedforedit"
+  add_index "old_reviews", ["reviewer", "course", "approved"], :name => "reviewer"
 
   create_table "professors", :force => true do |t|
     t.string   "name"
