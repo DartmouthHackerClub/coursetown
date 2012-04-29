@@ -1,9 +1,12 @@
 class Schedule < ActiveRecord::Base
   validates :offering, :presence => true
   validates :user, :presence => true
-  validate :review_matches_offering
   validate :course_matches_offering
-  # course presence is optional (if no course, just grab the default offering.course)
+  # course presence is optional (if no course, grab the default offering.course)
+  with_options :unless => 'review.nil?' do |sched|
+    sched.validates :review, :uniqueness => true
+    sched.validate :review_matches_offering
+  end
 
   belongs_to :user
   belongs_to :offering
@@ -15,7 +18,7 @@ class Schedule < ActiveRecord::Base
   end
 
   def review_matches_offering
-    if review && offering_id != review.offering_id
+    if offering_id != review.offering_id
       errors.add(:offering_mismatch, '. Schedule and Review offerings differ.')
     end
   end

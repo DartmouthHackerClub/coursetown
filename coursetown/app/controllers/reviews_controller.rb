@@ -117,9 +117,13 @@ class ReviewsController < ApplicationController
     #   offering, and suggest they review the other time slot (but don't force
     #   it, because users can take some classes multiple times)
 
+    offering_id = params[:id]
     force_login(request.fullpath) && return if @current_user.nil?
 
-    @review = Review.find_by_user_id_and_offering_id(@current_user.id, params[:id])
+    sched = Schedule.find_by_user_id_and_offering_id(@current_user.id, offering_id,
+      :include => :review)
+    @review = sched.review if sched
+    # @review = Review.find_by_user_id_and_offering_id(@current_user.id, params[:id])
     if @review.nil?
       @review = Review.new
       @review.offering = Offering.find(params[:id])
@@ -135,10 +139,7 @@ class ReviewsController < ApplicationController
 
   # receives data from 'new' and creates review
   def create
-    if @current_user.nil? # unauthorized
-      render :status => 401
-      return
-    end
+    force_login(request.fullpath) && return if @current_user.nil?
 
     @review = Review.new(params[:review])
     # TODO wrap everything after this point in one DB transaction?
@@ -160,25 +161,64 @@ class ReviewsController < ApplicationController
   # pulls grades from transcript, then prepopulates field with them
   def new_batch
     force_login(request.fullpath) && return if @current_user.nil?
-    @schedules = @current_user.schedules(:include => [:review, :course, {:offering => :courses}])
+    # @schedules = @current_user.schedules(:include => [:review, :course, {:offering => :courses}])
+    # TODO this is a poor hack
+    @schedules = Schedule.find_all_by_user_id(@current_user.id,
+      :include => [:review, :course, {:offering => :courses}])
   end
 
-
+  # returns JSON list of which reviews were successfully saved (by offering_id)
   def create_batch
-    if @current_user.nil? # unauthorized
-      # TODO 401
-    end
+    force_login(request.fullpath) && return if @current_user.nil?
 
     puts "PARAMS: #{params}"
 
+    schedules = Hash.new
+    # @current_user.schedules
+    Schedule.find_all_by_user_id(@current_user.id, :include => :review) \
+      .each { |s| schedules[s.offering_id] = s }
+
     successes = []
     params[:offerings].each do |offering_id, r_hash|
+      r_hash[:offering_id] = offering_id
+
+      # convert "reason = for_prof" to "for_prof = true"
       reasons = r_hash.delete(:reasons)
-      if reasons
-        r_hash[reasons] = true
+      next if !reasons
+      r_hash[reasons] = true
+
+      sched = schedules[offering_id]
+      if sched && sched.review
+        # DON'T reset other reasons to false. if user writes a full review with
+        # multiple reasons then edits their review in quick-review, don't
+        # overwrite it, just add any new reasons (if they exist)
+        success = sched.review.update_attributes(r_hash)
+        if success
+          sched.review = r
+          sched.save
+        end
+      else
         r = Review.new(r_hash)
+        puts "REVIEW: #{r.attributes}"
+        success = r.save
+
+        # update schedules table
+        if success && sched
+          sched.review = r
+          sched.save # PANIC if this fails!
+        elsif success
+
+        end
+      end
+      if success
+        puts "SUCCESS: #{offering_id}"
+        successes << offering_id
+      else
+        puts "FAILURE: #{offering_id}"
       end
     end
+
+    render :json => successes
   end
 
   def update
