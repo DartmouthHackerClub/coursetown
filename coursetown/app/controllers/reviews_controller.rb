@@ -258,4 +258,104 @@ class ReviewsController < ApplicationController
     sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key] : 0 }
     return sum, count
   end
+
+
+  # receive POST w/ full transcript data in it
+  def new_batch_from_transcript
+    # force_login(request.fullpath) && return if @current_user.nil?
+
+    # get existing schedule
+    # build hash w/ keys of the form "COSC|5|2012|W"
+    scheds = Hash.new
+    Schedule.find_by_user_id(@current_user.id,
+      :include => [:offering, :course]).each do |sched|
+      o, c = sched.offering, sched.course
+      scheds["#{c.department}|#{c.number}|#{o.year}|#{o.term}"] = sched
+    end
+
+    ## PARSE
+    results = parse_transcript(params[:data]) if params[:data]
+
+    ## IMPORT DATA
+
+    unmatched = []
+    matchings = Hash.new
+    results.each do |o|
+
+      key = "#{o[:department]}|#{o[:number]}|#{o[:year]}|#{o[:term]}"
+      # compare to existing schedule
+      s = scheds[key]
+      if s # they match
+        # TODO update existing offering's metadata
+        matchings[key] = s
+      else
+        unmatched << o
+      end
+    end
+
+    # build loose conditions
+    depts, numbers = Set.new, Set.new
+    unmatched.each do |res|
+      depts << res.department
+      numbers << res.number
+    end
+
+    # grab everything meeting loose sets of conditions
+    # TODO how do I actually pair these values in the query?
+    courses = Course.find_all_by_department_and_number(depts.to_a, numbers.to_a,
+      :include => :offerings)
+    courses_hash = courses.group_by{|c| "#{c.department}|#{c.number}"}
+
+    # group result offerings by course and check for direct matches
+    unmatched.each do |res|
+      course_key = "#{result[:department]}|#{result[:number]}"
+      courses = courses_hash[course_key]
+      offerings = courses.nil? ? [] : courses.map(&:offerings).flatten
+      offerings.select! do |o|
+        o.year == res[:year] && o.term == res[:term] && # times match
+        ( o.median == res[:median] || # medians match (or one doesn't exist)
+          o.median.nil? ||
+          o.median == 0 ||
+          res[:median].nil? ) &&
+        ( o.enrollment == res[:enrollment] || # enrollments match (or one doesn't exist)
+          o.enrollment.nil? ||
+          o.enrollment == 0 ||
+          res[:enrollment].nil? )
+      end
+      offerings.uniq!
+
+      # if a single direct match, add to schedule & update offering
+      if offerings.size == 1
+        sched = Schedule.new(:offering_id => offerings.first.id,
+          :user_id => @current_user.id, :course_id => courses.first.id)
+
+        # puts "FAILED TO SAVE SCHED #{sched.attributes}" if !sched.save
+        puts "SCHED: #{sched.attributes}"
+
+        # update offering (median, enrollment)
+        o = offerings.first
+        o.median = res[:median] if !o.median || o.median == 0
+        o.enrollment = res[:enrollment] if !o.enrollment || o.enrollment == 0
+        # puts "FAILED TO UPDATE OFFERING #{o.attributes}" if !o.save
+        puts "SAVING OFFERING: #{o.attributes}"
+        matchings[res] = sched
+      elsif offerings.size > 1
+        # else if multiple direct matches / loose matches, offer them as options
+        matchings[res] = [courses.first, offerings]
+      else
+        # else NO offerings exist, so force user to manually enter name(s)
+        matchings[res] = [courses.first, nil]
+      end
+    end
+
+    # if everything matches up to a schedule, render the new_batch page
+    # (same thing but w/o prof. drop-downs)
+    if matchings.all{|res, s| s.instance_of? Schedule}
+      @schedules = matchings.map{|res, s| s}
+      render 'new_batch'
+    end
+
+    @results = results
+    @matchings = matchings
+  end
 end

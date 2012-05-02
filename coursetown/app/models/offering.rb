@@ -28,6 +28,11 @@ class Offering < ActiveRecord::Base
     return Offering.includes(:courses,:professors).where(where_clause)
   end
 
+  # TODO use only last names
+  def prof_string
+    professors.map{|prof| prof.name}.sort.join(', ')
+  end
+
   # sorts an Enumerable<Offering> by time!
   def self.sort_by_time(offerings)
     terms = Hash[%w{W S X F}.each_with_index.to_a]
