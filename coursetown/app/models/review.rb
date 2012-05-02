@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
   validates_presence_of :offering
-  validates :grade, :inclusion => 0..12
+  validates :grade, :inclusion => 0..24 # grades are weird
   validates :prof_rating, :inclusion => 1..5
   validates :course_rating, :inclusion => 1..5
   validate :matches_schedule_offerings
@@ -12,23 +12,28 @@ class Review < ActiveRecord::Base
   has_many :courses, :through => :offering
   has_many :professors, :through => :offering
 
-  # grades_table = { E => 0, ..., A => 12 }
-  # TODO is it impossible to get a 1?
-  # TODO what's a W?
-  @grade_to_letter = %w{E na na D na C- C C+ B- B B+ A- A}
+  # grades_table = { letter => 6 * GPA }
+  # 6* because there are 3 levels for each letter (B-,B,B+), plus APPARENTLY
+  # medians can be listed as "B+/B" which is why each letter's multiplied by 2
+  @grade_to_letter = %w{E na na na na na D na na na C- C-/C C C/C+ C+ C+/B- B- B-/B B B/B+ B+ B+/A- A- A-/A A}
   @letter_to_grade = Hash[@grade_to_letter.each_with_index.to_a]
+  @letter_to_grade['ON'] = nil
   # account for 'na's
-  [1,2,4].each do |i| @grade_to_letter[i] = nil end
+  @grade_to_letter.each_with_index do |letter, i|
+    @grade_to_letter[i] = nil if letter == 'na'
+  end
   @letter_to_grade.delete('na')
   # letter-grade/number pairs: for use in <select> menus
-  @grade_number_pairs = @grade_to_letter.each_with_index.
-    select{|letter, index| letter}.to_a.reverse
+  # ignore "split" values, e.g. B/B+
+  @grade_number_pairs = (@grade_to_letter.each_with_index.
+    select{|letter, index| letter && index.even?}.to_a << ['',-1]).reverse
 
-  # convert from number_grade in 0..12 to letter grade
+  # convert from number_grade in 0..24 to letter grade
   def letter_grade # getter
     @grade_to_letter[grade]
   end
   def letter_grade= (value) # setter
+    value.chomp!('*') # ignore citation stars
     g = @letter_to_grade[value]
     grade = g if g
   end
@@ -37,7 +42,7 @@ class Review < ActiveRecord::Base
     @grade_to_letter[num_grade]
   end
 
-  # TODO
+  # grade/number pairs for reporting your own grade in a <select> tag
   def self.grade_number_pairs
     return @grade_number_pairs
   end
