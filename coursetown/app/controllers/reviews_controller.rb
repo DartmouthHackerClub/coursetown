@@ -188,7 +188,7 @@ class ReviewsController < ApplicationController
       r_hash[reasons] = true
 
       sched = schedules[offering_id]
-      if sched && sched.review
+      if sched && sched.review # then update
         # DON'T reset other reasons to false. if user writes a full review with
         # multiple reasons then edits their review in quick-review, don't
         # overwrite it, just add any new reasons (if they exist)
@@ -197,17 +197,20 @@ class ReviewsController < ApplicationController
           sched.review = r
           sched.save
         end
-      else
+      else # no review exists, so make a new one
         r = Review.new(r_hash)
         puts "REVIEW: #{r.attributes}"
         success = r.save
 
-        # update schedules table
+        # update schedules table to point to this review
         if success && sched
           sched.review = r
           sched.save # PANIC if this fails!
-        elsif success
-
+        elsif success # but no schedule, add a schedule
+          sched = Schedule.new :user_id => @current_user.id,
+            :offering_id => offering_id, :review_id => r.id
+          sched.course = offering.courses.first
+          sched.save # PANIC if this fails
         end
       end
       if success
