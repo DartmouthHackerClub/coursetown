@@ -23,8 +23,11 @@ class ApplicationController < ActionController::Base
     # redirect to a login page
     # NOTE: hacky way of building a uri, but it's because /auth/cas
     #   doesn't exist in a Rails-y way.
-    uri = callback_uri ? "/auth/cas?callback_uri=#{callback_uri}" : '/auth/cas'
-    redirect_to uri, :alert => 'You need to log in to do that.'
+    redirect_to login_path(callback_uri), :alert => 'You need to log in to do that.'
+  end
+
+  def login_path(callback_uri = nil)
+    callback_uri ? "/auth/cas?callback_uri=#{callback_uri}" : '/auth/cas'
   end
 
 end

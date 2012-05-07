@@ -1,10 +1,12 @@
 if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn.P_ViewTran'
   submit_url = 'http://localhost:3000/reviews/batch_from_transcript'
 
+  payload = document.documentElement.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+
   send_transcript_via_bookmarklet = ->
     # send transcript (over https) to rails server for scraping
     $("<form action='#{submit_url}' method='POST'>
-      <input type='hidden' name='transcript' value='#{document.documentElement.innerHTML}'>
+      <input type='hidden' name='transcript' value='#{payload}'>
       </form>").submit()
 
   if typeof jQuery == 'undefined'

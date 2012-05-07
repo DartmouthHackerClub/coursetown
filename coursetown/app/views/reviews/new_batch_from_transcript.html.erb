@@ -21,6 +21,7 @@ You can come back at any time to edit or expand your reviews.
   <table id="batch_reviews">
     <tr>
       <th>Title</th>
+      <th>Taught by</th>
       <th>Grade</th>
       <th>Course</th>
       <th>Prof.</th>
@@ -30,50 +31,43 @@ You can come back at any time to edit or expand your reviews.
     </tr>
     <% is_dark = true
       fuzzy_counter = 0 %>
-    <% @results.each do |result, data| %>
-      <% course, offering, offerings = nil, nil, nil
-      if data.instance_of? Schedule
-        course = data.course
-        offering = data.offering
-      else
-        course, offerings = data
-      end %>
-
-      <% prefix = "offerings[#{offerings ? 'fuzzy' : 'schedule'}][#{offerings ? fuzzy_counter : offering.id}]" %>
-
+    <% @results.each do |result| %>
+      <% data = @matchings[result] %>
       <% if data.instance_of? Schedule %>
-        <% prefix = "offerings[schedule][#{data.offering.id}]"
-        <%= content_tag :tr, :class => (is_dark ? 'dark' : 'light'), :id => "review_row_#{oid}" do %>
+        <% prefix = "offerings[schedule][#{data.offering.id}]" %>
+        <%= content_tag :tr, :class => (is_dark ? 'dark' : 'light'), :id => "review_row_#{data.offering.id}" do %>
           <% is_dark = !is_dark %>
-          <td class='title'><%= schedule.canonical_course.compact_title %></td>
-          <td class='profs'><%= schedule.offering.prof_string %></td>
-          <td class='grade'><%= result['grade'] %></td>
+          <td class='title'><%= data.canonical_course.compact_title %></td>
+          <td class='profs'><%= data.offering.prof_string %></td>
+          <td class='grade'><%= result[:grade] %></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
           <td><%= reasons_tag "#{prefix}[reasons]" %></td>
-          <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => oid) %></td>
+          <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => data.offering.id) %></td>
         <% end %>
       <% else %>
         <% course, offerings = data %>
-        <% if data.nil? %>
-          <%# TODO %>
-        <% end %>
 
         <% prefix = "offerings[fuzzy][#{fuzzy_counter}]" %>
         <%= content_tag :tr, :class => (is_dark ? 'dark' : 'light'), :id => "fuzzy_review_row_#{fuzzy_counter}" do %>
-            <% is_dark = !is_dark %>
-            <% fuzzy_counter += 1 %>
-            <% options = options_for_select([['Select Prof',0]] + offerings.map{|o| o.prof_string, o.id}) %>
-            <td class='title'><%= course.compact_title %></td>
+          <% is_dark = !is_dark %>
+          <% fuzzy_counter += 1 %>
+          <td class='title'><%= course.compact_title %></td>
+
+          <% if offerings %>
+            <% options = options_for_select([['Select Prof',0]] + offerings.map{|o| [o.prof_string, o.id]}) %>
             <td class='profs'><%= select_tag "#{prefix}[offering_id]", options %></td>
-            <td class='grade'><%= result['grade'] %></td>
-            <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
-            <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
-            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
-            <td><%= reasons_tag "#{prefix}[reasons]" %></td>
-            <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => oid) %></td>
+          <% else %>
+            <td class='profs'>???</td>
           <% end %>
+
+          <td class='grade'><%= result[:grade] %></td>
+          <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
+          <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
+          <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
+          <td><%= reasons_tag "#{prefix}[reasons]" %></td>
+          <td class='full_review'>WRITE FULL REVIEW!</td>
         <% end %>
       <% end %>
     <% end %>

@@ -12,6 +12,7 @@ class Array
 end
 
 class ReviewsController < ApplicationController
+  protect_from_forgery :except => 'new_batch_from_transcript'
 
   def show
     @review = Review.find_by_id(params[:id],
@@ -262,54 +263,67 @@ class ReviewsController < ApplicationController
 
   # receive POST w/ full transcript data in it
   def new_batch_from_transcript
-    # force_login(request.fullpath) && return if @current_user.nil?
+    force_login && return if @current_user.nil?
 
     # get existing schedule
     # build hash w/ keys of the form "COSC|5|2012|W"
     scheds = Hash.new
-    Schedule.find_by_user_id(@current_user.id,
-      :include => [:offering, :course]).each do |sched|
+    @current_user.schedules.includes(:offering, :course).each do |sched|
       o, c = sched.offering, sched.course
       scheds["#{c.department}|#{c.number}|#{o.year}|#{o.term}"] = sched
     end
 
     ## PARSE
-    results = parse_transcript(params[:data]) if params[:data]
+    results = parse_transcript(params[:transcript])
 
     ## IMPORT DATA
 
-    unmatched = []
-    matchings = Hash.new
-    results.each do |o|
+    unmatched, matchings = [], Hash.new
+    results.each do |res|
 
-      key = "#{o[:department]}|#{o[:number]}|#{o[:year]}|#{o[:term]}"
+      key = "#{res[:department]}|#{res[:number]}|#{res[:year]}|#{res[:term]}"
       # compare to existing schedule
       s = scheds[key]
       if s # they match
         # TODO update existing offering's metadata
-        matchings[key] = s
+        matchings[res] = s
       else
-        unmatched << o
+        unmatched << res
       end
     end
 
-    # build loose conditions
+    # build "loose conditions"
+    # e.g. anything in [COSC,MATH,ENGS] and [1,5,8,39], rather than smarter
+    # filtering like 'COSC 5' or 'MATH 8'
     depts, numbers = Set.new, Set.new
     unmatched.each do |res|
-      depts << res.department
-      numbers << res.number
+      depts << res[:department]
+      numbers << res[:number]
     end
 
     # grab everything meeting loose sets of conditions
     # TODO how do I actually pair these values in the query?
-    courses = Course.find_all_by_department_and_number(depts.to_a, numbers.to_a,
-      :include => :offerings)
+    courses = Course.
+      find_all_by_department_and_number(depts.to_a, numbers.to_a,
+        :include => :offerings)
     courses_hash = courses.group_by{|c| "#{c.department}|#{c.number}"}
+    puts "#COURSE KEYS: #{courses_hash.each_key.to_a.join(' ')}"
 
     # group result offerings by course and check for direct matches
     unmatched.each do |res|
-      course_key = "#{result[:department]}|#{result[:number]}"
+      course_key = "#{res[:department]}|#{res[:number]}"
+      puts "KEY: #{course_key}"
       courses = courses_hash[course_key]
+      puts "COURSES: #{courses.map(&:id).join(',')}" if !courses.nil?
+      if courses.nil? || courses.empty?
+        c = Course.new({:department => res[:department], :number => res[:number]})
+        # TODO add "source => transcript" to course.
+        # this is the LEAST credible source because anyone can provide false data
+        puts "ERROR: couldn't save course #{c}" if !c.save
+        courses = [c]
+      end
+
+      # find offerings (ideally just one) for this course & term/time
       offerings = courses.nil? ? [] : courses.map(&:offerings).flatten
       offerings.select! do |o|
         o.year == res[:year] && o.term == res[:term] && # times match
@@ -350,12 +364,60 @@ class ReviewsController < ApplicationController
 
     # if everything matches up to a schedule, render the new_batch page
     # (same thing but w/o prof. drop-downs)
-    if matchings.all{|res, s| s.instance_of? Schedule}
+    if matchings.all?{|res, s| s.instance_of? Schedule}
       @schedules = matchings.map{|res, s| s}
       render 'new_batch'
     end
 
     @results = results
     @matchings = matchings
+  end
+
+    # arg: transcript_html = full html page from [undergrad, undergrad]
+  # returns: array of {year,term,department,number,enrollment,median,grade} objs
+  def parse_transcript(escaped_transcript_html)
+    html = escaped_transcript_html.gsub('&quot;','"').gsub('&apos;',"'")
+    doc = Hpricot(html)
+    rows = doc/'table.datadisplaytable tr'
+
+    terms = {'winter' => 'W', 'fall' => 'F', 'summer' => 'X', 'spring' => 'S'}
+    scraped_data = []
+    current_term, current_year = 0,0
+    rows.each do |row|
+
+      children = row/'td'
+
+      if children.empty?
+        # term divider?
+        if (labels = row/'th.ddlabel') && labels.size == 1 &&
+            (label = labels.first) && label.attributes['colspan'].to_i == 12 &&
+            (span = label/'span') && (contents = span.inner_html)
+
+          term, mid, year = contents.split(' ')
+          if term && mid && year && mid.downcase == 'term' &&
+              (year = year.to_i) != 0 && (term = terms[term.downcase])
+
+            current_term, current_year = term, year
+          end
+        end
+      # if the row's all '.dddefault's, it's a course! scrape and record it.
+      elsif children.size == 8 &&
+          children.all?{|td| !(td.classes & ['dddefault', 'dddead']).empty? }
+
+        h = Hash.new
+        h[:year], h[:term] = current_year, current_term
+        h[:department], h[:number], _, _, h[:enrollment], h[:median], h[:grade] =
+          children.map {|td| td.classes.include?('dddead') ? nil : td.inner_html}
+        scraped_data << h
+
+        # gotcha: to be safe, strip leading zeros (SQL will handle them ok in
+        # queries, but sometimes we manually do string comparisons
+        h[:number] = h[:number].to_i if h[:number]
+      end
+    end
+
+    puts "Just scraped #{scraped_data.size} courses off a transcript"
+    # scraped_data.each{|d| puts "  * #{d[:year]} #{d[:term]} : #{d[:department]} #{d[:number]}"}
+    scraped_data
   end
 end

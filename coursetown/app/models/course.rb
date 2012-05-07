@@ -1,4 +1,7 @@
 class Course < ActiveRecord::Base
+  validates :number, :uniqueness => {:scope => :department,
+    :message => "Course number can only occur once per dept."}
+
   # TODO should we add ":include => [:professors, :distribs]" to "has_many offerings"?
   has_many :offering_courses
   has_many :offerings, :through => :offering_courses

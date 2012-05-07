@@ -48,6 +48,7 @@ GEM
       multipart-post (~> 1.1.0)
       rack (>= 1.1.0, < 2)
     hike (1.2.1)
+    hpricot (0.8.6)
     i18n (0.6.0)
     jquery-rails (1.0.19)
       railties (~> 3.0)
@@ -172,6 +173,7 @@ PLATFORMS
 
 DEPENDENCIES
   coffee-rails (~> 3.1.1)
+  hpricot
   jquery-rails
   json
   mysql2
