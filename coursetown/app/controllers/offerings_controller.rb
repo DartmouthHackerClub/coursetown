@@ -26,7 +26,6 @@ class OfferingsController < ApplicationController
   # GET /offerings.xml
   def index
     @offerings = Offering.all
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @offerings }

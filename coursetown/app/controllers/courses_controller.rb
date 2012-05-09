@@ -1,9 +1,10 @@
 class CoursesController < ApplicationController
 
   def index
-    @courses = Course.all
-    if @current_user.present?
-      @wishlist = Wishlist.where(:user_id => @current_user.id)
+    @courses = Course.find(:all,:conditions => ['long_title LIKE ?', "%#{params[:term]}%"],  :limit => 10, :order => 'long_title')
+    #@courses = Course.all
+    respond_to do |format|
+      format.json { render :json => @courses.map(&:long_title).compact.reject(&:blank?).to_json }
     end
   end
 
