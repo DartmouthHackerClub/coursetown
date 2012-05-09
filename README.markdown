@@ -2,6 +2,7 @@ CourseTown is a [Hacker Club](http://hacktown.cs.dartmouth.edu) project, intende
 
 # Setup
 
+$ cd coursetown
 $ bundle install
 $ gem install mysql2
 set up the mysql db. something like:
