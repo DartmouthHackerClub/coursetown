@@ -562,6 +562,7 @@ function do_search(form_params) {
             queries['description'] = words;
         }
         else if (name == 'Professors') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(',');
             profs = [];
@@ -570,8 +571,11 @@ function do_search(form_params) {
                     profs.push($.trim(splits[s]));
             }
             queries['professors'] = profs;
+            */
+          queries['professors'] = form_params[key]['value'];
         }
         else if (name == 'title') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(' ');
             title_words = [];
@@ -581,6 +585,8 @@ function do_search(form_params) {
             }
 
             queries['title'] = title_words;
+            */
+            queries['title'] = form_params[key]['value'];
         }
         else if (name == 'Number') {
             var val = parseInt(form_params[key]['value']);

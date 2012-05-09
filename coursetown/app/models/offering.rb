@@ -40,20 +40,22 @@ class Offering < ActiveRecord::Base
   # TODO: validations!
 
   # TODO: median, nro, description
-  # TODO: full-text search (LIKE clauses)
   def self.search_by_query(queries)
+    @offerings = Offering.includes(:courses, :professors, :distribs)
+
     where_clause = queries.slice(:period, :term, :year, :wc, :time)
-    # courses long_title is given as title. Should be a LIKE
-    # descr as well ?
-
-    where_clause[:courses] = queries.slice(:department, :number, :long_title,:description)
-    (where_clause[:professors] = {:name => queries[:professors]}) if queries.has_key?(:professors)
-    (where_clause[:distribs] = {:distrib_abbr => queries[:distribs]}) if queries.has_key?(:distribs)
-
-    # TODO build 'conditions' hash for advanced queries (median > ?, description LIKE ?)
-
-    # TODO first do a 'where' on just offering fields, for a smaller join?
-    return Offering.includes(:courses,:professors).where(where_clause)
+    where_clause[:courses] = queries.slice(:department, :number, :description)
+    if queries and queries.has_key?(:distribs)
+      where_clause[:distribs] = {:distrib_abbr => queries[:distribs]}
+    end
+    if queries and queries.has_key?(:title)
+      @offerings = @offerings.where("`courses`.`long_title` like '%#{queries[:title]}%'")
+    end
+    if queries and queries.has_key?(:professors)
+      # asfd, nsadf => "name like '%asfd%' OR name like '%nsadf%'"
+      @offerings = @offerings.where(queries[:professors].split(",").map { |name| "`professors`.`name` like '%#{name.strip}%'" }.join(" OR "))
+    end
+    return @offerings.where(where_clause)
   end
 
   # TODO use only last names
