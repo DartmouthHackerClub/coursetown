@@ -33,6 +33,8 @@ Coursetown::Application.routes.draw do
 
       get 'batch' => 'reviews#new_batch', :as => :new_batch
       post 'batch' => 'reviews#create_batch', :as => :create_batch
+
+      get 'batch_start' => 'reviews#batch_start', :as => :batch_start
     end
   end
 

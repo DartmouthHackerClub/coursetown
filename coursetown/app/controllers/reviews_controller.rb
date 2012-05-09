@@ -253,6 +253,8 @@ class ReviewsController < ApplicationController
     return sum, count
   end
 
+  def batch_start
+  end
 
   # receive POST w/ full transcript data in it
   def new_batch_from_transcript
