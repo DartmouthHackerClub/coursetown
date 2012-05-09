@@ -27,3 +27,6 @@ else
     "\n\tTranscript Type: Undergraduate Unofficial." +
     "\n5. Hit 'Submit'. You should now see your transcript." +
     "\n6. Click the bookmarklet again."
+    "\nWe'll send you to bannerstudent now"
+
+  window.location.href = 'https://dartmouth.edu/bannerstudent'
