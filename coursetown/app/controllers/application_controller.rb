@@ -1,3 +1,5 @@
+include ApplicationHelper
+
 class ApplicationController < ActionController::Base
 
   protect_from_forgery
@@ -24,10 +26,6 @@ class ApplicationController < ActionController::Base
     # NOTE: hacky way of building a uri, but it's because /auth/cas
     #   doesn't exist in a Rails-y way.
     redirect_to login_path(callback_uri), :alert => 'You need to log in to do that.'
-  end
-
-  def login_path(callback_uri = nil)
-    callback_uri ? "/auth/cas?callback_uri=#{callback_uri}" : '/auth/cas'
   end
 
 end
