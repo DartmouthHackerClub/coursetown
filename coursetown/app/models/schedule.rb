@@ -2,9 +2,11 @@ class Schedule < ActiveRecord::Base
   validates :offering, :presence => true
   validates :user, :presence => true
   validate :course_matches_offering
+  validates :offering_id, :uniqueness => {:scope => :user_id,
+    :message => 'User cannot write multiple reviews for one course offering'}
   # course presence is optional (if no course, grab the default offering.course)
   with_options :unless => 'review.nil?' do |sched|
-    sched.validates :review, :uniqueness => true
+    sched.validates :review_id, :uniqueness => true
     sched.validate :review_matches_offering
   end
 
@@ -24,7 +26,7 @@ class Schedule < ActiveRecord::Base
   end
 
   def course_matches_offering
-    if course && !offering.courses.contains?(course)
+    if course && offering && !offering.courses.include?(course)
       errors.add(:offering_mismatch, '. Course does not match offering.')
     end
   end

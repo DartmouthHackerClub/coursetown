@@ -142,19 +142,12 @@ class ReviewsController < ApplicationController
   def create
     force_login(request.fullpath) && return if @current_user.nil?
 
-    @review = Review.new(params[:review])
+    @review = params[:id] ? Review.find(params[:id]) : Review.new(params[:review])
     # TODO wrap everything after this point in one DB transaction?
     @review.save!
-    schedule = Schedule.find_by_user_id_and_offering_id(@current_user.id, @review.offering.id)
+    schedule = Schedule.find_or_create_by_user_id_and_offering_id(@current_user.id, @review.offering.id)
     schedule.review = @review
-    schedule.save!
-
-    # add course to user's schedule (if it's not there yet)
-    if !(@current_user.schedule_offerings.include? @review.offering)
-      sched = Schedule.new(:offering => @review.offering, :user => @current_user)
-      sched.save!
-      @current_user.schedules << sched # TODO no need to save?
-    end
+    puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
   end
 
 

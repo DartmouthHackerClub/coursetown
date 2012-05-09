@@ -30,16 +30,18 @@ class Review < ActiveRecord::Base
 
   # convert from number_grade in 0..24 to letter grade
   def letter_grade # getter
-    @grade_to_letter[grade]
+    self.class.letter_grade(grade)
   end
   def letter_grade= (value) # setter
-    value.chomp!('*') # ignore citation stars
-    g = @letter_to_grade[value]
+    g = self.class.number_grade(value)
     grade = g if g
   end
-
   def self.letter_grade (num_grade)
     @grade_to_letter[num_grade]
+  end
+  def self.number_grade (letter_grade)
+    val = letter_grade.chomp('*') # ignore citation stars
+    @letter_to_grade[val]
   end
 
   # grade/number pairs for reporting your own grade in a <select> tag
