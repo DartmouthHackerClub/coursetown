@@ -26,8 +26,7 @@
 			link_to(prof.name, prof_reviews_path(:id => prof.id))}.join(', ') %>
 		<br/>
 
-		<%# "11F @ 9L" %>
-		<%= "#{@review.offering.year}#{@review.offering.term} @ #{@review.offering.time}" %>
+		<%= review.offering.summary_string %>
 		<%# TODO [not when you took this course?] button %>
 	<% else %>
 		Please select a course offering to review.

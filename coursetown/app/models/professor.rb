@@ -13,10 +13,7 @@ class Professor < ActiveRecord::Base
   before_validation do
     return false if self.name.nil?
     if self.last_name.nil? || self.last_name.empty?
-      names = self.name.split(' ').select do |word|
-        # John A. Doe III -> John Doe
-        !((word.size == 2 && word[1] == '.') || (word.upcase == word))
-      end
+      names = self.class.important_names(self.name)
       self.last_name = names[-1] if !names.empty?
     end
     true
@@ -29,7 +26,6 @@ class Professor < ActiveRecord::Base
     inames = important_names(fuzzy_name)
     last_name = inames[-1]
     matches = self.find_all_by_last_name(last_name)
-    puts "MATCHES: #{matches.map(&:name).join(', ')}"
     return nil if matches.empty?
 
     # try to match the name perfectly
@@ -40,7 +36,6 @@ class Professor < ActiveRecord::Base
     # else check for something that includes the first name
     perfect_matches = matches.select do |match|
       nameset = match.name.split(' ')
-      puts "NAMESET: #{nameset}"
       i = -1
       # check that the full name includes all the other names AND
       # that the names appear in the correct order
@@ -59,9 +54,11 @@ class Professor < ActiveRecord::Base
     names = full_name.split(' ')
     important_names = names.select do |str|
       !((str.size == 2 && str[-1] == '.') || # initials
-        (str.size > 1 && str.upcase == str)) # roman numerals (all upcase)
+        (str.size > 1 && str.upcase == str) || # roman numerals (all upcase)
+        (str == 'Jr.' || str == 'Sr.'))
     end
   end
+
   # John A. Doe III => John Doe
   def self.short_name(full_name)
     important_names(full_name).join(' ')
