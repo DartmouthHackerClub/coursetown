@@ -44,12 +44,16 @@ class Offering < ActiveRecord::Base
     @offerings = Offering.includes(:courses, :professors, :distribs)
 
     where_clause = queries.slice(:period, :term, :year, :wc, :time)
-    where_clause[:courses] = queries.slice(:department, :number, :description)
+    where_clause[:courses] = queries.slice(:department, :number)
     if queries and queries.has_key?(:distribs)
       where_clause[:distribs] = {:distrib_abbr => queries[:distribs]}
     end
     if queries and queries.has_key?(:title)
       @offerings = @offerings.where("`courses`.`long_title` like '%#{queries[:title]}%'")
+    end
+    if queries and queries.has_key?(:description)
+      # asfd, nsadf => "name like '%asfd%' OR name like '%nsadf%'"
+      @offerings = @offerings.where(queries[:description].split(",").map { |name| "`courses`.`desc` like '%#{name.strip}%'" }.join(" OR "))
     end
     if queries and queries.has_key?(:professors)
       # asfd, nsadf => "name like '%asfd%' OR name like '%nsadf%'"

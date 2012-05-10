@@ -552,6 +552,7 @@ function do_search(form_params) {
             queries['department'] = depts;
         }
         else if (name == 'description') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(' ');
             words = [];
@@ -560,6 +561,8 @@ function do_search(form_params) {
                     words.push(splits[s]);
             }
             queries['description'] = words;
+            */
+            queries['description'] = form_params[key]['value'];
         }
         else if (name == 'Professors') {
           /*
