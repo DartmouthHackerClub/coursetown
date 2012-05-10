@@ -2,11 +2,14 @@ CourseTown is a [Hacker Club](http://hacktown.cs.dartmouth.edu) project, intende
 
 # Setup
 
+```
 $ cd coursetown
 $ bundle install
 $ gem install mysql2
+```
 set up the mysql db. something like:
 -----------
+```
 pyrak@parktop:~$ mysql -u root -p
 Enter password: 
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -36,14 +39,20 @@ mysql> create database coursetown;Query OK, 1 row affected (0.00 sec)
 
 mysql> grant all privileges on coursetown.* to coursetown@localhost identified by 'BLP80ZKB8nB8';
 Query OK, 0 rows affected (0.00 sec)
+```
 
 -----------
+```
 $ rake db:create
 $ rake db: migrate
 $ rails server
+```
 
 
 To import sample course/offering data (2011F) run:
 
+```
 $ rake scrape:orc
 $ rake scrape:timetable
+$ rake scrape:departments
+```
