@@ -2,7 +2,7 @@ namespace :scrape do
   task :departments => :environment do
     filename = File.expand_path(File.dirname(__FILE__) + '/../../public/scripts/dept_map.csv')
     open(filename).each do |line|
-      abbr, id, name = line.split ';'
+      abbr, id, name = line.gsub('"', '').split ';'
       Department.create({:abbr => abbr, :name => name})
     end
   end

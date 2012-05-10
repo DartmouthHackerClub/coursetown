@@ -466,21 +466,9 @@ function add_search_row_if_we_need_one() {
     $('input[name="Professors"]').autocomplete({
       source: '/professors.json',
     });
-  /*
-     TODO: commenting out for now because for some reason it's giving us an error. i don't know why.
-     $('input[name="Professors"]').autocomplete(profs,
-     {
-     matchContains: true,
-  //autoFill: true,
-  selectFirst: false
-  });
-  $('input[name="department"]').autocomplete(dept_abbrevs,
-  {
-  //autoFill: true,
-  multiple: true,
-  selectFirst: false
-  });
-   */
+    $('input[name="department"]').autocomplete({
+      source: '/departments.json',
+    });
 }
 
 function make_search_row_dom_element() {

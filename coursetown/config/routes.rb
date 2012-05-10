@@ -9,6 +9,7 @@ Coursetown::Application.routes.draw do
 
   resources :courses
   resources :professors
+  resources :departments
 
   resources :wishlists
 
