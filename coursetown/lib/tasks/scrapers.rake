@@ -1,4 +1,12 @@
 namespace :scrape do
+  task :departments => :environment do
+    filename = File.expand_path(File.dirname(__FILE__) + '/../../public/scripts/dept_map.csv')
+    open(filename).each do |line|
+      abbr, id, name = line.split ';'
+      Department.create({:abbr => abbr, :name => name})
+    end
+  end
+
   task :orc => :environment do
     filename = '../scrapers/orc/course_set.json'
     Offering.transaction {
