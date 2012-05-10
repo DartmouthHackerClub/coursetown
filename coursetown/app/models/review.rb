@@ -66,4 +66,31 @@ class Review < ActiveRecord::Base
       errors.add(:incomplete, '. Review must list at least one motivation')
     end
   end
+
+  @dimensions_for_average = [:grade, :course_rating, :prof_rating, :workload_rating]
+  def self.average_reviews(reviews)
+    average_records(reviews, @dimensions_for_average)
+  end
+
+
+  # TODO this is a HORRIBLE place to put this function, but I don't know where
+  # it _should_ go, so in the interest of time I'm putting it here
+  def self.average_records(records, dimensions)
+  # TODO this is really not the right place to put this, but
+  # it's better than in a controller?
+    sum, count = {}, {}
+    dimensions.each { |dim| sum[dim] = count[dim] = 0 }
+    records.each do |record|
+      dimensions.each do |dim|
+        if record[dim]
+          sum[dim] += record[dim].to_f
+          count[dim] += 1
+        end
+      end
+    end
+    # turn sum into avg
+    sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key].to_f : nil }
+    return sum, count
+  end
+
 end

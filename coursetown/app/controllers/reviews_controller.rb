@@ -15,12 +15,12 @@ class ReviewsController < ApplicationController
   protect_from_forgery :except => 'new_batch_from_transcript'
 
   def show
-    @review = Review.find_by_id(params[:id],
-      :include => {:offering => [:professors, :courses]})
-    if @review.nil?
-      render :status => 404
-      return
+    if params[:id].to_i.nil?
+      not_found
     end
+    # raises RecordNotFound exception if not found
+    @review = Review.find(params[:id],
+      :include => {:offering => [:professors, :courses]})
   end
 
 
@@ -43,16 +43,12 @@ class ReviewsController < ApplicationController
   def offering
     @offering = Offering.find(params[:id],
       :include => [:professors, {:courses => {:offerings => [:reviews, :professors]}}])
-    if @offering.nil? || @offering.professors.empty? || @offering.courses.empty?
-      render :status => 404
-      return
-    end
+    not_found if @offering.nil? || @offering.professors.empty? || @offering.courses.empty?
 
     # description = specific description OR first existing course description
     if @offering.specific_desc
       @description = @offering.specific_desc
     elsif !(descs = @offering.courses.select(&:desc)).empty?
-      puts "DESCS: #{descs}"
       @description = descs.first.desc
     else
       @description = nil
@@ -89,12 +85,15 @@ class ReviewsController < ApplicationController
       review.professors.map(&:name).sort.join(", ")
     end
 
+    # old reviews
+    @old_avgs, @old_counts, @old_reviews = OldReview.roll_up(@offering.courses.map(&:id), @offering.professors.map(&:id))
+
     # avg by prof
     @avgs_by_profs = {}
     @reviews_by_profs.each do |key, reviews|
       # TODO currently throwing away the counts...
       # show them on rollover?
-      @avgs_by_profs[key], counts = avg_reviews(reviews)
+      @avgs_by_profs[key], _ = avg_reviews(reviews)
     end
 
     # now review_buckets only contains reviews w/ other profs
@@ -103,7 +102,7 @@ class ReviewsController < ApplicationController
 
     # get the overal average of this course
     # TODO should be a rollup for this to make it searchable!
-    @course_avgs, counts = avg_reviews(all_reviews)
+    @course_avgs, _ = avg_reviews(all_reviews)
 
     # TODO find best profs teaching this course & see if
     #   (A) it conflicts w/ user's schedule
@@ -238,19 +237,7 @@ class ReviewsController < ApplicationController
   # note: dimensions have to be _attributes_ of the review object
   #   so :user doesn't work, but :user_id does.
   def avg_reviews(reviews, dimensions = [:course_rating, :prof_rating, :workload_rating, :grade])
-    sum, count = {}, {}
-    dimensions.each { |dim| sum[dim] = count[dim] = 0 }
-    reviews.each do |review|
-      dimensions.each do |dim|
-        if review[dim]
-          sum[dim] += review[dim]
-          count[dim] += 1
-        end
-      end
-    end
-    # turn sum into avg
-    sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key] : 0 }
-    return sum, count
+    Review.average_reviews(reviews)
   end
 
   def batch_start

@@ -126,6 +126,9 @@
 		} %>
 </div>
 
+<%= render :partial => 'old_reviews',
+	:locals => {:avgs => @old_avgs, :counts => @old_counts, :reviews => @old_reviews} %>
+
 <%# if other profs offer the same class, compare them! %>
 <% if !@avgs_by_profs.empty? %>
 	<br/>

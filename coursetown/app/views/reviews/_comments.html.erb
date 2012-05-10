@@ -10,11 +10,13 @@
   rating_field = local_assigns[:rating_field]
   %>
 
+<% if reviews.blank? %>
+No comments.
+<% else %>
+
 <div class="comments_box">
 
-  <% filtered_reviews = reviews.select do |r|
-    !r.attributes[comment_field].blank?
-  end
+  <% filtered_reviews = reviews.select{ |r| !r.attributes[comment_field].blank? }
 
     # bucketize the reviews so the two columns are
     # about even in height
@@ -66,3 +68,4 @@
   <div class="right_column"><% print_column.call(right_col) %></div>
 
 </div>
+<% end %>
