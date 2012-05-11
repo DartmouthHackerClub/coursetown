@@ -1,6 +1,7 @@
 class Schedule < ActiveRecord::Base
   validates :offering, :presence => true
   validates :user, :presence => true
+  validates :course, :presence => true
   validate :course_matches_offering
   validates :offering_id, :uniqueness => {:scope => :user_id,
     :message => 'User cannot write multiple reviews for one course offering'}
@@ -14,6 +15,16 @@ class Schedule < ActiveRecord::Base
   belongs_to :offering
   belongs_to :course
   belongs_to :review
+
+  before_validation do
+    return true if self.course
+
+    o = self.offering
+    return false if o.nil?
+
+    self.course = o.courses.first
+    return true
+  end
 
   def canonical_course
     course || offering.courses.first
