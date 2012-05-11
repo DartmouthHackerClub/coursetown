@@ -49,6 +49,7 @@ $ rails server
 ```
 
 
+To get new JSON, change to ../scrape and run ./scrape_all.sh
 To import sample course/offering data (2011F) run:
 
 ```
