@@ -1,16 +1,25 @@
 module ReviewHelper
-  def star_count (stars, max_stars = 5)
-    "#{stars} stars"
+  def star_count (id, stars, options = {})
+    render :partial => 'stars', :locals => options.merge({
+      :id => id, :read_only => true, :score => stars
+      })
   end
 
   # to be called from within the scope of form_for
-  def star_rating (form, field_name, max_stars = 5)
-    form.select field_name, (1..max_stars).map{|x| [x,x]}.to_a
+  def star_rating (form, field_name, options = {})
+    full_name = "#{form.object_name}[#{field_name}]"
+    star_rating_tag(full_name, options)
   end
 
-  # TODO make a nothing-selected option
-  def star_rating_tag (name, max_stars=5)
-    select_tag name, options_for_select((1..max_stars).map{|x| [x,x]}.to_a, 3)
+  # options:
+  #   id: span element's html id (has smart default)
+  #   class: span element's html class (auto-includes 'star-rating')
+  #   hints: (roll-over text), e.g. [bad,meh,ok,good,great]
+  #   cancel: true if you want a cancel button
+  #   cancel_place: 'left' or 'right'
+  def star_rating_tag (name, options = {})
+    # select_tag name, options_for_select((1..max_stars).map{|x| [x,x]}.to_a, 3)
+    render :partial => 'stars', :locals => options.merge({:field_name => name.to_s})
   end
 
   # TODO format grade according to above/below/at median

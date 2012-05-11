@@ -26,7 +26,7 @@
 			link_to(prof.name, prof_reviews_path(:id => prof.id))}.join(', ') %>
 		<br/>
 
-		<%= review.offering.summary_string %>
+		<%= @review.offering.summary_string %>
 		<%# TODO [not when you took this course?] button %>
 	<% else %>
 		Please select a course offering to review.
@@ -62,7 +62,7 @@
 	  <br/>
 
 	  <%= f.label 'Course' %>
-	  <%= star_rating f, :course_rating %>
+	  <%= star_rating f, :course_rating, :html_class => 'inline' %>
 	  <br/>
 	  <%= f.text_area(:course_comment, :rows => 6, :cols => 50,
 			:class => 'new_review_textarea',
@@ -70,7 +70,7 @@
 	  <br/>
 
 	  <%= f.label "Professor"%>
-	  <%= star_rating f, :prof_rating %>
+	  <%= star_rating f, :prof_rating, :html_class => 'inline' %>
 	  <br/>
 	  <%= f.text_area(:prof_comment, :rows => 6, :cols => 50,
 	  	:class => 'new_review_textarea',
@@ -78,7 +78,7 @@
 	  <br/>
 
 	  <%= f.label "Workload" %>
-	  <%= star_rating f, :workload_rating %>
+	  <%= star_rating f, :workload_rating, :html_class => 'inline' %>
 	  <br/>
 	  <%= f.text_area(:workload_comment, :rows => 6, :cols => 50,
 	  	:class => 'new_review_textarea',
