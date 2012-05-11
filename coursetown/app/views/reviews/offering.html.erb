@@ -23,9 +23,12 @@
 	</tr>
 	<tr>
 		<td><%= letter_grade @avgs[:grade] %></td>
-		<td><%= star_count @avgs[:prof_rating] %></td>
-		<td><%= star_count @avgs[:course_rating] %></td>
-		<td><%= star_count @avgs[:workload_rating] %></td>
+		<td><%= star_count 'avg_prof_rating', @avgs[:prof_rating],
+			:html_class => 'center' %></td>
+		<td><%= star_count 'avg_course_rating', @avgs[:course_rating],
+			:html_class => 'center' %></td>
+		<td><%= star_count 'avg_workload_rating', @avgs[:workload_rating],
+			:html_class => 'center' %></td>
 	</tr>
 </table>
 <% else %>
@@ -46,7 +49,7 @@
 				Add to your schedule:
 				<ul>
 				<% @future_offerings.each do |offering| %>
-					<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+					<li><%= offering.summary_string %>
 				<% end %>
 				</ul>
 			<% end %>
@@ -56,7 +59,7 @@
 				You took this class:
 				<ul>
 					<% @schedule_offerings.each do |offering| %>
-						<li><%= "#{offering.year}#{offering.term} @ #{offering.time}" %>
+						<li><%= offering.summary_string %>
 					<% end %>
 				</ul>
 				<br/><br/>
@@ -68,7 +71,7 @@
 				Review this class:
 				<ul>
 					<% @past_offerings.each do |offering| %>
-						<li><%= link_to "#{offering.year}#{offering.term} @ #{offering.time}", new_reviews_path(offering.id) %>
+						<li><%= link_to offering.summary_string, new_reviews_path(offering.id) %>
 					<% end %>
 				</ul>
 			<% end %>
@@ -126,6 +129,9 @@
 		} %>
 </div>
 
+<%= render :partial => 'old_reviews',
+	:locals => {:avgs => @old_avgs, :counts => @old_counts, :reviews => @old_reviews} %>
+
 <%# if other profs offer the same class, compare them! %>
 <% if !@avgs_by_profs.empty? %>
 	<br/>
@@ -138,14 +144,17 @@
 			<th>Workload</th>
 			<th></th>
 		</tr>
-		<% @reviews_by_prof.sort_by {|k1,v1,k2,v2|
-			v2[:course_rating] <=> v1[:course_rating]}.each do |key,avgs| %>
+		<% i = 0
+		@reviews_by_prof.sort_by {|k1,v1,k2,v2|
+			v2[:course_rating] <=> v1[:course_rating]}.each do |key,avgs|
+				# this is a really dumb way of generating unique id's...
+				i += 1 %>
 			<tr>
 				<td><%= key %></td>
 				<% if @num_reviews_by_profs[key] > 0 %>
-					<td><%= star_count avgs[:course_rating] %></td>
-					<td><%= star_count avgs[:prof_rating] %></td>
-					<td><%= star_count avgs[:workload] %></td>
+					<td><%= star_count "star-id-#{i}", avgs[:course_rating] %></td>
+					<td><%= star_count "star-id-#{i}", avgs[:prof_rating] %></td>
+					<td><%= star_count "star-id-#{i}", avgs[:workload] %></td>
 					<td ><%= "#{avgs[:num_reviews]} reviews" %></td>
 				<% else %>
 					<td colspan=4 class="no_reviews">No reviews</td>

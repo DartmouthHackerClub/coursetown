@@ -67,6 +67,23 @@ class Offering < ActiveRecord::Base
     professors.map{|prof| prof.name}.sort.join(', ')
   end
 
+  def short_prof_string
+    professors.map{|prof| prof.last_name}.sort.join(', ')
+  end
+
+  def time_string
+    prefix = "#{self.year}#{self.term}"
+    if self.time
+      "#{prefix} @ #{self.time}"
+    else
+      prefix
+    end
+  end
+
+  def summary_string
+    "#{time_string} - #{short_prof_string}"
+  end
+
   # sorts an Enumerable<Offering> by time!
   def self.sort_by_time(offerings)
     terms = Hash[%w{W S X F}.each_with_index.to_a]

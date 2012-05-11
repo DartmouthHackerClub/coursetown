@@ -1,0 +1,61 @@
+<%
+avgs = local_assigns[:avgs]
+avg_counts = local_assigns[:counts]
+reviews = local_assigns[:reviews]
+%>
+
+<% if reviews.blank? %>
+  No old reviews.
+<% else %>
+  <%= reviews.size %> old reviews.
+
+<%
+labels = [ # format: [key, label, low-star blurb, high-star blurb]
+%(coverall | Overall course rating | Horrible course | Great course),
+%(cpace | Was paced too quickly | Moved slowly | Moved quickly),
+%(cwork | Was more work than a typical course | Light workload | Heavy workload),
+%(cinterest | Course was interesting | Uninteresting | Very interesting),
+%(ctas | TAs were helpful | Unhelpful TA's | Really helpful TA's'),
+%(cmatchorc | Matched ORC | Didn't match its ORC description | Matched ORC description perfectly),
+
+%(hlearn | Homework helped learn the material | Unhelpful homework | Very helpful homework),
+%(hhard | Homework was difficult | Really easy homework | Very difficult homework),
+%(hinterest | Homework was interesting | Boring homework | Very interesting homework),
+
+%(efair | Exams were fair assessments of course material | Unfair exams | Exams were very fair),
+%(ehard | Exams were difficult | Very easy exams | Very difficult exams),
+
+%(loverall | Overall lab rating | Horrible labs | Great labs),
+%(lhard | Labs were difficult | Really easy labs | Very difficult labs),
+%(ledvalue | Labs were valuable | Labs were wastes of time | Valuable labs),
+%(ltas | Lab TAs were helpful | Unhelpful lab TA's | Really helpful lab TA's),
+
+# %(reffort | Amount of effort the reviewers put into the coures (on average) | Reviewers put little effort into this course | Reviewers put a lot of effort into this course),
+# %(rattend | Amount of class attended (on average) | Reviewers missed many lectures | Reviewers attended most classes)
+].map{|s| s.split(' | ')}
+%>
+
+
+<div class='old_reviews_highlights'>
+  <ul>
+    <% labels.each do |key, _, lo_star, hi_star| %>
+      <% if (count = avg_counts[key]) && (avg = avgs[key]) && count > 0 && (avg <= 2 || avg >= 4) %>
+        <li><%= avg < 2 ? lo_star : hi_star %></li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
+
+<div class='old_reviews_full'>
+  <table>
+    <% labels.each do |key, label, _, _| %>
+      <% next if avgs[key].nil? || avg_counts[key] == 0 %>
+      <tr>
+        <td><%= label %></td>
+        <td><%= star_count "star-count-#{key}", avgs[key] %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<% end %>

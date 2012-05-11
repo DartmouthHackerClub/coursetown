@@ -7,3 +7,4 @@
 //= require json-sans-eval
 //= require dept_map
 //= require_tree ./application
+//= require jquery.raty
