@@ -134,6 +134,7 @@ class ReviewsController < ApplicationController
     schedule = Schedule.find_or_create_by_user_id_and_offering_id(@current_user.id, @review.offering.id)
     schedule.review = @review
     puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
+    redirect_to offering_reviews_path(@review.offering)
   end
 
 

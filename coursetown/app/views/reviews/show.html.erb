@@ -32,15 +32,11 @@
 	</tr>
 	<tr>
 		<td>Professor</td>
-		<td><%= star_count(@review.prof_rating) %></td>
+		<td><%= star_count('review-prof', @review.prof_rating) %></td>
 	</tr>
 	<tr>
 		<td>Course</td>
-		<td><%= star_count(@review.course_rating) %></td>
-	</tr>
-	<tr>
-		<td>Comment</td>
-		<td><%= @review.comment %></td>
+		<td><%= star_count('review-course', @review.course_rating) %></td>
 	</tr>
 </table>
 

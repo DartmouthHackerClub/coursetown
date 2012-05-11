@@ -47,7 +47,6 @@ You can come back at any time to edit or expand your reviews.
           <td><button class="showCommentProf" type="button">Comment</button></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
           <td><button class="showCommentRating" type="button">Comment</button></td>
-          <td>xx<%= text_area_tag "#{prefix}[workload_comment]" %></td>
           <td><%= reasons_tag "#{prefix}[reasons]" %></td>
           <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => data.offering.id) %></td>
       <% end %>

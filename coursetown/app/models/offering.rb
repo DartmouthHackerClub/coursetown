@@ -41,6 +41,8 @@ class Offering < ActiveRecord::Base
 
   # TODO: median, nro, description
   def self.search_by_query(queries)
+    return [] if queries.blank?
+
     @offerings = Offering.includes(:courses, :professors, :distribs)
 
     where_clause = queries.slice(:period, :term, :year, :wc, :time)
@@ -62,7 +64,6 @@ class Offering < ActiveRecord::Base
     return @offerings.where(where_clause)
   end
 
-  # TODO use only last names
   def prof_string
     professors.map{|prof| prof.name}.sort.join(', ')
   end
