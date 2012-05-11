@@ -16,7 +16,7 @@ def load():
     data = urllib.urlopen('http://www.dartmouth.edu/~reg/courses/desc/index.html').read()
 
     # Find links to individual orc
-    urls = re.findall(r'http://www.dartmouth.edu/~reg/courses/desc/(.*?)\.html', data)
+    urls = re.findall(r'/~reg/courses/desc/(.*?)\.html', data)
 
     if not urls:
         print "Couldn't find course desc links"
