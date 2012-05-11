@@ -1,8 +1,5 @@
 class Distrib < ActiveRecord::Base
   belongs_to :offering
-  validates :distrib_abbr, :inclusion => {:in => @abbr_set,
-    :message => "Invalid distrib abbreviation: '%{value}'"}
-
   @full_names = {
     'INT' => 'International or Comparative Study',
     'ART' => 'Arts',
@@ -16,6 +13,8 @@ class Distrib < ActiveRecord::Base
     'TMV' => 'Traditions of Thought, Meaning & Value'
   }
   @abbr_set = Set.new(@full_names.each_key.to_a)
+  validates :distrib_abbr, :inclusion => {:in => @abbr_set,
+    :message => "Invalid distrib abbreviation: '%{value}'"}
 
   def self.full_name(distrib_abbr)
     @full_names[distrib_abbr]

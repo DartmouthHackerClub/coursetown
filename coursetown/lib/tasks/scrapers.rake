@@ -71,6 +71,7 @@ namespace :scrape do
           if !c.update_attributes(course_info) # saves to DB
             puts "Course [#{c.compact_title}] is invalid!"
           end
+          c
         end
         # check that at least one course saved correctly
         if courses.all?{|c| c.nil?}
@@ -99,11 +100,13 @@ namespace :scrape do
         #   o = c.offerings.find_or_create_by_year_and_term_and_section(year,term,offering['Sec'])
         #   o.update_attributes(offering_info)
         # but that creates duplicates! so let's be explicit
-        o = c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+
+        o = courses.map{|c|
+          c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+        }.select{|x| x}.first # filter out nils
         if o.nil?
-          o = Offering.new(offering_info.merge{
-            :year => year, :term => term, :section => offering['Sec']})
-          o.save
+          o = Offering.new({:year => year, :term => term, :section => offering['Sec']}.merge(offering_info))
+          puts "UH OH!!!!!!" if !o.save
         else
           o.update_attributes(offering_info)
         end
