@@ -1,4 +1,5 @@
 <%= stylesheet_link_tag "review" %>
+<%= javascript_include_tag "reviewComment" %>
 
 <h1>Quick Review</h1>
 
@@ -41,16 +42,20 @@ You can come back at any time to edit or expand your reviews.
           <td class='profs'><%= data.offering.prof_string %></td>
           <td class='grade'><%= result[:grade] %></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
+          <td><button class="showCommentCourse" type="button">Comment</button></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
+          <td><button class="showCommentProf" type="button">Comment</button></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
+          <td><button class="showCommentRating" type="button">Comment</button></td>
+          <td>xx<%= text_area_tag "#{prefix}[workload_comment]" %></td>
           <td><%= reasons_tag "#{prefix}[reasons]" %></td>
           <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => data.offering.id) %></td>
-        <% end %>
+      <% end %>
       <% else %>
         <% course, offerings = data %>
 
         <% prefix = "offerings[fuzzy][#{fuzzy_counter}]" %>
-        <%= content_tag :tr, :class => (is_dark ? 'dark' : 'light'), :id => "fuzzy_review_row_#{fuzzy_counter}" do %>
+        <%= content_tag :tr, :class => [(is_dark ? 'dark' : 'light'), fuzzy_counter] , :id => "fuzzy_review_row_#{fuzzy_counter}" do %>
           <% is_dark = !is_dark %>
           <% fuzzy_counter += 1 %>
           <td class='title'><%= course.compact_title %></td>
@@ -64,8 +69,11 @@ You can come back at any time to edit or expand your reviews.
 
           <td class='grade'><%= result[:grade] %></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
+          <td><button class="showCommentCourseFuzzy" type="button">Comment</button></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
+          <td><button class="showCommentProfFuzzy" type="button">Comment</button></td>
           <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
+          <td><button class="showCommentWorkFuzzy" type="button">Comment</button></td>
           <td><%= reasons_tag "#{prefix}[reasons]" %></td>
           <td class='full_review'>WRITE FULL REVIEW!</td>
         <% end %>
