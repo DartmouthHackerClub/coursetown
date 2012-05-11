@@ -1,16 +1,3 @@
-# Knuth shuffle
-class Array
-  def shuffle
-    a = Array.new(size)
-    (0...size).each do |i|
-      r = rand(i)
-      a[i] = a[r]
-      a[r] = self[i]
-    end
-    a
-  end
-end
-
 class ReviewsController < ApplicationController
   protect_from_forgery :except => 'new_batch_from_transcript'
 
