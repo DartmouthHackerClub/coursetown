@@ -309,13 +309,13 @@ class ReviewsController < ApplicationController
       offerings = courses.nil? ? [] : courses.map(&:offerings).flatten
       offerings.select! do |o|
         o.year == res[:year] && o.term == res[:term] && # times match
-        ( o.median == res[:median] || # medians match (or one doesn't exist)
-          o.median.nil? ||
-          o.median == 0 ||
+        ( o.median_grade == res[:median] || # medians match (or one doesn't exist)
+          o.median_grade.nil? ||
+          o.median_grade == 0 ||
           res[:median].nil? ) &&
-        ( o.enrollment == res[:enrollment] || # enrollments match (or one doesn't exist)
-          o.enrollment.nil? ||
-          o.enrollment == 0 ||
+        ( o.enrolled == res[:enrollment] || # enrollments match (or one doesn't exist)
+          o.enrolled.nil? ||
+          o.enrolled == 0 ||
           res[:enrollment].nil? )
       end
       offerings.uniq!
@@ -330,8 +330,8 @@ class ReviewsController < ApplicationController
 
         # update offering (median, enrollment)
         o = offerings.first
-        o.median = res[:median] if !o.median || o.median == 0
-        o.enrollment = res[:enrollment] if !o.enrollment || o.enrollment == 0
+        o.median_grade = res[:median] if !o.median_grade || o.median_grade == 0
+        o.enrolled = res[:enrollment] if !o.enrolled || o.enrolled == 0
         # puts "FAILED TO UPDATE OFFERING #{o.attributes}" if !o.save
         puts "SAVING OFFERING: #{o.attributes}"
         matchings[res] = sched
