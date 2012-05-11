@@ -1,0 +1,85 @@
+#slider-code 		{
+					width:887px;
+					height: 180px;
+					padding:20px 36px 0;
+					overflow:hidden;
+					position:relative;
+					}
+
+#slider-code .viewport {
+					float: left;
+					width: 887px;
+					height: 180px;
+					overflow: hidden;
+					position: relative;
+					}
+
+#slider-code .buttons {
+					width:25px;
+					height:35px;
+					display: block;
+					top:80px;
+					position:absolute;
+					text-indent:-9999px;
+					line-height:999px;
+					outline:none;
+					}
+
+#slider-code .prev	{left:0px;}
+#slider-code .next	{right:0px;}
+
+#slider-code a.prev	{background:url(../images/carousel_left_btn.png) 0 0 no-repeat;}
+#slider-code a.next	{background:url(../images/carousel_right_btn.png) 0 0 no-repeat;}
+
+#slider-code a:hover.prev	{background-position: 0 -35px;}
+#slider-code a:hover.next	{background-position: 0 -35px;}
+
+#slider-code a.disable.prev,
+#slider-code a:hover.disable.prev {background-position: 0 -70px; cursor:default;}
+#slider-code a.disable.next {background-position: 0 -70px; cursor:default;}
+
+#slider-code .overview {
+					list-style: none;
+					position: absolute;
+					padding: 0;
+					margin: 0;
+					left: 0;
+					top: 0;
+					}
+
+#slider-code .overview li{
+					float: left;
+					margin: 4px 11px 0 4px;
+					padding: 0;
+					width: 200px;
+					height: 140px;
+					position:relative;
+					border:4px solid #fff;
+					border-radius:5px;
+					-moz-border-radius:5px;
+					-khtml-border-radius:5px;
+					-webkit-border-radius:5px;
+					box-shadow:0 0 4px rgba(0, 0, 0, 0.8);
+					-moz-box-shadow:0 0 4px rgba(0, 0, 0, 0.8);
+					-webkit-box-shadow:0 0 4px rgba(0, 0, 0, 0.8);
+					}
+
+#slider-code .overview li h4 {
+					overflow:hidden;
+					width:200px;
+					z-index:1;
+					background: transparent url(../images/transparent.png) repeat;	
+					margin: 0;
+					}
+
+#slider-code .overview li a, #slider-code .overview li h2 a{ text-decoration:none; }
+#slider-code .overview li a:hover{ background:none; }
+#slider-code .overview li a, #slider-code .overview li img { display:block; }
+
+#slider-code .overview li h4 a:link, #slider-code .overview li h4 a:visited{
+					width:182px;
+					color:#CECECE;
+					padding:8px 10px;
+					}
+
+#slider-code .overview li h4 a:hover{ color:#fff; }
