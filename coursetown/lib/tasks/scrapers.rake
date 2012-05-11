@@ -26,10 +26,12 @@ namespace :scrape do
           #   course["section"]
           #   course["offered"] #ex: "11W: 10 12W: 10A"
           #   course["distribs"] #ex: ["LIT"]
-          #   course["wcults"] #ex["NW"] 
+          #   course["wcults"] #ex["NW"]
           #   course["profs"] #ex [["Rodolfo A. Franconi"],["Beatriz Pastor","11W"],["Buéno"]
           c = Course.find_or_initialize_by_department_and_number(course['subject'], course['number'])
           c.update_attributes(course_info)
+
+          # TODO: add wcult & distribs to the course's offerings
         }
       }
     }
@@ -41,10 +43,14 @@ namespace :scrape do
     #filename = '../scrapers/timetable/timetable.json'
 
     File.open(filename, 'r') do |f|
-      puts "loading timetable JSON..." 
+      puts "loading timetable JSON..."
       data = JSON.parse(f.read)
       puts "done."
       puts "importing data into db (#{data.size} offerings)..."
+
+      all_distribs = Set.new(Distrib.all_abbrs.to_a)
+      month_quarter_mappings = {'01' => 'W','09' => 'F','03' => 'S','06' => 'X'}
+
       data.each { |offering|
         course_info = {
           #:department => offering['Subj'],
@@ -52,18 +58,28 @@ namespace :scrape do
           :short_title => offering['Title']
         }
 
-        c = Course.find_or_initialize_by_department_and_number(offering['Subj'], offering['Num'])
-        if !c.update_attributes(course_info) # saves to DB
-          puts "Course [#{c.compact_title}] is invalid!"
+        ### THE COURSES
+        # x-listed courses AND canonical course
+        courses = offering['Xlist'].split(',').map{|str| str.split(' ')}
+        courses << [offering['Subj'], offering['Num']]
+        courses.map! do |dept, num, section|
+          if dept.nil? || num.nil?
+            puts "SCRAPE ERROR: Invalid course identifier in offering: #{offering}\n"
+            next nil
+          end
+          c = Course.find_or_initialize_by_department_and_number(dept, num)
+          if !c.update_attributes(course_info) # saves to DB
+            puts "Course [#{c.compact_title}] is invalid!"
+          end
+          c
+        end
+        # check that at least one course saved correctly
+        if courses.all?{|c| c.nil?}
+          puts "Saved NO valid courses for this offering! Skipping."
+          next
         end
 
         ### THE OFFERING
-        month_quarter_mappings = {
-          '01' => 'W',
-          '09' => 'F',
-          '03' => 'S',
-          '06' => 'X',
-        }
         offering_info = {
           :time => offering['Period'],
           :wc => offering['WC'],
@@ -77,29 +93,38 @@ namespace :scrape do
         # Unused fields:
         #   offering['Status'] ex: "IP" for "In Progress"
         #   offering['Xlist'] ex: "WGST 034 02"
+        # Dist, ex: 'INT or SOC'
 
-        # TODO it'd be great to be able to say:
+        # because we're going through a join table, we need to save our new object
+        # BEFORE adding connections
         #   o = c.offerings.find_or_create_by_year_and_term_and_section(year,term,offering['Sec'])
         #   o.update_attributes(offering_info)
         # but that creates duplicates! so let's be explicit
-        o = c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+
+        o = courses.map{|c|
+          c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+        }.select{|x| x}.first # filter out nils
         if o.nil?
-          o = Offering.new(offering_info)
-          o.year = year
-          o.term = term
-          o.section = offering['Sec']
-          o.save
-          c.offerings << o
+          o = Offering.new({:year => year, :term => term, :section => offering['Sec']}.merge(offering_info))
+          puts "UH OH!!!!!!" if !o.save
         else
           o.update_attributes(offering_info)
         end
+        o.courses |= courses # add any courses to the offering that weren't already
 
-        distribs = offering['Dist'].strip.upcase.split(' OR ')
-        distribs.each {|d| o.distribs.find_or_create_by_distrib_abbr(d)}
+        ### DISTRIBS
+        distrib_str = offering['Dist'] || ''
+        distrib_abbrs = distrib_str.split(' ').select{|d| Distrib.is_abbr?(d.upcase!)}
+        distrib_abbrs.each { |d| o.distribs.find_or_create_by_distrib_abbr(d) }
+
+        ### PROFESSORS
         professor_names = offering['Instructor'].split(', ')
         professor_names.each { |name|
-          if o.professors.find_by_name(name).nil?
-            o.professors << Professor.find_or_create_by_name(name)
+          # use custom finder, find_by_fuzzy_name, to find the professor in the
+          # db, even if her name is in a different form
+          # e.g. Jane A. Doe III vs. Jane Doe
+          if Professor.find_by_fuzzy_name(name, o.professors).nil?
+            o.professors << Professor.find_or_create_by_fuzzy_name(name)
           end
         }
       }

@@ -21,11 +21,13 @@ class Professor < ActiveRecord::Base
 
   # find_by_fuzzy_name('John Doe') --> <prof name => 'John A. Doe III'>
   # assumes arg is subset of solution. 'John A. Doe III' won't find 'John Doe'
-  def self.find_by_fuzzy_name(fuzzy_name)
+  # if prof_list is provided, searches within that list.
+  # else searches by last name
+  def self.find_by_fuzzy_name(fuzzy_name, prof_list = nil)
     names = fuzzy_name.split(' ')
     inames = important_names(fuzzy_name)
     last_name = inames[-1]
-    matches = self.find_all_by_last_name(last_name)
+    matches = prof_list || self.find_all_by_last_name(last_name)
     return nil if matches.empty?
 
     # try to match the name perfectly
@@ -35,18 +37,35 @@ class Professor < ActiveRecord::Base
 
     # else check for something that includes the first name
     perfect_matches = matches.select do |match|
-      nameset = match.name.split(' ')
+      # if name sizes match, we already know they're not equal, so NO
+      next false if match.name.size == fuzzy_name.size
+      # else figure out which is smaller and assume the smaller one, if a match
+      # is a subset of the larger one
+      if match.name.size > fuzzy_name.size
+        long_nameset, short_nameset = match.name.split(' '), names
+      else
+        long_nameset, short_nameset = names, match.name.split(' ')
+      end
+
       i = -1
       # check that the full name includes all the other names AND
       # that the names appear in the correct order
-      names.all? do |nom|
-        j = nameset.find_index nom
+      short_nameset.all? do |nom|
+        j = long_nameset.find_index nom
         i && j && j > i && (i = j) # awkward to avoid explicit returns...
       end
     end
 
     puts "WARNING: multipe professors are fuzzy matches for name #{fuzzy_name}" if perfect_matches.size > 1
     return perfect_matches.first # might return nil
+  end
+
+  # returns nil if failed to save
+  def self.find_or_create_by_fuzzy_name(fuzzy_name)
+    result = self.find_by_fuzzy_name(fuzzy_name)
+    return result if result
+    result = self.new({:name => fuzzy_name})
+    return result.save ? result : nil
   end
 
   # John A. Doe III => [John,Doe]

@@ -9,6 +9,14 @@ $ gem install mysql2
 ```
 set up the mysql db. something like:
 -----------
+
+ALL AT ONCE:
+
+```
+echo "create database coursetown_dev; grant all privileges on coursetown_dev.* to coursetown@localhost identified by 'BLP80ZKB8nB8'; create database coursetown_test; grant all privileges on coursetown_test.* to coursetown@localhost  identified by 'BLP80ZKB8nB8'; create database coursetown; grant all privileges on coursetown.* to coursetown@localhost identified by 'BLP80ZKB8nB8';" | mysql -u root -p
+```
+
+OR ONE BY ONE:
 ```
 pyrak@parktop:~$ mysql -u root -p
 Enter password: 
@@ -30,12 +38,14 @@ Query OK, 1 row affected (0.14 sec)
 mysql> grant all privileges on coursetown_dev.* to coursetown@localhost identified by 'BLP80ZKB8nB8';
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> create database coursetown_test;Query OK, 1 row affected (0.00 sec)
+mysql> create database coursetown_test;
+Query OK, 1 row affected (0.00 sec)
 
 mysql> grant all privileges on coursetown_test.* to coursetown@localhost identified by 'BLP80ZKB8nB8';
 Query OK, 0 rows affected (0.00 sec)
 
-mysql> create database coursetown;Query OK, 1 row affected (0.00 sec)
+mysql> create database coursetown;
+Query OK, 1 row affected (0.00 sec)
 
 mysql> grant all privileges on coursetown.* to coursetown@localhost identified by 'BLP80ZKB8nB8';
 Query OK, 0 rows affected (0.00 sec)

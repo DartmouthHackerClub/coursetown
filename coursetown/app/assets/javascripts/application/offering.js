@@ -143,7 +143,7 @@ function favorite_checkbox_onclick(event){
 // out: a jquery DOM object of that result
 function generate_result_div(result) {
     canonical_course = result['courses'][0]
-    result_div = $('<div class="result"></div>');
+    result_div = $('<div class="post"></div>');
     canonical_title = '';
     if(canonical_course['long_title']){
         canonical_title = canonical_course['long_title']
@@ -153,7 +153,7 @@ function generate_result_div(result) {
     }
 
     // title
-    title = $('<span class="dept_num_title">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</span>');
+    title = $('<h2 class="dept_num_title"><a href="#">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</a></h2>');
 
     // crn
     if(result['crn']){
@@ -162,43 +162,17 @@ function generate_result_div(result) {
     }
     result_div.append(title);
 
-    // Course guide link
-    var deptnum = get_department_number(result['department']);
-    var link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
-    var cglink_div = $('<a class="cglink" href="'+link+'" target="_blank">read reviews</a>');
-    result_div.append(cglink_div);
-
-    // TODO
-    // FIXME this shouldn't be hard-coded. use ERB magic
-    // Write review link
-    var offering_id = canonical_course['id'];
-    var review_div = $('<a class="cglink" href="../../reviews/new?offering_id=' + offering_id + '" target="_blank">write review</a>')
-    result_div.append(review_div);
-
-    // favorite
-    checked = 'course_in_wishlist="false"';
-    //TODO: the server doesn't actually pass us this "favorited" field yet
-    if(result['favorited']){
-        checked = 'checked="checked" course_in_wishlist="true"';
-    }
-    checkbox = $('<input type="checkbox"' + checked + ' value=' + canonical_course['id'] + '/>');
-    checkbox.click(favorite_checkbox_onclick);
-    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
-    favorited.append(checkbox);
-    result_div.append(favorited);
-
-    // term
-    term = $('<span class="term"><span class="fieldname">term </span>' + result['term'] + ' ' + result['year'] + '<a href="http://www.dartmouth.edu/~reg/calendars/acad_11_12.html">(?)</a></span>');
-    result_div.append(term);
-
+	course_info = $("<div class='posted'></div>");
     // profs
-    profs_div = $('<span class="profs"></span>');
+    profs_div = $('<span class="author"></span>');
+	/*
     if (result['professors'].length <= 1) {
         profs_div.append($('<span class="fieldname">prof </span>'));
     }
     else {
         profs_div.append($('<span class="fieldname">profs </span>'));
     }
+	*/
     if (result['professors'].length > 0) {
         var first = true;
         var html = '';
@@ -216,11 +190,48 @@ function generate_result_div(result) {
     else {
         profs_div.append($('<span class="notfound">none listed</span>'));
     }
-    result_div.append(profs_div);
+    course_info.append(profs_div);
 
-    // Period
-    time = $('<span class="time"><span class="fieldname">period </span>' + result['time'] + ' <a href="http://oracle-www.dartmouth.edu/dart/groucho/timetabl.diagram">(?)</a></span>');
-    result_div.append(time);
+    // term + period
+    term = $('<span class="date">' + result['year'] + result['term'] + ': ' + result['time'] + '</span>');
+    course_info.append(term);
+
+	department = $('<span class="category"><a href="http://www.dartmouth.edu/~reg/courses/desc/' + canonical_course['department'] + '.html">' + canonical_course['department'] +'</a></span>');
+    course_info.append(department);
+
+    link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
+    reviews = $('<span class="comments"><a href="'+link+'" target="_blank">read reviews</a></span>');
+	course_info.append(reviews);
+
+	result_div.append(course_info);
+
+    var deptnum = get_department_number(result['department']);
+
+	/*
+    // TODO
+    // FIXME this shouldn't be hard-coded. use ERB magic
+    // Write review link
+    var offering_id = canonical_course['id'];
+    var review_div = $('<a class="cglink" href="../../reviews/new?offering_id=' + offering_id + '" target="_blank">write review</a>')
+    result_div.append(review_div);
+	*/
+
+	/*
+    // favorite
+    checked = 'course_in_wishlist="false"';
+    //TODO: the server doesn't actually pass us this "favorited" field yet
+    if(result['favorited']){
+        checked = 'checked="checked" course_in_wishlist="true"';
+    }
+    checkbox = $('<input type="checkbox"' + checked + ' value=' + canonical_course['id'] + '/>');
+    checkbox.click(favorite_checkbox_onclick);
+    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
+    favorited.append(checkbox);
+    result_div.append(favorited);
+	*/
+
+
+
 
 
     /*
@@ -246,6 +257,7 @@ function generate_result_div(result) {
     result_div.append(distrib);
     */
 
+	/*
     // WCULT
     wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
     if(result['wc']){
@@ -255,6 +267,7 @@ function generate_result_div(result) {
         wcult.append($('<span class="notfound">none</span>'));
     }
     result_div.append(wcult);
+	*/
 
     /*
     // Can NRO?
@@ -281,6 +294,7 @@ function generate_result_div(result) {
     result_div.append(median_div);
     */
 
+	/*
     //ORC STUFF
     // Header
     if (result['note'] || result['offered'] || result['description']) {
@@ -304,10 +318,11 @@ function generate_result_div(result) {
         offered = $('<span class="offered"><span class="fieldname">offered </span>' + result['offered'] + '</span>');
         result_div.append(offered);
     }
+	*/
 
     // Description
     if (canonical_course['desc']) {
-        var description_div = $('<span class="description"><span class="fieldname">description </span>'+ canonical_course['desc'].replace(/\n/g, '<br />') +'</span>');
+        var description_div = $('<span class="description">' + canonical_course['desc'].replace(/\n/g, '<br />') +'</span>');
         result_div.append(description_div);
     }
     return result_div;
@@ -325,9 +340,7 @@ function get_or_create_results_div() {
     if (results_div.length < 1) {
         results_div = $('\
             <div id="results"> \
-            <h3> \
-            Results \
-            </h3> \
+			<div class="hr"></div> \
             <div id="the_results"> \
             </div> \
             ');
@@ -418,9 +431,11 @@ function make_left_side_dropdown() {
                 $(this).data('is_empty', false);
             }
         }
+		/*
         if(!old_value){
             $(this).parent().children('.close_row').show();
         }
+		*/
         if (old_value) {
             search_options[old_value]['in_use'] = false;
         }
@@ -439,7 +454,7 @@ function make_left_side_dropdown() {
             }
         }
     });
-    return dropdown
+    return dropdown;
 }
 
 function add_search_row_if_we_need_one() {
@@ -477,11 +492,12 @@ function make_search_row_dom_element() {
     close_link = $('<a href="#" class="close_row">X</a>');
     left_side.append(close_link);
     close_link.hide();
-    left_side.append(make_left_side_dropdown());
+	dropdown = make_left_side_dropdown();
+    left_side.append(dropdown);
     right_side = $(' <fieldset class="right_side"></fieldset> ');
     row.append(left_side);
     row.append(right_side);
-    return row[0];
+	return row[0];
 }
 
 function get_search_form() {
@@ -491,6 +507,7 @@ function get_search_form() {
 function insert_search_row_dom_element() {
     row = make_search_row_dom_element();
     get_search_form().find('.rows').append(row);
+	$(row).wrap("<p>");
     /*
     if (row.find('#Professors')) {
         $('#Professors').focus();

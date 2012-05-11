@@ -1,41 +1,39 @@
-<div id="search">
-  <h3>Search</h3>
+<div class="PageTitle">
+  <h1>Search</h1>
+</div>
+<!-- Content Area -->
+<div id="content">
   <form method="" action="" id="search_form">
     <fieldset class="rows">
     </fieldset>
+    <p>
     <input type="submit" value="Search &raquo;"/>
+    </p>
   </form>
+
+  <div>
+    Sort by: <input type="radio" id="sortby_course" name="sortby" value="course" checked> <label for="sortby_course">course</label>
+    <input type="radio" id="sortby_time" name="sortby" value="time"> <label for="sortby_time">time</label>
+    <input type="radio" id="sortby_median" name="sortby" value="median"> <label for="sortby_median">median</label>
+    <br><br>
+  </div>
+
+  <div id="results_container">
+  </div>
+
+  <div id="disclaimer">
+    Notes:
+    <ul>
+      <li>
+      Our CRNs and course listings may be out of date. <a href="http://www.dartmouth.edu/~reg/courses/index.html">The registrar's tools</a> have the most up-to-date information.
+      </li>
+      <li>
+      CRNs are different during course election and the add/drop period.
+      </li>
+      <li>
+      This website is not run by the registrar.
+      </li>
+    </ul>
+    This app is a work in progress.  Please email <a href="mailto:hackerclub-core@googlegroups.com">hackerclub-core@googlegroups.com</a> with suggestions and feedback.
+  </div>
 </div>
-<div>
-                Sort by: <input type="radio" id="sortby_course" name="sortby" value="course" checked> <label for="sortby_course">course</label>
-                <input type="radio" id="sortby_time" name="sortby" value="time"> <label for="sortby_time">time</label>
-                <input type="radio" id="sortby_median" name="sortby" value="median"> <label for="sortby_median">median</label>
-            <br><br>
-            </div>
-
-			<div id="results_container">
-			</div>
-			<!--
-			<div id="favorites">
-
-			<h2>
-			Favorites
-			</h2>
-
-			</div>
-			-->
-            <div id="disclaimer">
-            Notes:
-            <ul>
-            <li>
-            Our CRNs and course listings may be out of date. <a href="http://www.dartmouth.edu/~reg/courses/index.html">The registrar's tools</a> have the most up-to-date information.
-            </li>
-            <li>
-            CRNs are different during course election and the add/drop period.
-            </li>
-            <li>
-            This website is not run by the registrar.
-            </li>
-            </ul>
-            This app is a work in progress.  Please email <a href="mailto:hackerclub-core@googlegroups.com">hackerclub-core@googlegroups.com</a> with suggestions and feedback.
-            </div>
