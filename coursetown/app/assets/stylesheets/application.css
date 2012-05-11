@@ -5,3 +5,27 @@
  *= require_self
  *= require_tree . 
 */
+#content {
+  min-height: 500px;
+}
+.search_row * {
+  display: inline;
+}
+.search_row .left_side {
+  margin-right: 20px;
+}
+.search_row .left_side .close_row {
+  margin-right: 10px;
+}
+.search_row .right_side {
+  width: 400px;
+}
+.search_row .right_side input[type='text'] {
+  width: 100%;
+}
+.search_form input[type='submit'] {
+  float: right;
+}
+.close_row {
+  display: none;
+}

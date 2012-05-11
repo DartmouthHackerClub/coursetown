@@ -1,49 +1,85 @@
 <html>
-	<head>
-		<title>Dartmouth Course Picker by Hacker Club</title>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <title>Dartmouth Course Picker by Hacker Club</title>
+    <%= stylesheet_link_tag    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css" %>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" %>
+    <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "/js/cufon/cufon-yui.js" %>
+    <%= csrf_meta_tags %>
+  </head>
 
-        <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" %>
-        <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" %>
-        <%= javascript_include_tag "/dept_map.js" %>
-        <%= javascript_include_tag "/json-sans-eval.js" %>
-        <%= javascript_include_tag "/utils/utils.js" %>
-        <%= javascript_include_tag "application" %>
+  <body id="sp">
+    <!-- Start Main Nav -->
+    <div class="mainnav_full">
+      <div id="MainNav">
+        <a href="/" class="logo"><h1>course picker</h1></a>
+        <div id="menu">
+          <ul class="ddsmoothmenu">
+            <li><span class="menuslide"></span><a href="/" title="Home">Home<span class="menu_description">Front Page</span></a></li>
+            <li><span class="menuslide"></span><a href="/search" title="Search">Search<span class="menu_description">Course Search</span></a></li>
+            <li><span class="menuslide"></span><a href="<%= batch_start_reviews_path %>" title="Write Reviews">Write Review<span class="menu_description">Only takes a minute!</span></a></li>
+            <% if @current_user.present? %>
+              <li><span class="menuslide"></span><a href="<%= signout_path %>" title="Logout">Logout</a></li>
+            <% else %>
+              <li><span class="menuslide"></span><a href="<%= login_path(request.fullpath) %>" title="Login">Login</a></li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+    <!-- End Main Nav -->
 
-        <%= stylesheet_link_tag    "/stylesheets/compiled/application.css" %>
-        <%= stylesheet_link_tag    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css" %>
-        <%= csrf_meta_tags %>
+    <!-- Begin Header -->
+    <div class="header_full sample_02">
+      <div class="head_top_shadow"></div>
+      <div class="head_bot_shadow"></div>
+      <div id="header"></div>
+    </div>
+    <!-- End Header -->
 
-		<script type="text/javascript" >
-</script>
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-23367713-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-	</head>
-	<body>
-		<div id="header">
-		    <% if @current_user.present? %>
-          <%= link_to "Logout",  signout_path %>
-          <%= link_to "My planner",  "/planner" %>
-        <% else %>
-          <%= link_to "Login", login_path(request.fullpath), :style => "color:red" %>
-        <% end %>
-			<a id="logo" href="http://hacktown.cs.dartmouth.edu">
-            <%= image_tag "pickr_logo.png" %>
-			</a>
-		</div>
-		<div id="content">
+    <!-- Start Content Wrapper -->
+    <div class="content_wrapper">
       <%= yield %>
-		</div>
-	</body>
-</html>
+    </div>
+    <!-- End Content Wrapper -->
+
+    <!-- Start Footer Sidebar -->
+    <div class="fsb_full">	
+      <div id="fsb">
+      </div>
+    </div>
+    <!-- End Footer Sidebar -->
+    <!-- Start Footer  -->
+    <div class="footer_full">
+      <div id="footer">
+        <div class="copy">
+          <p class="developed_by">Developed By <a href="http://hacktown.cs.dartmouth.edu/">Hacker Club</a></p>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+    <!-- End Footer  -->
+
+    <!-- Theme Hook -->
+    <script type="text/javascript" src="/js/Includer.js"></script>
+    <script type="text/javascript">Cufon.now();</script>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-23367713-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+       })();
+
+</script>
+   </body>
+ </html>
