@@ -443,44 +443,32 @@ function make_left_side_dropdown() {
 }
 
 function add_search_row_if_we_need_one() {
-    while (empty_rows <= 0) {
-        insert_search_row_dom_element();
-    }
-    $(".check_all").click(function () {
-        $(this).parent().children("input").attr('checked', 'checked');
+  while (empty_rows <= 0) {
+    insert_search_row_dom_element();
+  }
+  $(".check_all").click(function () {
+    $(this).parent().children("input").attr('checked', 'checked');
+  });
+  $(".check_none").click(function () {
+    $(this).parent().children("input").attr('checked', '');
+  });
+  $(".close_row").click(function () {
+    left_side = $(this).parent();
+    // choose "null" in the dropdown--just to make sure that the option that had been selected gets added back to the set of available options
+    left_side.find("select option:selected").removeAttr('selected');
+    left_side.find("select option[value='title']").attr('selected', 'selected');
+    left_side.find("select").change();
+    left_side.parent().hide();
+  });
+    $('input[name="title"]').autocomplete({
+      source: '/courses.json',
     });
-    $(".check_none").click(function () {
-        $(this).parent().children("input").attr('checked', '');
+    $('input[name="Professors"]').autocomplete({
+      source: '/professors.json',
     });
-    $(".close_row").click(function () {
-        left_side = $(this).parent();
-        // choose "null" in the dropdown--just to make sure that the option that had been selected gets added back to the set of available options
-        left_side.find("select option:selected").removeAttr('selected');
-        left_side.find("select option[value='term']").attr('selected', 'selected');
-        left_side.find("select").change();
-        left_side.parent().hide();
+    $('input[name="department"]').autocomplete({
+      source: '/departments.json',
     });
-    /*
-    TODO: commenting out for now because for some reason it's giving us an error. i don't know why.
-    $('input[name="Professors"]').autocomplete(profs,
-            {
-                matchContains: true,
-                //autoFill: true,
-                selectFirst: false
-            });
-    $('input[name="title"]').autocomplete(titles,
-            {
-                matchContains: true,
-                //autoFill: true,
-                selectFirst: false
-            });
-    $('input[name="department"]').autocomplete(dept_abbrevs,
-            {
-                //autoFill: true,
-                multiple: true,
-                selectFirst: false
-            });
-    */
 }
 
 function make_search_row_dom_element() {
@@ -552,6 +540,7 @@ function do_search(form_params) {
             queries['department'] = depts;
         }
         else if (name == 'description') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(' ');
             words = [];
@@ -560,8 +549,11 @@ function do_search(form_params) {
                     words.push(splits[s]);
             }
             queries['description'] = words;
+            */
+            queries['description'] = form_params[key]['value'];
         }
         else if (name == 'Professors') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(',');
             profs = [];
@@ -570,8 +562,11 @@ function do_search(form_params) {
                     profs.push($.trim(splits[s]));
             }
             queries['professors'] = profs;
+            */
+          queries['professors'] = form_params[key]['value'];
         }
         else if (name == 'title') {
+          /*
             var val = form_params[key]['value'];
             splits = val.split(' ');
             title_words = [];
@@ -581,6 +576,8 @@ function do_search(form_params) {
             }
 
             queries['title'] = title_words;
+            */
+            queries['title'] = form_params[key]['value'];
         }
         else if (name == 'Number') {
             var val = parseInt(form_params[key]['value']);
@@ -783,7 +780,7 @@ $().ready(function () {
     row1 = $(row1);
 
     row1.find("select option:selected").removeAttr('selected');
-    row1.find("select option[value='term']").attr('selected', 'selected');
+    row1.find("select option[value='title']").attr('selected', 'selected');
     row1.find("select").change();
 
     //show_favorites();

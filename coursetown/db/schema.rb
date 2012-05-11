@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(:version => 20120507145616) do
     t.integer  "section"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "nroable",        :default => true
+    t.boolean  "nroable",                    :default => true
     t.string   "building"
     t.string   "room"
     t.integer  "enrollment_cap"
@@ -86,16 +86,16 @@ ActiveRecord::Schema.define(:version => 20120507145616) do
     t.string   "roffice",           :limit => 2
     t.integer  "rattend",           :limit => 2
     t.string   "title"
-    t.text     "creview",           :limit => 2147483647
-    t.text     "lreview",           :limit => 2147483647
-    t.text     "fsreview",          :limit => 2147483647
+    t.text     "creview",           :limit => 16777215
+    t.text     "lreview",           :limit => 16777215
+    t.text     "fsreview",          :limit => 16777215
     t.string   "approved",          :limit => 0
     t.string   "modified",          :limit => 0
     t.text     "note"
     t.integer  "reviewer"
     t.integer  "rterm",             :limit => 2
     t.datetime "date"
-    t.datetime "modifiedat",                              :null => false
+    t.datetime "modifiedat",                            :null => false
     t.string   "rnotify",           :limit => 0
     t.integer  "ltas",              :limit => 2
     t.integer  "interpretas",       :limit => 2
@@ -104,7 +104,7 @@ ActiveRecord::Schema.define(:version => 20120507145616) do
     t.string   "ip",                :limit => 18
     t.string   "hostname",          :limit => 200
     t.integer  "ryear"
-    t.datetime "lastviewedforedit",                       :null => false
+    t.datetime "lastviewedforedit",                     :null => false
     t.integer  "cdiversity",        :limit => 2
     t.integer  "old_id"
     t.integer  "old_offering_id"
