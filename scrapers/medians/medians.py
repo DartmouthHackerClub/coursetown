@@ -67,7 +67,7 @@ def load():
     data = urllib.urlopen('http://www.dartmouth.edu/~reg/courses/medians/').read()
 
     # Find links to individual median pages
-    urls = re.findall(r'http://www\.dartmouth\.edu/~reg/courses/medians/.*?\.html', data)
+    urls = re.findall(r'/~reg/courses/medians/.*?\.html', data)
 
     if not urls:
         print "Couldn't urls any median pages in input"
@@ -75,7 +75,7 @@ def load():
 
     l = []
     for url in urls:
-        data = urllib.urlopen(url).read()
+        data = urllib.urlopen("http://www.dartmouth.edu" + url).read()
         soup = BeautifulSoup(data)
         # Remove first tr, which is the table header
         hdr = soup.find('tr')

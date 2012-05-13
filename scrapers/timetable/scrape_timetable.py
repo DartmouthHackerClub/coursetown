@@ -3,7 +3,7 @@ import urllib2
 from html5lib import HTMLParser, treebuilders
 import cookielib
 import BeautifulSoup
-
+import sys
 
 timetable_url = 'http://oracle-www.dartmouth.edu/dart/groucho/timetable.display_courses?subjectradio=allsubjects&depts=no_value&periods=no_value&distribs=no_value&distribs_i=no_value&distribs_wc=no_value&pmode=public&term=&levl=&fys=n&wrt=n&pe=n&review=n&crnl=no_value&classyear=2008&searchtype=General+Education+Requirements&termradio=allterms&terms=no_value&distribradio=alldistribs&hoursradio=allhours&sortorder=dept'
 outfile = 'timetable.json'
@@ -63,6 +63,8 @@ def get_timetable_html():
     return url_to_html_str(timetable_url)
 
 def main():
+    if(len sys.argv < 3)
+     print >> sys.stderr , "Usage: ./scrape_timetable.py year term # Term is as shown in the tables"
     print "opening output file..."
     fp = open(outfile, 'w')
     print "done."
