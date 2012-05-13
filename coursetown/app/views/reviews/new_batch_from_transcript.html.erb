@@ -1,6 +1,8 @@
 <%= stylesheet_link_tag "review" %>
 <%= javascript_include_tag "reviewComment" %>
 
+<% full_term_names = {'W' => 'Winter', 'F' => 'Fall', 'S' => 'Spring', 'X' => 'Summer'} %>
+
 <h1>Quick Review</h1>
 
 We've fetched the courses we know you've taken. You don't have to review all of
@@ -20,63 +22,65 @@ You can come back at any time to edit or expand your reviews.
   <%= submit_tag 'Submit', :id => 'batch_review_submit' %>
 
   <table id="batch_reviews">
-    <tr>
-      <th>Title</th>
-      <th>Taught by</th>
-      <th>Grade</th>
-      <th>Course</th>
-      <th>Prof.</th>
-      <th>Workload</th>
-      <th>Why?</th>
-      <td/>
-    </tr>
     <% is_dark = true
       fuzzy_counter = 0 %>
-    <% @results.each do |result| %>
-      <% data = @matchings[result] %>
-      <% if data.instance_of? Schedule %>
-        <% prefix = "offerings[schedule][#{data.offering.id}]" %>
-        <%= content_tag :tr, :class => (is_dark ? 'dark' : 'light'), :id => "review_row_#{data.offering.id}" do %>
-          <% is_dark = !is_dark %>
-          <td class='title'><%= data.canonical_course.compact_title %></td>
-          <td class='profs'><%= data.offering.prof_string %></td>
-          <td class='grade'><%= result[:grade] %></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
-          <td><button class="showCommentCourse" type="button">Comment</button></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
-          <td><button class="showCommentProf" type="button">Comment</button></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
-          <td><button class="showCommentRating" type="button">Comment</button></td>
-          <td><%= reasons_tag "#{prefix}[reasons]" %></td>
-          <td class='full_review'><%= link_to 'write full review', new_reviews_path(:id => data.offering.id) %></td>
-      <% end %>
-      <% else %>
-        <% course, offerings = data %>
 
-        <% prefix = "offerings[fuzzy][#{fuzzy_counter}]" %>
-        <%= content_tag :tr, :class => [(is_dark ? 'dark' : 'light'), fuzzy_counter] , :id => "fuzzy_review_row_#{fuzzy_counter}" do %>
-          <% is_dark = !is_dark %>
-          <% fuzzy_counter += 1 %>
-          <td class='title'><%= course.compact_title %></td>
+    <% @years.each do |year| %>
 
-          <% if offerings %>
-            <% options = options_for_select([['Select Prof',0]] + offerings.map{|o| [o.prof_string, o.id]}) %>
-            <td class='profs'><%= select_tag "#{prefix}[offering_id]", options %></td>
-          <% else %>
-            <td class='profs'>???</td>
-          <% end %>
+      <%# TODO: split table entirely by years %>
 
-          <td class='grade'><%= result[:grade] %></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
-          <td><button class="showCommentCourseFuzzy" type="button">Comment</button></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
-          <td><button class="showCommentProfFuzzy" type="button">Comment</button></td>
-          <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
-          <td><button class="showCommentWorkFuzzy" type="button">Comment</button></td>
-          <td><%= reasons_tag "#{prefix}[reasons]" %></td>
-          <td class='full_review'>WRITE FULL REVIEW!</td>
+      <% %w(W S X F).each do |term| %>
+
+        <% next if (results = @results_by_term[[year,term]]).nil? %>
+        <tr>
+          <th colspan=3><%= "#{full_term_names[term]} #{year}"%></th>
+          <th colspan=2>Course</th>
+          <th colspan=2>Prof.</th>
+          <th colspan=2>Workload</th>
+          <th colspan=2>Why?</th>
+        </tr>
+
+        <% results.each do |result|
+            data = @matchings[result]
+            is_dark = !is_dark %>
+
+          <%
+          if data.instance_of? Schedule
+            prefix = "offerings[schedule][#{data.offering.id}]"
+            title = data.course.compact_title
+            profs = data.offering.prof_string
+            action = link_to 'write full review', new_reviews_path(:id => data.offering.id)
+          else
+            prefix = "offerings[fuzzy][#{fuzzy_counter += 1}]"
+            title = data[0].compact_title
+            if (offerings = data[1])
+              options = options_for_select([['Select Prof...',0]] +
+                offerings.map{|o| [o.professors.size > 1 ? o.short_prof_string : o.prof_string, o.id]})
+              profs = select_tag "#{prefix}[offering_id", options
+            else
+              profs = 'No profs found'
+            end
+            action = 'WUH?'
+          end
+          row_class = is_dark ? 'dark' : 'light'
+          %>
+
+          <tr class=<%= row_class %>>
+            <td class='title'><%= title %></td>
+            <td class='profs'><%= profs %></td>
+            <td class='grade'><%= result[:grade] %></td>
+            <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
+            <td><button class="showCommentCourse" type="button">Comment</button></td>
+            <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
+            <td><button class="showCommentProf" type="button">Comment</button></td>
+            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
+            <td><button class="showCommentRating" type="button">Comment</button></td>
+            <td><%= reasons_tag "#{prefix}[reasons]" %></td>
+            <td class='full_review'><%= action %></td>
+          </tr>
         <% end %>
       <% end %>
     <% end %>
   </table>
 <% end %>
+

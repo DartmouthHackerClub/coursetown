@@ -146,6 +146,12 @@ class ReviewsController < ApplicationController
     # TODO this is a poor hack
     @schedules = Schedule.find_all_by_user_id(@current_user.id,
       :include => [:review, :course, {:offering => :courses}])
+    @schedules_by_term = @schedules.group_by do |sched|
+      [sched.offering.year, sched.offering.term]
+    end
+    @sorted_terms = schedules_by_term.each_key.sort_by do |sched|
+      sched.offering.year * 4 + sched.offering.term_as_number
+    end
   end
 
   # returns JSON list of which reviews were successfully saved (by offering_id)
@@ -306,7 +312,10 @@ class ReviewsController < ApplicationController
           o.enrolled == 0 ||
           res[:enrollment].nil? )
       end
-      offerings.uniq!
+      # FIXME: the user will think something's wrong if they see multiple listings
+      # for the same prof, so we'll just assign them to an arbitrary one.
+      # it doesn't actually matter anyways if they've _already_ taken the class.
+      offerings.uniq! { |o| "#{o.prof_string}|#{o.section}" }
 
       # if a single direct match, add to schedule & update offering
       if offerings.size == 1
@@ -341,9 +350,13 @@ class ReviewsController < ApplicationController
 
     @results = results
     @matchings = matchings
+
+    @results_by_term = results.group_by { |r| [r[:year], r[:term]] }
+    @terms = @results_by_term.each_key.sort_by {|yr,term| yr * 4 + Offering.term_as_number(term)}
+    @years = @terms.map{|t| t[0]}.uniq
   end
 
-    # arg: transcript_html = full html page from [undergrad, undergrad]
+  # arg: transcript_html = full html page from [undergrad, undergrad]
   # returns: array of {year,term,department,number,enrollment,median,grade} objs
   def parse_transcript(escaped_transcript_html)
     html = escaped_transcript_html.gsub('&quot;','"').gsub('&apos;',"'")

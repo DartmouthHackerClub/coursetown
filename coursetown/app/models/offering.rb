@@ -16,6 +16,9 @@ class Offering < ActiveRecord::Base
   # validates all classes w/ old_id are same year & term
   # validates :time, :inclusion => {:in => [nil] + %w{9L 9S 10 11 12 2 3A 3B 10A 2A}}
 
+  @terms = Hash[%w{W S X F}.each_with_index.to_a]
+  @times = Hash[%w{8 9L 9S 10 11 12 2 3A 10A 2A 3B}.each_with_index.to_a]
+
   # ATTRIBUTES (from schema).
   # sources: timetable, orc, transcript, courseguide, medians
   # everything from transcript's uncertain
@@ -85,17 +88,34 @@ class Offering < ActiveRecord::Base
     "#{time_string} - #{short_prof_string}"
   end
 
+  def self.compare_times(x, y)
+    return x.year <=> y.year if y.year && x.year && y.year != x.year
+    return @terms[x.term] <=> @terms[y.term] if x.term && y.term && y.term != x.term
+    return @times[x.time] <=> @times[y.time] if x.time && y.time && y.time != x.time
+    return (x.section || -1) <=> (y.section || -1) # sections come after nil-section
+  end
+
+  def is_before?(offering)
+    self.class.compare_times(self, offering) < 0
+  end
+
+  def is_after?(offering)
+    self.class.compare_times(self, offering) > 0
+  end
+
   # sorts an Enumerable<Offering> by time!
   def self.sort_by_time(offerings)
-    terms = Hash[%w{W S X F}.each_with_index.to_a]
-    times = Hash[%w{8 9L 9S 10 11 12 2 3A 10A 2A 3B}.each_with_index.to_a]
     offerings.sort do |x, y|
-      return x.year <=> y.year if y.year && x.year && y.year != x.year
-      return terms[x.term] <=> terms[y.term] if x.term && y.term && y.term != x.term
-      return times[x.time] <=> times[y.time] if x.time && y.time && y.time != x.time
-      return x.section <=> y.section if x.section && y.section
-      return 0
+      compare_times(x,y)
     end
+  end
+
+  # useful for sorting
+  def self.term_as_number(term_str)
+    @terms[term_str]
+  end
+  def term_as_number
+    @terms[self.term]
   end
 
   def median_letter_grade
