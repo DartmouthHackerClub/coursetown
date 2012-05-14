@@ -5,9 +5,11 @@
 batch_submit_url = '/reviews/batch'
 
 markCompleteRows = (data) ->
-  alert JSON.stringify(data)
   for row_id in data
     $("#review_row_#{row_id}").remove()
+    $("#review_row_#{row_id}_prof_comment").remove()
+    $("#review_row_#{row_id}_workload_comment").remove()
+    $("#review_row_#{row_id}_course_comment").remove()
 
 $(document).ready ->
   $('#batch_review_submit').click ->

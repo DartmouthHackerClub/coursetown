@@ -170,62 +170,77 @@ class ReviewsController < ApplicationController
   #   end
   # end
 
-  # # returns JSON list of which reviews were successfully saved (by offering_id)
-  # def create_batch
-  #   # force_login(request.fullpath) && return if @current_user.nil?
+  # returns JSON list of which reviews were successfully saved (by offering_id)
+  def create_batch
+    force_login(request.fullpath) && return if @current_user.nil?
 
-  #   # puts "PARAMS: #{params}"
+    puts "PARAMS: #{params}"
 
-  #   # schedules = Hash.new
-  #   # # @current_user.schedules
-  #   # Schedule.find_all_by_user_id(@current_user.id, :include => :review) \
-  #   #   .each { |s| schedules[s.offering_id] = s }
+    schedules = Hash.new
+    # @current_user.schedules
+    Schedule.find_all_by_user_id(@current_user.id, :include => :review).
+      each { |s| schedules[s.offering_id] = s }
 
-  #   # successes = []
-  #   # params[:offerings].each do |offering_id, r_hash|
-  #   #   r_hash[:offering_id] = offering_id
+    successes = []
+    params[:offerings].each do |row_id, r_hash|
 
-  #   #   # convert "reason = for_prof" to "for_prof = true"
-  #   #   reasons = r_hash.delete(:reasons)
-  #   #   next if !reasons
-  #   #   r_hash[reasons] = true
+      offering_id = r_hash[:offering_id].to_i
+      next if offering_id.blank?
 
-  #   #   sched = schedules[offering_id]
-  #   #   if sched && sched.review # then update
-  #   #     # DON'T reset other reasons to false. if user writes a full review with
-  #   #     # multiple reasons then edits their review in quick-review, don't
-  #   #     # overwrite it, just add any new reasons (if they exist)
-  #   #     success = sched.review.update_attributes(r_hash)
-  #   #     if success
-  #   #       sched.review = r
-  #   #       sched.save
-  #   #     end
-  #   #   else # no review exists, so make a new one
-  #   #     r = Review.new(r_hash)
-  #   #     puts "REVIEW: #{r.attributes}"
-  #   #     success = r.save
+      ### data conversion!
 
-  #   #     # update schedules table to point to this review
-  #   #     if success && sched
-  #   #       sched.review = r
-  #   #       sched.save # PANIC if this fails!
-  #   #     elsif success # but no schedule, add a schedule
-  #   #       sched = Schedule.new :user_id => @current_user.id,
-  #   #         :offering_id => offering_id, :review_id => r.id
-  #   #       sched.course = offering.courses.first
-  #   #       sched.save # PANIC if this fails
-  #   #     end
-  #   #   end
-  #   #   if success
-  #   #     puts "SUCCESS: #{offering_id}"
-  #   #     successes << offering_id
-  #   #   else
-  #   #     puts "FAILURE: #{offering_id}"
-  #   #   end
-  #   end
+      # convert "reason = for_prof" to "for_prof = true"
+      reasons = r_hash.delete(:reasons)
+      next if reasons.blank?
+      r_hash[reasons] = true
 
-  #   render :json => successes
-  # end
+      sched = schedules[offering_id]
+      if sched && sched.review # then update
+        # DON'T reset other reasons to false. if user writes a full review with
+        # multiple reasons then edits their review in quick-review, don't
+        # overwrite it, just add any new reasons (if they exist)
+        if !sched.review.update_attributes(r_hash)
+          puts "ERROR: failed to update review via schedule"
+          puts "NEW REVIEW DATA: #{r_hash}"
+          puts "SCHEDULE: #{sched}"
+          next
+        end
+      else # no review exists, so make a new one
+
+        r = nil
+        begin
+          r = Review.new(r_hash)
+        rescue
+          next
+        end
+
+        # update schedules table to point to this review
+        if sched
+          puts "there's a sched"
+          sched.review = r
+          puts "sched = #{sched.attributes}"
+          puts "review = #{r}"
+
+          next if !sched.save
+          # if !sched.save # PANIC if this fails!
+          #   puts "Review saved, but schedule didn't!"
+          #   puts "REVIEW: #{r.attributes}"
+          #   puts "SCHEDULE: #{sched.attributes}"
+          # end
+        else # add a schedule
+          puts "NO SCHEDULE for tag #{r_hash}"
+          puts "#{schedules.each do |x, y| "#{x} -> #{y.attributes}" end}"
+          sched = Schedule.new :user_id => @current_user.id,
+            :offering_id => offering_id, :review_id => r.id
+          sched.course = sched.offering.courses.first
+          next if !sched.save
+        end
+      end
+      successes << row_id
+    end
+
+    render :json => successes
+  end
 
   def batch_start
   end
@@ -237,7 +252,7 @@ class ReviewsController < ApplicationController
     # get existing schedule
     # build hash w/ keys of the form "COSC|5|2012|W"
     scheds = Hash.new
-    @current_user.schedules.includes(:offering, :course).each do |sched|
+    @current_user.schedules.includes({:offering => :professors}, :course).each do |sched|
       o, c = sched.offering, sched.course
       scheds["#{c.department}|#{c.number}|#{o.year}|#{o.term}"] = sched
     end
@@ -248,17 +263,19 @@ class ReviewsController < ApplicationController
     ## IMPORT DATA
 
     unmatched, matchings = [], Hash.new
-    results.each do |res|
+    results.select! do |res|
 
       key = "#{res[:department]}|#{res[:number]}|#{res[:year]}|#{res[:term]}"
       # compare to existing schedule
       s = scheds[key]
       if s # they match
         # TODO update existing offering's metadata
+        (next false) if s.review.present? # don't re-review
         matchings[res] = s
       else
         unmatched << res
       end
+      true
     end
 
     # build "loose conditions"
@@ -270,11 +287,13 @@ class ReviewsController < ApplicationController
       numbers << res[:number]
     end
 
+    new_scheds = []
+
     # grab everything meeting loose sets of conditions
     # TODO how do I actually pair these values in the query?
     courses = Course.
       find_all_by_department_and_number(depts.to_a, numbers.to_a,
-        :include => :offerings)
+        :include => {:offerings => :professors})
     courses_hash = courses.group_by{|c| "#{c.department}|#{c.number}"}
     puts "#COURSE KEYS: #{courses_hash.each_key.to_a.join(' ')}"
 
@@ -285,7 +304,8 @@ class ReviewsController < ApplicationController
       courses = courses_hash[course_key]
       puts "COURSES: #{courses.map(&:id).join(',')}" if !courses.nil?
       if courses.nil? || courses.empty?
-        c = Course.new({:department => res[:department], :number => res[:number]})
+        c = Course.new({:department => res[:department], :number => res[:number],
+          :short_title => res[:title]})
         # TODO add "source => transcript" to course.
         # this is the LEAST credible source because anyone can provide false data
         puts "ERROR: couldn't save course #{c}" if !c.save
@@ -312,11 +332,12 @@ class ReviewsController < ApplicationController
 
       # if a single direct match, add to schedule & update offering
       if offerings.size == 1
-        sched = Schedule.new(:offering_id => offerings.first.id,
-          :user_id => @current_user.id, :course_id => courses.first.id)
+        sched = Schedule.new
+        sched.offering = offerings.first
+        sched.user = @current_user
+        sched.course = courses.first
 
-        # puts "FAILED TO SAVE SCHED #{sched.attributes}" if !sched.save
-        puts "SCHED: #{sched.attributes}"
+        new_scheds << sched
 
         # update offering (median, enrollment)
         o = offerings.first
@@ -340,6 +361,14 @@ class ReviewsController < ApplicationController
     @results_by_term = results.group_by { |r| [r[:year], r[:term]] }
     @terms = @results_by_term.each_key.sort_by {|yr,term| yr * 4 + Offering.term_as_number(term)}
     @years = @terms.map{|t| t[0]}.uniq
+    render
+
+    # save AFTER rendering
+    new_scheds.each do |s|
+      puts "FAILED TO SAVE SCHEDULE: #{s.attributes}" if !s.save
+    end
+
+    return
   end
 
 
@@ -380,7 +409,7 @@ class ReviewsController < ApplicationController
 
         h = Hash.new
         h[:year], h[:term] = current_year, current_term
-        h[:department], h[:number], _, _, h[:enrollment], h[:median], h[:grade] =
+        h[:department], h[:number], _, h[:title], h[:enrollment], h[:median], h[:grade] =
           children.map {|td| td.classes.include?('dddead') ? nil : td.inner_html}
         scraped_data << h
 

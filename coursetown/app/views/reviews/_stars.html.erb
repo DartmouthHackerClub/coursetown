@@ -9,7 +9,7 @@
 
 field_name = local_assigns[:field_name] # name of hidden field where value will be kept
 hints = local_assigns[:hints]
-hints = hints.blank? ? "['bad','poor','neutral','good','great']" : "#{hints}"
+hints = hints.blank? ? "['bad','poor','neutral','good','great']" : hints
 cancel = local_assigns[:cancel] ? 'true' : 'false'
 cancel_place = local_assigns[:cancel_place] || 'left'
 classes = "star-rating #{local_assigns[:html_class]}".strip
@@ -34,7 +34,7 @@ read_only = (!field_name || local_assigns[:read_only]) ? 'true' : 'false'
 
     cancelPlace: '<%= cancel_place %>',
     cancel: <%= cancel %>,
-    hints: <%= hints %>,
+    hints: <%= raw hints %>,
 
     path: "/assets/raty"
   });

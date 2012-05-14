@@ -31,13 +31,16 @@ class Schedule < ActiveRecord::Base
   end
 
   def review_matches_offering
-    if offering_id != review.offering_id
+    if self.offering_id != review.offering_id
+      puts "Schedule[#{self.id}]: OFFERING MISMATCH: Schedule and review offerings differ."
+      puts "  -- #{self.offering_id} vs. #{review.offering_id}"
       errors.add(:offering_mismatch, '. Schedule and Review offerings differ.')
     end
   end
 
   def course_matches_offering
-    if course && offering && !offering.courses.include?(course)
+    if (c = self.course) && (o = self.offering) && !o.courses.include?(c)
+      puts "COURSE/OFFERING MISMATCH: Course #{self.course.id} AND Offering #{self.offering.id}"
       errors.add(:offering_mismatch, '. Course does not match offering.')
     end
   end

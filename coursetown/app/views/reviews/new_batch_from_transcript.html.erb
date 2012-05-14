@@ -2,8 +2,13 @@
 <%= javascript_include_tag "reviewComment" %>
 
 <% full_term_names = {'W' => 'Winter', 'F' => 'Fall', 'S' => 'Spring', 'X' => 'Summer'} %>
+<% workload_hints = ['super light','a little light','average','pretty heavy','very heavy'] %>
 
+<div class="PageTitle">
 <h1>Quick Review</h1>
+</div>
+
+<div id='content'>
 
 We've fetched the courses we know you've taken. You don't have to review all of
 them right now, but if you choose to review a course then you must fill out
@@ -12,18 +17,18 @@ everything on that course's row.<br/>
 If you want to give a course a more in-depth review, with comments and/or
 multiple stated reasons for taking the class, click "write full review."<br/>
 
-You can come back at any time to edit or expand your reviews.
+You don't have to review ALL your courses right now. We'll only save the ones
+you fill out a a complete review for (rate all 3 star-ratings, add a reason)
 
 <%# TODO bucketize reviews %>
 
-<%= form_tag({:controller => :reviews, :action => 'create_batch'},
-  :id => 'batch_review_form') do %>
+<%= form_tag({:controller => :reviews, :action => 'create_batch'}, :id => 'batch_review_form') do %>
 
   <%= submit_tag 'Submit', :id => 'batch_review_submit' %>
 
   <table id="batch_reviews">
     <% is_dark = true
-      fuzzy_counter = 0 %>
+      row_num = 0 %>
 
     <% @years.each do |year| %>
 
@@ -32,55 +37,71 @@ You can come back at any time to edit or expand your reviews.
       <% %w(W S X F).each do |term| %>
 
         <% next if (results = @results_by_term[[year,term]]).nil? %>
-        <tr>
-          <th colspan=3><%= "#{full_term_names[term]} #{year}"%></th>
+        <tr class='term-divider'>
+          <th colspan=3 class='term-name'><%= "#{full_term_names[term]} #{year}"%></th>
           <th colspan=2>Course</th>
           <th colspan=2>Prof.</th>
           <th colspan=2>Workload</th>
-          <th colspan=2>Why?</th>
+          <th>Why?</th>
         </tr>
 
         <% results.each do |result|
-            data = @matchings[result]
-            is_dark = !is_dark %>
+            data = @matchings[result] %>
 
+          <% if !(data.instance_of? Schedule) && data[1].nil? %>
+          <tr class="oops">
+            <td class='title'><%= data[0].compact_title %></td>
+            <td class='error' colspan=9>Oops. According to our records, this course didn't exist. We're probably wrong, though. Workin' on it!</td>
+          </tr>
           <%
+            next
+          end
+          row_num += 1
+          prefix = "offerings[#{row_num}]"
+
+          # offering_id is either in the select field--if the user has to pick profs
+          # or in a hidden field (if it's clear which offering they were in)
+
           if data.instance_of? Schedule
-            prefix = "offerings[schedule][#{data.offering.id}]"
             title = data.course.compact_title
             profs = data.offering.prof_string
-            action = link_to 'write full review', new_reviews_path(:id => data.offering.id)
-          else
-            prefix = "offerings[fuzzy][#{fuzzy_counter += 1}]"
+          else (offerings = data[1])
             title = data[0].compact_title
-            if (offerings = data[1])
-              options = options_for_select([['Select Prof...',0]] +
-                offerings.map{|o| [o.professors.size > 1 ? o.short_prof_string : o.prof_string, o.id]})
-              profs = select_tag "#{prefix}[offering_id", options
-            else
-              profs = 'No profs found'
-            end
-            action = 'WUH?'
+            options = options_for_select([['Select Prof...',0]] +
+              offerings.map{|o| [o.professors.size > 1 ? o.short_prof_string : o.prof_string, o.id]})
+            profs = select_tag "#{prefix}[offering_id]", options
           end
-          row_class = is_dark ? 'dark' : 'light'
           %>
 
-          <tr class=<%= row_class %>>
+          <% button_prefix = "#{prefix}-comment-button".gsub(/\[|\]/,'').gsub('_','-') %>
+
+          <tr class="data-row" id="review_row_<%= row_num %>">
+            <%= (hidden_field_tag "#{prefix}[offering_id]", data.offering_id) if data.instance_of? Schedule %>
             <td class='title'><%= title %></td>
             <td class='profs'><%= profs %></td>
-            <td class='grade'><%= result[:grade] %></td>
+            <td class='grade'>
+              <%= result[:grade] %>
+              <%= hidden_field_tag "#{prefix}[grade]", Review.number_grade(result[:grade]) %>
+            </td>
             <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
-            <td><button class="showCommentCourse" type="button">Comment</button></td>
+            <td class='comment-button'><button class="showCommentCourse" type="button" id="<%= "#{button_prefix}-course" %>"></button>
             <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
-            <td><button class="showCommentProf" type="button">Comment</button></td>
-            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]" %></td>
-            <td><button class="showCommentRating" type="button">Comment</button></td>
+            <td class='comment-button'><button class="showCommentProf" type="button" id="<%= "#{button_prefix}-prof" %>"></button></td>
+            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]", :hints => workload_hints %></td>
+            <td class='comment-button'><button class="showCommentWork" type="button" id="<%= "#{button_prefix}-work" %>"></button>
             <td><%= reasons_tag "#{prefix}[reasons]" %></td>
-            <td class='full_review'><%= action %></td>
           </tr>
+
+          <script type="text/javascript">
+            jQuery('#<%= "#{button_prefix}-prof" -%>').button({icons:{primary:'ui-icon-pencil'},text:false})
+            jQuery('#<%= "#{button_prefix}-work" -%>').button({icons:{primary:'ui-icon-pencil'},text:false})
+            jQuery('#<%= "#{button_prefix}-course" -%>').button({icons:{primary:'ui-icon-pencil'},text:false})
+          </script>
+
         <% end %>
       <% end %>
     <% end %>
   </table>
 <% end %>
 
+</div>

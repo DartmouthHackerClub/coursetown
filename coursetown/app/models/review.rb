@@ -40,6 +40,7 @@ class Review < ActiveRecord::Base
     @grade_to_letter[num_grade]
   end
   def self.number_grade (letter_grade)
+    return nil if letter_grade.blank?
     val = letter_grade.chomp('*') # ignore citation stars
     @letter_to_grade[val]
   end
@@ -54,7 +55,8 @@ class Review < ActiveRecord::Base
   # TODO issue: when creating a review, isn't hooked up to schedule UNTIL saved.
   # so this only works if the schedule already exists
   def matches_schedule_offerings
-    if schedule && offering_id != schedule.offering_id
+    if self.schedule && self.offering_id != self.schedule.offering_id
+      puts "OFFERING MISMATCH: #{self.offering_id} vs. #{self.schedule.offering_id}"
       errors.add(:offering_mismatch, '. Review offering must match schedule offering')
     end
   end
@@ -63,6 +65,7 @@ class Review < ActiveRecord::Base
   def has_reasons
     if !(for_major || for_prof || for_interest ||
         for_distrib || for_easy_a || for_prereq)
+      puts "HAS NO REASONS: incomplete review"
       errors.add(:incomplete, '. Review must list at least one motivation')
     end
   end
@@ -91,8 +94,9 @@ class Review < ActiveRecord::Base
         end
       end
     end
+
     # turn sum into avg
-    sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key].to_f : nil }
+    sum.each_key { |key| (count[key] != 0) ? (sum[key] /= count[key].to_f) : nil }
     return sum, count
   end
 

@@ -178,12 +178,25 @@ h2 {
 /* ------------ view: new_batch --------------- */
 
 table#batch_reviews {
-  @include pop_out;
+  /*@include pop_out;*/
   width: 100%;
-  border-spacing: 0;
+  /*border-spacing: 0;*/
+  border-spacing: 0px inherit;
+  border-collapse: separate;
 
-  .dark {
+  /*tr.dark {
     background-color: #ddd;
+  }*/
+
+  tr.data-row:hover {
+    background-color: #f3f3f3;
+  }
+  tr.oops:hover {
+    background-color: #d0d0d0;
+    color: #777;
+  }
+  tr.comment-row:hover {
+    background-color: #e7e7e7;
   }
 
   th {
@@ -194,6 +207,12 @@ table#batch_reviews {
 
   tr {
     margin: 7px 0px;
+    padding-top: 5px;
+
+    button {
+      width: 1.2em;
+      height: 1.2em;
+    }
 
     .full_review {
       a {
@@ -208,14 +227,71 @@ table#batch_reviews {
     td {
       margin: 0;
       border: none;
-      padding: 0;
+      padding: 5px 3px;
+      border-bottom: 1px solid #ccc;
     }
-
+    td.comment-button {
+      padding-left: 0px;
+    }
     .title {
-      width: 100px;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    .grade {
+      white-space: nowrap;
+      padding: 0px 10px;
+      font-weight: bold;
     }
     .rating {
-      width: 80px;
+      width: 90px;
+    }
+    th.term-name {
+      font-weight: bold;
+    }
+  }
+
+  tr.oops {
+    background-color: #ddd;
+    color: #888;
+
+    td {
+      border-bottom: 1px solid #bbb;
+    }
+
+    td.error {
+      font-style: italic;
+    }
+  }
+
+  tr.comment-row {
+    background-color: #eee;
+    padding: 5px;
+    border-radius: 10px;
+    td {
+      padding: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+    textarea {
+      width: 830px;
+      float: right;
+      resize: vertical;
+      font-size: 0.85em;
+    }
+    span {
+      padding-top: 7px;
+      text-align: right;
+      vertical-align: middle;
+    }
+  }
+
+  tr.term-divider {
+    height: 60px;
+    vertical-align: bottom;
+    td, th {
+      color: $label_color;
+      border-bottom: 1px solid gray;
+      margin: 10px;
     }
   }
 }

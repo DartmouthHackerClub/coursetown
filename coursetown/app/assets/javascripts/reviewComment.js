@@ -1,54 +1,53 @@
-$( function(){ 
+// TODO: the better way to do this would be to just number rows 1..n
+// and include a hidden 'schedule_id' field on the ones w/ schedules
+// then there's no need to hide the id as a class (hacky!) to generate
+// the name field
+
+var course_placeholder = "How interesting, well-paced, and useful was the course? Would you recommend it?";
+var workload_placeholder = "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?";
+var prof_placeholder = "Were the professors helpful? Knowledgeable? Fair? How were the lectures/discussions?";
+
+$( function(){
     $('.showCommentWork').click( function(){
-            commentButton(this, "workload", false );
+            commentButton(this, 'workload', "Workload", workload_placeholder );
     });
     $('.showCommentCourse').click( function(){
-            commentButton(this, "course", false );
+            commentButton(this, 'course', "Course", course_placeholder );
     });
     $('.showCommentProf').click( function(){
-            commentButton(this, "prof", false );
-    });
-    $('.showCommentWorkFuzzy').click( function(){
-            commentButton(this, "workload", true );
-    });
-    $('.showCommentCourseFuzzy').click( function(){
-            commentButton(this, "course", true );
-    });
-    $('.showCommentProfFuzzy').click( function(){
-            commentButton(this, "prof", true );
+            commentButton(this, 'prof', "Prof.", prof_placeholder );
     });
 
 
 
-    var commentButton = function( that, type, fuzzy){
+    var commentButton = function( that, type, title, placeholder){
         if(!that.clicked){
-            showComments(that, type, fuzzy );
+            showComments(that, type, title, placeholder );
             that.clicked = true;
         }
         else if(that.clicked){
-           $("#" + getId(that, type, fuzzy) ).parent().toggle(); 
-           $('#' + getId(that, type, fuzzy)).focus();  
+           $("#" + getId(that, type)).toggle();
+           $('#' + getId(that, type) + '-span').focus();
         }
     }
 
-    var showComments = function(that, type, fuzzy){
+    var showComments = function(that, type, title, placeholder){
        //Super hacky, get id from class and use it to create a proper commentbox;
-        var id = getId( that, type, fuzzy );
-        var prefix = "schedule";
-        if( fuzzy ){
-            prefix = "fuzzy";
-        }
-        var area = '<tr><td colspan=8>' + type+':<textarea class="" id="' +id + '" name="offerings[' + prefix +'][6]['+ type+ '_comment]"></textarea></td></tr>'
+        var id = getId( that, type );
+        var row_id = getIndex(that);
+        var area = '<tr class="comment-row" id="' + id + '"><td colspan=10><span>' + title + '</span><textarea class="" ' +
+            'id="' + id + '-span" name="offerings[' + row_id +']['+ type + '_comment]" ' +
+            'placeholder="' + placeholder + '"></textarea></td></tr>';
         $(that).parent().parent().after(area);
-       $('#' + id).focus();  
+       $('#' + id + '-span').focus();
         };
-    
-    var getId = function( that, type, fuzzy ){
-        var p = "schedule";
-        if( fuzzy ){
-            p = "fuzzy";
-        }
-        var index = $(that).parent().parent().attr('class').split(/\s+/)[1];
-        return 'offerings_' + p + '_' + index + '_' + type + '_comment';
+
+    var getIndex = function( that ){
+        // parent row has id like "review_row_6"
+        return $(that).parent().parent().attr('id').split('review_row_')[1];
+    }
+
+    var getId = function( that, type ){
+        return 'review_row_' + getIndex(that) + '_' + type + '_comment';
     }
 });

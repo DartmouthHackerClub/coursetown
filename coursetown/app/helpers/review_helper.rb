@@ -31,14 +31,15 @@ module ReviewHelper
 
   def reasons_tag(name, selected_field = :for_interest)
     reasons = [
-      ['Interest',:for_interest],
+      ['',''],
       ['Major/Minor',:for_major],
-      ['Distrib/WC', :for_distrib],
-      ['Prof',:for_prof],
+      ['Distrib/WC/Other Req.', :for_distrib],
       ['Easy A',:for_easy_a],
-      ['Prereqs',:for_prereqs]
+      ['Prof',:for_prof],
+      ['Prereqs',:for_prereq],
+      ['Interest',:for_interest],
     ]
-    select_tag name, options_for_select(reasons, selected_field)
+    select_tag name, options_for_select(reasons, ''), :class => 'select-reasons'
   end
 
 end
