@@ -1,0 +1,42 @@
+<%
+# summary box
+# a bar w/ star-ratings in it, to be displayed at the top of an aggregate
+# review page (course, offering, prof)
+
+avgs = local_assigns[:avgs]
+old_reviews = local_assigns[:old_reviews] || []
+reviews = local_assigns[:reviews]
+if reviews.blank?
+  puts "ERROR: missing arguments reviews from _review_summary"
+end
+review_count = old_reviews.size + reviews.size
+%>
+
+<% if %w(prof_rating course_rating workload_rating grade).all?{|s| avgs[s.to_sym]} %>
+
+<%= "Found #{review_count} reviews (#{old_reviews.size} of them from the old CourseGuide)" %>
+<table id="review-summary-box">
+  <tr class="labels">
+    <td>Median</td>
+    <td>Course</td>
+    <td>Prof</td>
+    <td>Workload</td>
+  </tr>
+  <tr>
+    <td><%= letter_grade avgs[:median] %></td>
+    <td><%= star_count 'avg_prof_rating', avgs[:prof_rating],
+      :html_class => 'center' %></td>
+    <td><%= star_count 'avg_course_rating', avgs[:course_rating],
+      :html_class => 'center' %></td>
+    <td><%= star_count 'avg_workload_rating', avgs[:workload_rating],
+      :html_class => 'center' %></td>
+  </tr>
+</table>
+
+<% else %>
+
+<div id="summary_box_fail">
+  There aren't enough reviews to display the results.
+</div>
+
+<% end %>

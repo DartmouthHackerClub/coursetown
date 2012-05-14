@@ -124,4 +124,38 @@ class Offering < ActiveRecord::Base
   def median_letter_grade=(val)
     self.median_grade = Review::number_grade(val)
   end
+
+  def self.average_reviews(offerings)
+    reviews = offerings.map(&:reviews).flatten
+    old_reviews = offerings.map(&:old_reviews).flatten
+
+    avgs, count = Review.average_reviews(reviews)
+    old_avgs, old_count = OldReview.average_reviews_for_new_schema(old_reviews)
+
+    # merge
+    [:course_rating, :workload_rating].each do |key|
+      a = avgs[key] || 0
+      c = count[key] || 0
+      a2 = old_avgs[key] || 0
+      c2 = old_count[key] || 0
+      count[key] = c + c2
+      avgs[key] = c + c2 != 0 ? (a * c + a2 * c2) / (c + c2) : nil
+    end
+
+    # calculate the median separately (from offerings, not reviews)
+    msum, mcount = 0, 0
+    offerings.each do |o|
+      if o.median_grade.present?
+        msum += o.median_grade
+        mcount += 1
+      end
+    end
+    avgs[:median] = (msum.to_f / mcount.to_f).to_i if mcount > 0
+
+    avgs[:num_reviews] = reviews.size + old_reviews.size
+    avgs[:num_offerings] = offerings.size
+
+    # TODO would it make more sense to stuff reviews & old_reviews in the hash too?
+    return avgs, reviews, old_reviews
+  end
 end

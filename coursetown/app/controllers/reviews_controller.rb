@@ -1,29 +1,45 @@
 class ReviewsController < ApplicationController
   protect_from_forgery :except => 'new_batch_from_transcript'
 
-  def show
-    if params[:id].to_i.nil?
-      not_found
-    end
-    # raises RecordNotFound exception if not found
-    @review = Review.find(params[:id],
-      :include => {:offering => [:professors, :courses]})
-  end
+  # def show
+  #   if params[:id].to_i.nil?
+  #     not_found
+  #   end
+  #   # raises RecordNotFound exception if not found
+  #   @review = Review.find(params[:id],
+  #     :include => {:offering => [:professors, :courses]})
+  # end
 
 
   def course
-    @course = Course.find( params[:id], :include => :reviews )
-    @reviews = @course.reviews
-    @avgs, counts = avg_reviews(@reviews)
-    # TODO avg by prof too (& display who teaches it best)
+    @course = Course.find(params[:id],
+      :include => {:offerings => [:professors, :reviews, :old_reviews]})
+    @avgs, @reviews, @old_reviews = Offering.average_reviews(@course.offerings)
+
+    offerings_by_profs = @course.offerings.group_by(&:prof_string)
+
+    @avgs_by_profs = {}
+    offerings_by_profs.each_key do |key|
+      @avgs_by_profs[key], _ = Offering.average_reviews(offerings_by_profs[key])
+    end
+
+    @old_avgs, @old_counts = OldReview.average_reviews(@old_reviews)
   end
 
-
+  # TODO set up a view
   def prof
-    @prof = Professor.find( params[:id], :include => :reviews )
-    @reviews = @prof.reviews
-    @avgs, counts = avg_reviews(@reviews)
-    # TODO avg by course too (& compare this prof in each course to others)
+    @prof = Professor.find( params[:id],
+      :include => {:offerings => [:courses, :reviews, :old_reviews]} )
+    @avgs, @reviews, @old_reviews = Offering.average_reviews(@prof.offerings)
+
+    grouped_offerings = @prof.offerings.group_by(&:course_string)
+
+    @grouped_avgs = {}
+    grouped_offerings.each_key do |key|
+      @grouped_avgs[key], _ = Offering.average_reviews(grouped_offerings[key])
+    end
+
+    @old_avgs, @old_counts = OldReview.average_reviews(@old_reviews)
   end
 
 
@@ -138,101 +154,78 @@ class ReviewsController < ApplicationController
   end
 
 
-  # TODO route & view
-  # pulls grades from transcript, then prepopulates field with them
-  def new_batch
-    force_login(request.fullpath) && return if @current_user.nil?
-    # @schedules = @current_user.schedules(:include => [:review, :course, {:offering => :courses}])
-    # TODO this is a poor hack
-    @schedules = Schedule.find_all_by_user_id(@current_user.id,
-      :include => [:review, :course, {:offering => :courses}])
-    @schedules_by_term = @schedules.group_by do |sched|
-      [sched.offering.year, sched.offering.term]
-    end
-    @sorted_terms = schedules_by_term.each_key.sort_by do |sched|
-      sched.offering.year * 4 + sched.offering.term_as_number
-    end
-  end
+  # # TODO route & view
+  # # pulls grades from transcript, then prepopulates field with them
+  # def new_batch
+  #   force_login(request.fullpath) && return if @current_user.nil?
+  #   # @schedules = @current_user.schedules(:include => [:review, :course, {:offering => :courses}])
+  #   # TODO this is a poor hack
+  #   @schedules = Schedule.find_all_by_user_id(@current_user.id,
+  #     :include => [:review, :course, {:offering => :courses}])
+  #   @schedules_by_term = @schedules.group_by do |sched|
+  #     [sched.offering.year, sched.offering.term]
+  #   end
+  #   @sorted_terms = schedules_by_term.each_key.sort_by do |sched|
+  #     sched.offering.year * 4 + sched.offering.term_as_number
+  #   end
+  # end
 
-  # returns JSON list of which reviews were successfully saved (by offering_id)
-  def create_batch
-    force_login(request.fullpath) && return if @current_user.nil?
+  # # returns JSON list of which reviews were successfully saved (by offering_id)
+  # def create_batch
+  #   # force_login(request.fullpath) && return if @current_user.nil?
 
-    puts "PARAMS: #{params}"
+  #   # puts "PARAMS: #{params}"
 
-    schedules = Hash.new
-    # @current_user.schedules
-    Schedule.find_all_by_user_id(@current_user.id, :include => :review) \
-      .each { |s| schedules[s.offering_id] = s }
+  #   # schedules = Hash.new
+  #   # # @current_user.schedules
+  #   # Schedule.find_all_by_user_id(@current_user.id, :include => :review) \
+  #   #   .each { |s| schedules[s.offering_id] = s }
 
-    successes = []
-    params[:offerings].each do |offering_id, r_hash|
-      r_hash[:offering_id] = offering_id
+  #   # successes = []
+  #   # params[:offerings].each do |offering_id, r_hash|
+  #   #   r_hash[:offering_id] = offering_id
 
-      # convert "reason = for_prof" to "for_prof = true"
-      reasons = r_hash.delete(:reasons)
-      next if !reasons
-      r_hash[reasons] = true
+  #   #   # convert "reason = for_prof" to "for_prof = true"
+  #   #   reasons = r_hash.delete(:reasons)
+  #   #   next if !reasons
+  #   #   r_hash[reasons] = true
 
-      sched = schedules[offering_id]
-      if sched && sched.review # then update
-        # DON'T reset other reasons to false. if user writes a full review with
-        # multiple reasons then edits their review in quick-review, don't
-        # overwrite it, just add any new reasons (if they exist)
-        success = sched.review.update_attributes(r_hash)
-        if success
-          sched.review = r
-          sched.save
-        end
-      else # no review exists, so make a new one
-        r = Review.new(r_hash)
-        puts "REVIEW: #{r.attributes}"
-        success = r.save
+  #   #   sched = schedules[offering_id]
+  #   #   if sched && sched.review # then update
+  #   #     # DON'T reset other reasons to false. if user writes a full review with
+  #   #     # multiple reasons then edits their review in quick-review, don't
+  #   #     # overwrite it, just add any new reasons (if they exist)
+  #   #     success = sched.review.update_attributes(r_hash)
+  #   #     if success
+  #   #       sched.review = r
+  #   #       sched.save
+  #   #     end
+  #   #   else # no review exists, so make a new one
+  #   #     r = Review.new(r_hash)
+  #   #     puts "REVIEW: #{r.attributes}"
+  #   #     success = r.save
 
-        # update schedules table to point to this review
-        if success && sched
-          sched.review = r
-          sched.save # PANIC if this fails!
-        elsif success # but no schedule, add a schedule
-          sched = Schedule.new :user_id => @current_user.id,
-            :offering_id => offering_id, :review_id => r.id
-          sched.course = offering.courses.first
-          sched.save # PANIC if this fails
-        end
-      end
-      if success
-        puts "SUCCESS: #{offering_id}"
-        successes << offering_id
-      else
-        puts "FAILURE: #{offering_id}"
-      end
-    end
+  #   #     # update schedules table to point to this review
+  #   #     if success && sched
+  #   #       sched.review = r
+  #   #       sched.save # PANIC if this fails!
+  #   #     elsif success # but no schedule, add a schedule
+  #   #       sched = Schedule.new :user_id => @current_user.id,
+  #   #         :offering_id => offering_id, :review_id => r.id
+  #   #       sched.course = offering.courses.first
+  #   #       sched.save # PANIC if this fails
+  #   #     end
+  #   #   end
+  #   #   if success
+  #   #     puts "SUCCESS: #{offering_id}"
+  #   #     successes << offering_id
+  #   #   else
+  #   #     puts "FAILURE: #{offering_id}"
+  #   #   end
+  #   end
 
-    render :json => successes
-  end
-
-  def update
-    # TODO
-  end
-
-
-  def destroy
-    review = Review.find_by_id(params[:id])
-
-    if review.user != @current_user
-      render :status => 401 # unauthorized
-      return
-    end
-    review.destroy
-  end
-
-  # helper functions
-
-  # note: dimensions have to be _attributes_ of the review object
-  #   so :user doesn't work, but :user_id does.
-  def avg_reviews(reviews, dimensions = [:course_rating, :prof_rating, :workload_rating, :grade])
-    Review.average_reviews(reviews)
-  end
+  #   render :json => successes
+  # end
 
   def batch_start
   end
@@ -341,13 +334,6 @@ class ReviewsController < ApplicationController
       end
     end
 
-    # if everything matches up to a schedule, render the new_batch page
-    # (same thing but w/o prof. drop-downs)
-    if matchings.all?{|res, s| s.instance_of? Schedule}
-      @schedules = matchings.map{|res, s| s}
-      render 'new_batch'
-    end
-
     @results = results
     @matchings = matchings
 
@@ -355,6 +341,11 @@ class ReviewsController < ApplicationController
     @terms = @results_by_term.each_key.sort_by {|yr,term| yr * 4 + Offering.term_as_number(term)}
     @years = @terms.map{|t| t[0]}.uniq
   end
+
+
+
+
+  ### HELPER FUNCTIONS
 
   # arg: transcript_html = full html page from [undergrad, undergrad]
   # returns: array of {year,term,department,number,enrollment,median,grade} objs

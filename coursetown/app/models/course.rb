@@ -8,6 +8,7 @@ class Course < ActiveRecord::Base
   has_many :wishlists
   has_many :schedules # schedules are basically (course, offering) pairs
   has_many :reviews, :through => :offerings
+  has_many :old_reviews, :through => :offerings
 
   def compact_title
   	"#{department} #{number}"

@@ -76,8 +76,11 @@ class Review < ActiveRecord::Base
   # TODO this is a HORRIBLE place to put this function, but I don't know where
   # it _should_ go, so in the interest of time I'm putting it here
   def self.average_records(records, dimensions)
-  # TODO this is really not the right place to put this, but
-  # it's better than in a controller?
+    # TODO this is really not the right place to put this, but
+    # it's better than in a controller?
+
+    return {}, {} if records.blank?
+
     sum, count = {}, {}
     dimensions.each { |dim| sum[dim] = count[dim] = 0 }
     records.each do |record|

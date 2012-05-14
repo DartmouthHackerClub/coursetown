@@ -11,31 +11,7 @@
 <h2><%= "#{@offering.professors.length > 1 ? 'Professors' : 'Professor'}: " <<
 	"#{@offering.professors.map(&:name).join(', ')}"%></h2>
 
-<% if @reviews && !@reviews.empty? %>
-<!-- review summary -->
-<%= "The following is based upon #{@reviews.count} reviews." %>
-<table id="summary_box">
-	<tr class="labels">
-		<td>Median</td>
-		<td>Course</td>
-		<td>Prof</td>
-		<td>Workload</td>
-	</tr>
-	<tr>
-		<td><%= letter_grade @avgs[:grade] %></td>
-		<td><%= star_count 'avg_prof_rating', @avgs[:prof_rating],
-			:html_class => 'center' %></td>
-		<td><%= star_count 'avg_course_rating', @avgs[:course_rating],
-			:html_class => 'center' %></td>
-		<td><%= star_count 'avg_workload_rating', @avgs[:workload_rating],
-			:html_class => 'center' %></td>
-	</tr>
-</table>
-<% else %>
-<div id="summary_box_fail">
-	There aren't enough reviews to display the results.
-</div>
-<% end %>
+<%= render :partial => 'review_summary', :locals => {:avgs => @avgs, :reviews => @reviews, :old_reviews => @old_reviews } %>
 
 <table id="course_info">
 	<tr>
