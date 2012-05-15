@@ -42,29 +42,70 @@ class Offering < ActiveRecord::Base
 
   # TODO: validations!
 
+  # FIXME: HUGE SQL INJECTION VULNERABILITY. HUGE.
+
   # TODO: median, nro, description
   def self.search_by_query(queries)
-    return [] if queries.blank?
+    return [] if queries.blank? || queries.each_value.all?{|v| v.blank?}
 
-    @offerings = Offering.includes(:courses, :professors, :distribs)
+    # for most keys (professor, course, description), it's better do a left
+    # join w/ THAT table on the left, not offerings.
 
-    where_clause = queries.slice(:period, :term, :year, :wc, :time)
-    where_clause[:courses] = queries.slice(:department, :number)
-    if queries and queries.has_key?(:distribs)
-      where_clause[:distribs] = {:distrib_abbr => queries[:distribs]}
+    ### build the query
+
+    seeded_from_offerings = true
+    q = {}
+    if queries[:title].present?
+      q[:title] = "`courses`.`long_title` like '%#{queries[:title]}%'"
     end
-    if queries and queries.has_key?(:title)
-      @offerings = @offerings.where("`courses`.`long_title` like '%#{queries[:title]}%'")
+    if queries[:description].present?
+      q[:desc] = queries[:description].split(",").
+          map { |name| "`courses`.`desc` like '%#{name.strip}%'" }.join(" OR ")
     end
-    if queries and queries.has_key?(:description)
-      # asfd, nsadf => "name like '%asfd%' OR name like '%nsadf%'"
-      @offerings = @offerings.where(queries[:description].split(",").map { |name| "`courses`.`desc` like '%#{name.strip}%'" }.join(" OR "))
+    if queries[:professors].present?
+      q[:prof] = queries[:professors].split(",").map { |name| "`professors`.`name` like '%#{name.strip}%'" }.join(" OR ")
     end
-    if queries and queries.has_key?(:professors)
-      # asfd, nsadf => "name like '%asfd%' OR name like '%nsadf%'"
-      @offerings = @offerings.where(queries[:professors].split(",").map { |name| "`professors`.`name` like '%#{name.strip}%'" }.join(" OR "))
+    q[:course] = Hash[queries.slice(:department, :number).map{|k,v| ["`courses`.`#{k.to_s}`",v]}]
+    q[:offering] = Hash[queries.slice(:period, :term, :year, :wc, :time).map{|k,v| ["offerings.#{k.to_s}",v]}]
+    q[:distribs] = {'distribs.distrib_abbr' => queries[:distribs]} if queries[:distribs].present?
+    # TODO: right now it returns null-grade courses too when user searches for median grade. good choice? bad choice?
+    if (med = queries[:median]).present? && med.to_i.to_s == med.to_s
+      q[:median] = "offerings.median_grade >= #{(queries[:median].to_f * 6).round} OR offerings.median_grade IS NULL"
     end
-    return @offerings.where(where_clause)
+
+    ### get the query STARTED
+
+    # if there's a prof name, that's a great place to star! any one prof only has a few offerings
+    if (my_query = q.delete(:prof)).present?
+      seeded_from_offerings = false
+      seed = Professor.where(my_query).includes(:offerings => [:professors, :courses, :distribs])
+
+    # if there's a description, a title, or BOTH department AND number, start w/ courses
+    elsif q[:description].present? || q[:title].present? || (q[:course].present? && q[:course].size == 2)
+      seeded_from_offerings = false
+      seed = Course
+      [:description, :title, :course].each do |k|
+        if (d = q.delete(k)).present?
+          seed = seed.where(d)
+        end
+      end
+      seed = seed.includes(:offerings => [:professors, :courses, :distribs])
+    else
+      seed = Offering
+      if (d = q.delete(:offering))
+        seed = seed.where(d)
+      end
+      seed = seed.includes(:professors, :courses, :distribs)
+    end
+
+    # add the remaining queries to this big ol' query
+    q.each_value{ |v| seed = seed.where(v) if v.present? }
+
+    if seeded_from_offerings
+      return seed
+    else
+      return seed.map(&:offerings).flatten.uniq
+    end
   end
 
   def prof_string
