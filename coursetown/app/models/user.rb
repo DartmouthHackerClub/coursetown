@@ -12,7 +12,7 @@ class User < ActiveRecord::Base
 
   def self.create_with_omniauth(auth)
     create! do |user|
-      user.netid = auth["extra"]["netid"]
+      user.hashed_netid = self.hash_netid(auth["extra"]["netid"])
     end
   end
 
