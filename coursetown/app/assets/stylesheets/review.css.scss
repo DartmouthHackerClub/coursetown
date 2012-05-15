@@ -35,6 +35,16 @@ $glow: 0 0 10px 0;
   }
 }
 
+#review-summary-box {
+  width: 100%;
+  margin: 20px 0 7px 0;
+
+  td {
+    width: 25%;
+    text-align: center;
+  }
+}
+
 #course_detail_header, #prof_detail_header, #workload_detail_header {
   color: $label_color;
   font-weight: bold;
@@ -112,7 +122,7 @@ h2 {
     border-radius: 15px / 10px;
     border-bottom-right-radius: 0px;
     margin: 5px;
-    width: 305px; /* TODO */
+    width: 440px; /* TODO */
     float: left;
 
     .comment {

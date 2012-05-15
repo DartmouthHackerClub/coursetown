@@ -1,4 +1,9 @@
+
+<div class="PageTitle">
 <h1><%= "#{@course.department} #{@course.number}: #{@course.long_title || @course.short_title || '(No title found)'}"%></h1>
+</div>
+
+<div id='content'>
 
 <%= render :partial => 'review_summary',
   :locals => {:avgs => @avgs, :reviews => @reviews, :old_reviews => @old_reviews} %>

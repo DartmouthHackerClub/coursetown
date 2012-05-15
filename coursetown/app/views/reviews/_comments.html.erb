@@ -58,7 +58,7 @@ No comments.
             <%= letter_grade review.grade %>
           </div>
           <div class="rating">
-            <%= star_count review_attributes[rating_field] %>
+            <%= star_count "comment-#{rating_field}-#{review.id}", review_attributes[rating_field] %>
           </div>
         </div>
       </div>

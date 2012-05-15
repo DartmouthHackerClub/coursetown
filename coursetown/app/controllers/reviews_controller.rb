@@ -184,8 +184,10 @@ class ReviewsController < ApplicationController
     successes = []
     params[:offerings].each do |row_id, r_hash|
 
+      next if [:prof_rating, :course_rating, :workload_rating, :reasons, :grade,
+        :offering_id].any? {|k| r_hash[k].blank?}
+
       offering_id = r_hash[:offering_id].to_i
-      next if offering_id.blank?
 
       ### data conversion!
 

@@ -21,7 +21,7 @@ labels = [ # format: [key, label, low-star blurb, high-star blurb]
 %(cwork | Was more work than a typical course | Light workload | Heavy workload),
 %(cinterest | Course was interesting | Uninteresting | Very interesting),
 %(ctas | TAs were helpful | Unhelpful TA's | Really helpful TA's'),
-%(cmatchorc | Matched ORC | Didn't match its ORC description | Matched ORC description perfectly),
+%(cmatchorc | Matched ORC | Didn't match its ORC description | ),
 
 %(hlearn | Homework helped learn the material | Unhelpful homework | Very helpful homework),
 %(hhard | Homework was difficult | Really easy homework | Very difficult homework),
@@ -41,7 +41,7 @@ labels = [ # format: [key, label, low-star blurb, high-star blurb]
 
 comments = labels.map{ |key, _, lo_star, hi_star|
   if (count = avg_counts[key]) && (avg = avgs[key]) && count > 0 && (avg <= 2 || avg >= 4)
-    avg < 2 ? lo_star : hi_star
+    avg <= 2 ? lo_star : hi_star
   end
 }.select{|x| x.present?}
 %>
