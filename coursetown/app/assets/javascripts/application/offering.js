@@ -208,10 +208,10 @@ function add_search_row_if_we_need_one() {
     insert_search_row_dom_element();
   }
   $(".check_all").click(function () {
-    $(this).parent().children("input").attr('checked', 'checked');
+    $(this).parent().children("input").attr('checked', true);
   });
   $(".check_none").click(function () {
-    $(this).parent().children("input").attr('checked', '');
+    $(this).parent().children("input").attr('checked', false);
   });
   $(".close_row").click(function () {
     left_side = $(this).parent();
@@ -485,7 +485,7 @@ var search_options = {
     },
     'nro': {
         'long_name': 'Can NRO?',
-        'input_field': '<input type="checkbox" name="nro" value="true" checked="checked"/>Heck Yeah'
+        'input_field': '<input type="checkbox" name="nro" value="true" checked="true"/>Heck Yeah'
     }
 /*
 'enrollment_cap':  {
