@@ -88,6 +88,22 @@ class Offering < ActiveRecord::Base
     "#{time_string} - #{short_prof_string}"
   end
 
+  # NOTE: don't call .title unless the course is INCLUDED
+  def title
+    t = nil
+    # default to long title
+    long_titles = self.courses.map(&:long_title)
+    return t if (t = long_titles.find(&:present?)).present?
+
+    # then try specific title. then short title
+    return self.specific_title if self.specific_title.present?
+
+    short_titles = self.courses.map(&:short_title)
+    return t if (t = short_titles.find(&:present?)).present?
+
+    return '(Title Unavailable)'
+  end
+
   def self.compare_times(x, y)
     return x.year <=> y.year if y.year && x.year && y.year != x.year
     return @terms[x.term] <=> @terms[y.term] if x.term && y.term && y.term != x.term

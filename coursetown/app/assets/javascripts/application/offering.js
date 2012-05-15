@@ -7,25 +7,18 @@ var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search
 var search_query_url = '/search_json';
 var d1 = null; //for debugging
 
-function show_error(e) {
-    //console.log(e);
-    the_results_div = get_or_create_results_div().find('#the_results');
-    the_results_div.empty();
-    result_div = $('<div class="error_msg"><h3>OH NOES! AN ERROR!</h3><h4>Shield Your Eyes:</h4><div>');
-    result_div.append(JSON.stringify(e));
-    the_results_div.append(result_div);
-    return true;
-}
-
-var last_result = null;     // used for re-sorting 
+var last_result = null;     // used for re-sorting
 var sortby = "course";
-function sort_results(data) {
+
+function sort_divs(data) {
     var f;
     switch(sortby) {
         case "course":
             f = function(a,b) {
-                var keya = a['department'];
-                var keyb = b['department'];
+                a = $(a);
+                b = $(b);
+                var keya = a.attr('data-department');
+                var keyb = b.attr('data-department');
                 if (keya < keyb) {
                     return -1;
                 }
@@ -33,7 +26,7 @@ function sort_results(data) {
                     return 1;
                 }
                 else {
-                    return a['Number'] - b['Number'];
+                    return a.attr('data-number') - b.attr('data-number');
                 }
             }
             break;
@@ -54,19 +47,24 @@ function sort_results(data) {
                         case '2A': return 5;
                         case '3A': return 6;
                         case '3B': return 6;
+                        // default: return 7;
                     }
                 }
-                return score(a['period']) - score(b['period']);
+                return score($(a).attr('data-period')) - score($(b).attr('data-period'));
             }
             break;
         case "median":
             // highest first
             f = function(a,b) {
-                if (!a['avg_median'])
+                amed = $(a).attr('data-avg-median');
+                bmed = $(b).attr('data-avg-median');
+                if (!amed && !bmed)
+                    return 0;
+                if (!amed)
                     return 1;
-                if (!b['avg_median'])
+                if (!bmed)
                     return -1;
-                return b['avg_median'] - a['avg_median'];
+                return bmed - amed;
             }
             break;
 
@@ -76,256 +74,18 @@ function sort_results(data) {
 }
 
 function show_results(results) {
-    results = sort_results(results);
-
-    the_results_div = get_or_create_results_div().find('#the_results');
-    the_results_div.empty();
-    if(!results || results == '' || results == {}){
-        result_div = $('<div class="error_msg">No results :(</div>');
-        the_results_div.append(result_div);
-        return false;
-    }
-    /*
-		dept_num_title
-		term
-		profs
-		time
-		distrib
-		wcult
-		crn
-		nro
-    */
-    for (key in results) {
-        result = results[key];
-        if (!result) continue;
-        result_div = generate_result_div(result);
-        the_results_div.append(result_div);
-    }
-    last_result = results;
+    last_result = results
+    results = sort_divs(results);
+    $('#results_container').html(results);
+    return;
 }
 
-function favorite_checkbox_onclick(event){
-    event.preventDefault();
-
-    var $checkbox, data, type, url;
-    $checkbox = $(this);
-
-    data = {};
-    data["course_id"] = $checkbox.attr('value');
-
-    type = $checkbox.attr('course_in_wishlist') === "true" ? "delete" : "post";
-    url = "/wishlists/";
-    if (type == "delete") {
-        url += data["course_id"];
-    }
-    $.ajax({
-        url: url,
-        data: data,
-        type: type,
-        error: function(e){
-          console.log(e);
-        },
-        success: function(retval) {
-          $checkbox.toggleCheckbox();
-          course_in_wishlist = $checkbox.attr('course_in_wishlist') === 'true' ? 'false' : 'true';
-          $checkbox.attr('course_in_wishlist', course_in_wishlist);
-          console.log(retval)
-          return true;
-          //return $checkbox.attr('course_in_wishlist', !attr('course_in_wishlist'));
-        }
-    });
-    return false;
-}
-
-// note: this is a sloppy substitute for an .erb partial, but this needs to happen
-//       client-side so that the results can be re-sorted
-// in: a json object representing a single result (one offering)
-// out: a jquery DOM object of that result
-function generate_result_div(result) {
-    canonical_course = result['courses'][0]
-    result_div = $('<div class="post"></div>');
-    canonical_title = '';
-    if(canonical_course['long_title']){
-        canonical_title = canonical_course['long_title']
-    }
-    else if(canonical_course['short_title']){
-        canonical_title = canonical_course['short_title']
-    }
-
-    // title
-    title = $('<h2 class="dept_num_title"><a href="#">' + canonical_course['department'] + ' ' + canonical_course['number'] + ': ' + canonical_title + '</a></h2>');
-
-    // crn
-    if(result['crn']){
-        crn = $('<span class="crn">CRN ' + result['crn'] + '</span>');
-        title.append(crn);
-    }
-    result_div.append(title);
-
-	course_info = $("<div class='posted'></div>");
-    // profs
-    profs_div = $('<span class="author"></span>');
-	/*
-    if (result['professors'].length <= 1) {
-        profs_div.append($('<span class="fieldname">prof </span>'));
-    }
-    else {
-        profs_div.append($('<span class="fieldname">profs </span>'));
-    }
-	*/
-    if (result['professors'].length > 0) {
-        var first = true;
-        var html = '';
-        for (key in result['professors']) {
-            if (!first) {
-                html += ', ';
-            }
-            first = false;
-            //html += "<a href='http://dartwiki.org/w/" + prof.replace(' ', '_') + "'>" + prof + "</a>"
-            var prof = result['professors'][key]['name'];
-            html += '<a href="http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&dept=&number=&prof=' + prof.replace(' ', '+') + '&action=selectcourses2">' + prof + '</a>';
-        }
-        profs_div.append(html);
-    }
-    else {
-        profs_div.append($('<span class="notfound">none listed</span>'));
-    }
-    course_info.append(profs_div);
-
-    // term + period
-    term = $('<span class="date">' + result['year'] + result['term'] + ': ' + result['time'] + '</span>');
-    course_info.append(term);
-
-	department = $('<span class="category"><a href="http://www.dartmouth.edu/~reg/courses/desc/' + canonical_course['department'] + '.html">' + canonical_course['department'] +'</a></span>');
-    course_info.append(department);
-
-    link = 'http://hacktown.cs.dartmouth.edu/gudru/index.php?become=view&year=&term=&number='+result['number']+'&prof=&action=selectcourses2&dept='+deptnum
-    reviews = $('<span class="comments"><a href="'+link+'" target="_blank">read reviews</a></span>');
-	course_info.append(reviews);
-
-	result_div.append(course_info);
-
-    var deptnum = get_department_number(result['department']);
-
-	/*
-    // TODO
-    // FIXME this shouldn't be hard-coded. use ERB magic
-    // Write review link
-    var offering_id = canonical_course['id'];
-    var review_div = $('<a class="cglink" href="../../reviews/new?offering_id=' + offering_id + '" target="_blank">write review</a>')
-    result_div.append(review_div);
-	*/
-
-	/*
-    // favorite
-    checked = 'course_in_wishlist="false"';
-    //TODO: the server doesn't actually pass us this "favorited" field yet
-    if(result['favorited']){
-        checked = 'checked="checked" course_in_wishlist="true"';
-    }
-    checkbox = $('<input type="checkbox"' + checked + ' value=' + canonical_course['id'] + '/>');
-    checkbox.click(favorite_checkbox_onclick);
-    favorited = $('<span class="favorite"><label for="favorite" class="fieldname">favorite: </label></span>');
-    favorited.append(checkbox);
-    result_div.append(favorited);
-	*/
-
-
-
-
-
-    /*
-    // Distribs
-    distrib = $('<span class="distrib"><span class="fieldname">distrib </span></span>');
-    if(result['dist'] && result['dist'].length > 0){
-        var first = true;
-        var html = '';
-        // TODO at the moment we bundle distribs together into a string
-        // so this is unnecessary
-        for (key in result['dist']) {
-            if (!first) {
-                html += ', ';
-            }
-            first = false;
-            html += result['dist'][key];
-        }
-        distrib.append(html);
-    }
-    else{
-        distrib.append($('<span class="notfound">none</span>'));
-    }
-    result_div.append(distrib);
-    */
-
-	/*
-    // WCULT
-    wcult = $('<span class="wcult"><span class="fieldname">wcult </span></span>');
-    if(result['wc']){
-        wcult.append(result['wc']);
-    }
-    else{
-        wcult.append($('<span class="notfound">none</span>'));
-    }
-    result_div.append(wcult);
-	*/
-
-    /*
-    // Can NRO?
-    nro = $('<span class="nro"><span class="fieldname">nro </span></span>');
-    if(result['nro'] == 'true'){
-        nro.append($('<span>yes</span>')); // TODO why is this not displaying w/o <span>?
-    }
-    else if(result['nro'] == 'false'){
-        nro.append($('<span class="notfound">no</span>'));
-    }
-    result_div.append(nro);
-    */
-
-    /*
-    // Median
-    var median_div = $('<span class="median"><span class="fieldname">avg median </span></span>');
-    if (result['avg_median']) {
-        var avg = result['avg_median'].toFixed(2);
-        median_div.append($('<span>' + avg + '</span>'));
-    }
-    else {
-        median_div.append($('<span class="notfound">not available</span>'));
-    }
-    result_div.append(median_div);
-    */
-
-	/*
-    //ORC STUFF
-    // Header
-    if (result['note'] || result['offered'] || result['description']) {
-        var orc_header_div = $('<h4>From the <a href="http://www.dartmouth.edu/~reg/courses/desc/' + canonical_course['department'] + '.html"> ' + canonical_course['department'] + ' ORC</a> <small>(may be out of date)</small></h4>:');
-    result_div.append(orc_header_div);
-    }
-    // Link to ORC
-    else{
-    var dept_orc_div = $('<span class="dept_orc"><span class="fieldname">dept ORC</span><a href="http://www.dartmouth.edu/~reg/courses/desc/'+canonical_course['department']+'.html">' + canonical_course['department'] + ' ORC</a<</span>');
-    result_div.append(dept_orc_div);
-    }
-
-    // Note
-    if (result['note']) {
-        var note_div = $('<span class="note"><span class="fieldname">note </span>'+result['note']+'</span>');
-        result_div.append(note_div);
-    }
-
-    // offered
-    if (result['offered']) {
-        offered = $('<span class="offered"><span class="fieldname">offered </span>' + result['offered'] + '</span>');
-        result_div.append(offered);
-    }
-	*/
-
-    // Description
-    if (canonical_course['desc']) {
-        var description_div = $('<span class="description">' + canonical_course['desc'].replace(/\n/g, '<br />') +'</span>');
-        result_div.append(description_div);
-    }
-    return result_div;
+function show_error(e) {
+    //console.log(e);
+    result_div = $('<div class="error_msg"><h3>OH NOES! AN ERROR!</h3><h4>Shield Your Eyes:</h4><div>');
+    result_div.append(JSON.stringify(e));
+    $('#results_container').html(result_div);
+    return true;
 }
 
 // course guide defines depts by number
@@ -333,20 +93,6 @@ function get_department_number(dept) {
     if (dept_map && dept_map[dept])
         return dept_map[dept]['id'];
     return -1;
-}
-
-function get_or_create_results_div() {
-    results_div = $('#results');
-    if (results_div.length < 1) {
-        results_div = $('\
-            <div id="results"> \
-			<div class="hr"></div> \
-            <div id="the_results"> \
-            </div> \
-            ');
-    }
-    $('#results_container').html(results_div);
-    return results_div;
 }
 
 function generate_input_field_quarter() {
@@ -638,12 +384,12 @@ function do_search(form_params) {
     //console.log(JSON.stringify(search_params));
     $('#results_container').html('<h1>Loading...</h1>');
     $.ajax({
-        dataType: "json",
+        dataType: "html",
         type: "GET",
         url: search_query_url,
         data: search_params,
         success: function (data) {
-            show_results(data);
+            show_results($(data).children('div.post'));
         },
         error: function (e) {
             show_error(e);
@@ -770,7 +516,7 @@ $().ready(function () {
     $.ajax({
         dataType: "json",
         type: "POST",
-        url: query_url,
+        url: search_query_url,
         data: JSON.stringify(search_params),
         success: function (data) {
             data = data['hits']['hits'];

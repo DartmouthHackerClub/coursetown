@@ -1,0 +1,49 @@
+<div id='search-results'>
+  <% @offerings.each do |offering| %>
+    <% course = offering.courses.first %>
+    <%# attach metadata for sorting w/ HTML5's data-* attributes %>
+    <%= content_tag :div, :id => "search-result-#{offering.id}", :class => 'post',
+      'data-department' => course.department,
+      'data-number' => course.number,
+      'data-period' => offering.time,
+      'data-avg-median' => offering.median_grade do -%>
+      <%# TODO it would make more sense to use whatever course was the initial result of the search
+        so if I search CS 19, the results don't show Math 19 %>
+      <h2 class="department_num_title">
+        <%= link_to (raw "#{course.compact_title}: #{offering.title}"), course_reviews_path(:id => course.id) -%>
+      </h2>
+      <% if offering.courses.size > 1 %>
+        <h4 class='x-listings'>X-Listed as:
+          <%= raw offering.courses.select{|c| c != course}.
+            map{|c| link_to c.compact_title, course_reviews_path(:id => c.id)}.
+            join(', ') -%>
+        </h4>
+      <% end %>
+
+      <%# BAR %>
+      <div class='posted'>
+        <span class='author'>
+          <%= prof_links(offering) -%>
+        </span>
+        <span class='date'>
+          <%= "#{offering.year}#{offering.term}#{": #{offering.time}" if offering.time.present? }" -%>
+        </span>
+        <span class='category'>
+          <%= (d = [*offering.wc, *offering.distribs.map{|d| d.distrib_abbr}]).present? ? d.join(', ') : 'no distribs/wc' %>
+        </span>
+        <span class='comments'>
+          <%= link_to 'read reviews', course_reviews_path(:id => course.id, :offering_id => offering.id) -%>
+        </span>
+      </div>
+      <span class='description'>
+        <% if offering.specific_desc.present? %>
+          <%= offering.specific_desc -%>
+        <% elsif (d = offering.courses.map(&:desc).find(&:present?)) %>
+          <%= d %>
+        <% else %>
+          (Course description unavailable)
+        <% end %>
+      </span>
+    <% end %>
+  <% end %>
+</div>

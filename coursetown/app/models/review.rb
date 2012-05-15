@@ -63,8 +63,7 @@ class Review < ActiveRecord::Base
 
   # each review must mark at least one motivation for taking the course
   def has_reasons
-    if !(for_major || for_prof || for_interest ||
-        for_distrib || for_easy_a || for_prereq)
+    if !(for_major || for_prof || for_interest || for_distrib || for_easy_a || for_prereq)
       puts "HAS NO REASONS: incomplete review"
       errors.add(:incomplete, '. Review must list at least one motivation')
     end

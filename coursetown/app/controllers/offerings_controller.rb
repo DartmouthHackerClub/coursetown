@@ -7,12 +7,31 @@ class OfferingsController < ApplicationController
     logger.debug queries
     logger.debug "==================================="
 
-    render :json => Offering.search_by_query(queries).uniq(&:id).map { |offering|
-      hash = offering.attributes
-      hash[:professors] = offering.professors.map(&:attributes)
-      hash[:courses] = offering.courses.map(&:attributes)
-      hash
-    }
+    @offerings = Offering.search_by_query(queries).uniq(&:id)
+
+    if @offerings.blank?
+      render :status => :not_found, :nothing => true
+      return
+    end
+
+    respond_to do |format|
+      format.json do
+        # TODO: WTF. If I change this to 'map do' instead of 'map {' it BREAKS! HOW?!?!
+        render :json => @offerings.map { |offering|
+          hash = offering.attributes
+          hash[:professors] = offering.professors.map(&:attributes)
+          hash[:courses] = offering.courses.map(&:attributes)
+          hash
+        }
+      end
+      format.html do
+        render :layout => false
+      end
+    end
+  end
+
+  def search_results_html
+    @offerings = Offering.search_by_query(params[:queries])
   end
 
   def search
