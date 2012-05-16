@@ -47,7 +47,7 @@ function sort_divs(data) {
                         case '2A': return 5;
                         case '3A': return 6;
                         case '3B': return 6;
-                        // default: return 7;
+                        default: return 7;
                     }
                 }
                 return score($(a).attr('data-period')) - score($(b).attr('data-period'));

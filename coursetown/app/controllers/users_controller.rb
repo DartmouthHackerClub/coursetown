@@ -10,6 +10,10 @@ class UsersController < ApplicationController
     end
   end
 
+  def am_i_logged_in
+    render :json => @current_user.present? ? 'yes' : 'no'
+  end
+
   # GET /users/1
   # GET /users/1.xml
   def show

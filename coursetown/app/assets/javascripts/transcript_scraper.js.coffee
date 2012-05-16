@@ -3,11 +3,81 @@ if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn
 
   payload = document.documentElement.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 
+  not_logged_in = ->
+    alert("Looks like you aren't logged in on Course Picker. Please log in and then try again")
+
+  check_logged_in = ->
+    alert('#TODO: check if logged in')
+    $.ajax(
+        dataType: "json"
+        type: "GET"
+        url: '/am_i_logged_in'
+        success: (data) ->
+          if data == 'yes'
+            send_transcript_via_bookmarklet
+          else
+            not_logged_in()
+        error: (e) ->
+            not_logged_in()
+    )
+
+  remove_name = ->
+    $('table.datadisplaytable tr').each( (i, row) ->
+      kids = row.children
+      return if kids.length != 2
+      if $(kids[0]).attr('class') == 'ddlabel' && ($(kids[0]).html() == 'Name :' || $(kids[0]).html() == 'Birth Date:')
+        $(kids[1]).html('<span class="redacted-data" style="color:#2ad;">[removed]</span>')
+    )
+
+  # replication of the hpricot parsing, but with jquery!
+  remove_grades = ->
+    at_grades_already = false
+    $('table.datadisplaytable tr').each( (i, row) ->
+      kids = row.children
+      if !at_grades_already && kids.length == 1 && $(kids[0]).find('a[name="insti_credit"]').length >= 1
+        at_grades_already = true
+      return if !at_grades_already || kids.length < 7
+      meets_format = true
+      $(kids).each( (j,kid) ->
+        meets_format = meets_format && ($(kid).attr('class') == 'dddefault' ||
+          $(kid).attr('class') == 'dddead')
+      )
+      # replace grade
+      return if !meets_format
+      $(kids[6]).html('<span class="redacted-data" style="color:#2ad;">[removed]</span>')
+    )
+
+  prompt_about_removing_grades = ->
+    str = "It's helpful to have reviewers report their grades to give their " +
+      "reviews context. All of Course Picker's data is anonymized, so if you " +
+      "report your grades nobody (neither us NOR anyone malicious) will be able " +
+      "to trace them to your identity." +
+      "\n\nPress OK to report your grades along with " +
+      "the courses you took (to save you one more step in the review process). " +
+      "\n\nPress CANCEL to have your grades removed from this transcript first " +
+      "(just like we've already removed your name)."
+    if !confirm(str)
+      remove_grades()
+    submit_transcript()
+
   send_transcript_via_bookmarklet = ->
+    # before anything else, check that the user's logged in
+    check_logged_in()
+
+    # remove their name
+    remove_name()
+
+    # prompt them about whether they want to report grades
+    prompt_about_removing_grades()
+
+  submit_transcript = ->
     # send transcript (over https) to rails server for scraping
     $("<form action='#{submit_url}' method='POST'>
       <input type='hidden' name='transcript' value='#{payload}'>
       </form>").submit()
+
+
+  # RUN IT
 
   if typeof jQuery == 'undefined'
     script = document.createElement('script')
