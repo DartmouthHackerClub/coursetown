@@ -2,8 +2,8 @@ module ReviewHelper
 
   @workload_labels = ['really light', 'pretty light', 'average', 'heavy', 'intense']
 
-  def star_count (id, stars, options = {})
-    return '(no ratings)' if stars.nil?
+  def star_count (id, stars, default = nil, options = {})
+    return default || (raw '<span class="not-found">no ratings</span>') if stars.nil?
     render :partial => 'stars', :locals => options.merge({
       :id => id, :read_only => true, :score => stars
       })
@@ -26,10 +26,10 @@ module ReviewHelper
     render :partial => 'stars', :locals => options.merge({:field_name => name.to_s})
   end
 
-  # TODO format grade according to above/below/at median
-  def letter_grade (raw_grade, median = 8)
-    return '?' if !raw_grade.instance_of?(Fixnum)
-    Review.letter_grade(raw_grade) || '?'
+  # if grade's not valid/DNE, return default instead
+  def letter_grade (number_grade, default = '?')
+    return default if number_grade.blank? || !number_grade.instance_of?(Fixnum)
+    Review.letter_grade(number_grade) || default
   end
 
   def reasons_tag(name, selected_field = :for_interest)

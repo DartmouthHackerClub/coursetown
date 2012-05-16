@@ -12,7 +12,7 @@ end
 review_count = old_reviews.size + reviews.size
 %>
 
-<% if %w(prof_rating course_rating workload_rating grade).all?{|s| avgs[s.to_sym]} %>
+<% if %w(prof_rating course_rating workload_rating median).any?{|s| avgs[s.to_sym]} %>
 
 <%= "Found #{review_count} reviews (#{old_reviews.size} of them from the old CourseGuide)" %>
 <table id="review-summary-box">
@@ -24,12 +24,12 @@ review_count = old_reviews.size + reviews.size
   </tr>
   <tr>
     <td><%= letter_grade avgs[:median] %></td>
-    <td><%= star_count 'avg_prof_rating', avgs[:prof_rating],
+    <td><%= star_count 'avg_prof_rating', avgs[:course_rating], '-',
       :html_class => 'center' %></td>
-    <td><%= star_count 'avg_course_rating', avgs[:course_rating],
+    <td><%= star_count 'avg_course_rating', avgs[:prof_rating], '-',
       :html_class => 'center' %></td>
-    <td><%= star_count 'avg_workload_rating', avgs[:workload_rating],
-      :html_class => 'center' %></td>
+    <td><%= star_count 'avg_workload_rating', avgs[:workload_rating], '-',
+      :html_class => 'center', :type => 'workload' %></td>
   </tr>
 </table>
 

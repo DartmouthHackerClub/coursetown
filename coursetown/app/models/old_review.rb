@@ -12,14 +12,14 @@ class OldReview < ActiveRecord::Base
 
   def self.average_reviews(reviews)
     avgs, counts = Review.average_records(reviews, @averageable_columns)
-    avgs['coverall'] *= (5.0/24.0) if avgs['coverall']
+    avgs.each { |key,val| avgs[key] = (val * 5.0) / 24.0 if key.ends_with?('overall') }
     return avgs, counts # FIXME why does it complain if I don't write 'return'?
   end
 
   # [:grade, :course_rating, :prof_rating, :workload_rating]
   def self.average_reviews_for_new_schema(reviews)
-    avgs, counts = Review.average_records(reviews, %w(coverall hard))
-    (avgs['coverall'] *= (5.0/24.0)) if avgs['coverall']
+    avgs, counts = Review.average_records(reviews, %w(coverall hhard))
+    avgs.each { |key,val| avgs[key] = (val * 5.0) / 24.0 if key.ends_with?('overall') }
     a = {
       :course_rating => avgs['coverall'],
       :workload_rating => avgs['hhard'],

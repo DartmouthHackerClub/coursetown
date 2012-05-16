@@ -22,7 +22,7 @@ $glow: 0 0 10px 0;
 }
 
 #summary_box, #summary_box_fail,
-#course_detail_header, #prof_detail_header, #workload_detail_header {
+.section_divider_header {
   width: 100%;
   margin: 20px 0 7px 0;
   @include pop_out;
@@ -45,7 +45,7 @@ $glow: 0 0 10px 0;
   }
 }
 
-#course_detail_header, #prof_detail_header, #workload_detail_header {
+.section_divider_header {
   color: $label_color;
   font-weight: bold;
   text-align: left;
@@ -117,24 +117,25 @@ h2 {
   }
 
   .comment_bubble {
-    @include pop_out;
+    /*@include pop_out;
     background-color: #fafafa;
     border-radius: 15px / 10px;
-    border-bottom-right-radius: 0px;
+    border-bottom-right-radius: 0px;*/
     margin: 5px;
+    margin-bottom: 10px;
     width: 440px; /* TODO */
     float: left;
 
     .comment {
       margin-bottom: 5px;
       oferflow: hidden;
+      @include pop_in;
     }
 
     .author_details {
       float: right;
       .grade {
         margin-right: 10px;
-        float: left;
       }
       .rating {
         float: right;
@@ -157,6 +158,148 @@ h2 {
   margin-right: auto;
 }
 
+/* ----------- partial: old reviews ------- */
+
+.old-review-header {
+  width: 100%;
+}
+
+.old_reviews_content {
+  padding: 10px;
+  overflow: hidden;
+
+  .old_reviews_full {
+    float:left;
+    width: 48%;
+
+    tr td {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+
+  .old_reviews_headlines {
+    float:right;
+    width: 48%;
+
+    @include pop_in;
+
+    h4 {
+      padding: 5px;
+      margin: 5px;
+    }
+
+    li {
+      border-top:1px solid #ccc;
+      padding: 2px 10px;
+
+      a {
+        text-decoration: none;
+      }
+    }
+
+    li:hover, li:hover a {
+      background-color: #ccc;
+      color: black;
+    }
+  }
+}
+
+/* ----------- partial: compare_reviews ---------- */
+
+.compare_reviews {
+  width: 100%;
+  border-spacing: 0px inherit;
+
+  td, th {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    div {
+      margin: 0 auto;
+    }
+  }
+
+  tr:hover {
+    td, th {
+      background-color: #f0f0f0;
+    }
+  }
+  .bad_news:hover {
+    td, th {
+      background-color: #ddd;
+    }
+  }
+
+  th.profs, td.counts {
+    text-align: left;
+  }
+
+  .bad_news {
+    background-color: #eee;
+    border-bottom: 1px solid #ccc;
+  }
+
+  td.bad_news {
+    font-style: italic;
+    color: #888;
+  }
+}
+
+/* ----------- partial: comments ---------- */
+
+.comments_header {
+  width: 100%;
+  /*margin: 20px 0 7px 0;*/
+  @include pop_out;
+  overflow: hidden;
+
+  .header_text {
+    float:left;
+    width: 50%;
+    margin-bottom:none;
+  }
+  .comments_count {
+    float:right;
+  }
+}
+
+#review-summary-box {
+  width: 100%;
+  margin: 20px 0 7px 0;
+
+  td {
+    width: 25%;
+    text-align: center;
+  }
+}
+/*
+#course_detail_header, #prof_detail_header, #workload_detail_header,
+.group-review-content > h2 {
+  color: $label_color;
+  font-weight: bold;
+  text-align: left;
+  padding: 5px 15px;
+  width: auto;
+}*/
+
+.comment_bubble > .author_details > .full-review-link {
+  float: left;
+}
+
+.comment_bubble > .author_details {
+  width: 100%;
+
+  .full-review-link {
+    float: left;
+    padding-left: 10px;
+    text-decoration: none;
+  }
+
+  .grade, .rating {
+    float: right;
+  }
+}
+
 /* ----------- view: new ------------------ */
 
 #review_motivations {
@@ -177,12 +320,62 @@ h2 {
   }
 }
 .new_review_textarea {
-  padding: 7px;
   width: 414px;
   border-radius:4px;
   border: 0px;
   @include pop_in;
   background-color: white;
+}
+
+/* ------------ view: show -------------------- */
+
+table {
+  border-collapse: separate;
+  border-spacing: 0px 3px;
+}
+
+table#show-review {
+
+  border-bottom: 1px solid #ddd;
+
+  td {
+    padding: 5px;
+  }
+
+  td.comment {
+    border-radius: 5px;
+    background-color: #eee;
+    margin: 5px;
+  }
+
+  tr.rating {
+    td {
+      border-top: 1px solid #ddd;
+    }
+  }
+}
+
+.hint, .not-found {
+  font-weight: normal;
+  font-style: italic;
+  color: #999;
+
+  strong {
+    color: #888;
+  }
+}
+
+.pull-right {
+  float: right;
+}
+
+/* ------------ view: show_old_review --------- */
+
+.old_reviews_full {
+  margin-bottom: 20px;
+}
+.old_reviews_comments {
+  width: 50%;
 }
 
 /* ------------ view: new_batch --------------- */

@@ -62,6 +62,20 @@ class Review < ActiveRecord::Base
     end
   end
 
+  # STUFF ABOUT REASONS
+
+  @reason_names = {'for_interest' => 'Interest', 'for_prof' => 'Prof',
+    'for_easy_a' => 'Easy A', 'for_distrib' => 'Distrib/WC',
+    'for_major' => 'Major/Minor', 'for_prereq' => "Prereqs"}
+
+  # list of all reasons this review offers (as human-readable strings)
+  def self.list_reasons(review)
+    @reason_names.map{|key, value| value if review.attributes[key]}.compact
+  end
+  # hacky, but I think this is the best way to do it?
+  def list_reasons
+    self.class.list_reasons(self)
+  end
   # each review must mark at least one motivation for taking the course
   def has_reasons
     if !(for_major || for_prof || for_interest || for_distrib || for_easy_a || for_prereq)
@@ -69,6 +83,7 @@ class Review < ActiveRecord::Base
       errors.add(:incomplete, '. Review must list at least one motivation')
     end
   end
+
 
   @dimensions_for_average = [:grade, :course_rating, :prof_rating, :workload_rating]
   def self.average_reviews(reviews)
@@ -88,7 +103,7 @@ class Review < ActiveRecord::Base
     dimensions.each { |dim| sum[dim] = count[dim] = 0 }
     records.each do |record|
       dimensions.each do |dim|
-        if record[dim]
+        if record[dim].present? && record[dim] != 0
           sum[dim] += record[dim].to_f
           count[dim] += 1
         end

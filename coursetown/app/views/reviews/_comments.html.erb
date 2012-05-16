@@ -8,64 +8,74 @@
   reviews = local_assigns[:reviews]
   comment_field = local_assigns[:comment_field]
   rating_field = local_assigns[:rating_field]
+  header_text = local_assigns[:header_text]
+
+  type = rating_field.to_s == 'workload_rating' ? 'workload' : nil
+  filtered_reviews = reviews.select{ |r| !r.attributes[comment_field].blank? }
   %>
 
-<% if reviews.blank? %>
+<% if filtered_reviews.blank? && header_text.blank? %>
 No comments.
 <% else %>
-
-<div class="comments_box">
-
-  <% filtered_reviews = reviews.select{ |r| !r.attributes[comment_field].blank? }
-
-    # bucketize the reviews so the two columns are
-    # about even in height
-    # NOTE: this is really hacky. should be done in JS on client's machine
-    # also, should sort reviews by height, add longer reviews first, then shuffle columns AFTER, to get the best fit
-    left_col, right_col = [], []
-    left_lines, right_lines = 0, 0
-    threshold = 47
-    # sorts comments by length (in reverse order) so it allocates big
-    #   comments first, small last. this results in more balanced sides
-    #   but should really be done in JS
-    filtered_reviews.sort_by { |x|
-      -x.attributes[comment_field].length
-    }.each do |r|
-      comment = r.attributes[comment_field]
-      lines = 3 + comment.length / threshold
-      if left_lines < right_lines
-        left_col << r
-        left_lines += lines
-      else
-        right_col << r
-        right_lines += lines
-      end
-    end
-    right_col = right_col.shuffle
-    left_col = left_col.shuffle
-     %>
-
-  <%# column-printing subroutine %>
-  <% print_column = Proc.new do |rs| %>
-    <% rs.each do |review| %>
-      <% review_attributes = review.attributes %>
-      <div class="comment_bubble">
-        <div class="comment">
-          <%= review_attributes[comment_field] %>
-        </div>
-        <div class="author_details">
-          <div class="grade">
-            <%= letter_grade review.grade %>
-          </div>
-          <div class="rating">
-            <%= star_count "comment-#{rating_field}-#{review.id}", review_attributes[rating_field] %>
-          </div>
-        </div>
-      </div>
-    <% end %>
+  <% if header_text.present? %>
+    <h2 class="section_divider_header comments_header">
+      <%= header_text %>
+      <span class="comments_count pull-right"><%= "(#{filtered_reviews.size} #{filtered_reviews.size == 1 ? 'comment' : 'comments'})" %></span>
+    </h2>
   <% end %>
-  <div class="left_column"><% print_column.call(left_col) %></div>
-  <div class="right_column"><% print_column.call(right_col) %></div>
 
-</div>
+  <div class="comments_box">
+
+    <%
+      # bucketize the reviews so the two columns are
+      # about even in height
+      # NOTE: this is really hacky. should be done in JS on client's machine
+      # also, should sort reviews by height, add longer reviews first, then shuffle columns AFTER, to get the best fit
+      left_col, right_col = [], []
+      left_lines, right_lines = 0, 0
+      threshold = 47
+      # sorts comments by length (in reverse order) so it allocates big
+      #   comments first, small last. this results in more balanced sides
+      #   but should really be done in JS
+      filtered_reviews.sort_by { |x|
+        -x.attributes[comment_field].length
+      }.each do |r|
+        comment = r.attributes[comment_field]
+        lines = 3 + comment.length / threshold
+        if left_lines <= right_lines
+          left_col << r
+          left_lines += lines
+        else
+          right_col << r
+          right_lines += lines
+        end
+      end
+      right_col.shuffle!
+      left_col.shuffle!
+       %>
+
+    <%# column-printing subroutine %>
+    <% print_column = Proc.new do |rs| %>
+      <% rs.each do |review| %>
+        <% review_attributes = review.attributes %>
+        <div class="comment_bubble">
+          <div class="comment">
+            <%= review_attributes[comment_field] %>
+          </div>
+          <div class="author_details">
+            <%= link_to 'read full review', review_path(:id => review.id), :class => 'full-review-link' %>
+            <div class="rating">
+              <%= star_count "comment-#{rating_field}-#{review.id}", review_attributes[rating_field], :type => type %>
+            </div>
+            <div class="grade">
+              <%= letter_grade review.grade, not_found('(grade ommitted)') %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+    <div class="left_column"><% print_column.call(left_col) %></div>
+    <div class="right_column"><% print_column.call(right_col) %></div>
+
+  </div>
 <% end %>

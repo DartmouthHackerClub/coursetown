@@ -12,22 +12,26 @@ i = 0
 
 <% if grouped_avgs.present? && grouped_avgs.size > 1 %>
 
-<h2 id="<%= header_id %>" class="<%= header_class %>">Compare Profs</h2>
-<table class="compare-reviews" <%= %(id="#{table_id}") if table_id %>>
+<h2 id="<%= header_id %>" class="<%= header_class %> section_divider_header">Compare Profs</h2>
+<table class="compare_reviews" <%= %(id="#{table_id}") if table_id %>>
+  <tr>
+    <th></th>
+    <th>Med. Grade</th>
+    <th>Course</th>
+    <th>Prof</th>
+    <th>Workload</th>
+    <th></th>
+  </tr>
 <% keys.each do |key| %>
   <% a = grouped_avgs[key] %>
-  <tr>
-    <th><%= key %></th>
-    <td><%= letter_grade(a[:median_grade]) %></td>
-    <% if a[:num_reviews] == 0 || a.each_value.all?{|x| x.nil?} %>
-      <td colspan=4 class="bad-news">No reviews</td>
-    <% else %>
-      <% prefix = "compare-star-count#{i += 1}" %>
-      <td><%= star_count("#{prefix}-course", a[:course_rating]) %></td>
-      <td><%= star_count("#{prefix}-prof",   a[:professor_rating]) %></td>
-      <td><%= star_count("#{prefix}-work",   a[:workload_rating]) %></td>
-      <td><%= "#{a[:num_reviews]} reviews" %></td>
-    <% end %>
+  <tr class='<%= 'bad_news' if a[:num_reviews] == 0 || a.each_value.all?{|x| x.nil?} %>'>
+    <th class='profs'><%= key %></th>
+    <td><%= letter_grade(a[:median_grade], not_found('-')) %></td>
+    <% prefix = "compare-star-count#{i += 1}" %>
+    <td><%= star_count("#{prefix}-course", a[:course_rating], '-') %></td>
+    <td><%= star_count("#{prefix}-prof",   a[:professor_rating], '-') %></td>
+    <td><%= star_count("#{prefix}-work",   a[:workload_rating], '-') %></td>
+    <td class='count'><%= "#{a[:num_reviews]} reviews" %></td>
   </tr>
 <% end %>
 </table>

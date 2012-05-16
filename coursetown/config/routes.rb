@@ -25,6 +25,8 @@ Coursetown::Application.routes.draw do
   match "/auth/:provider/callback" => "sessions#create"
   match "/signout" => "sessions#destroy", :as => :signout
 
+  get "/old_reviews/:id" => 'reviews#show_old_review', :as => :old_review
+
   resources :reviews, :only => [:show, :create, :update] do
     # aggregate pages
     collection do

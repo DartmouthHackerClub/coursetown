@@ -1,14 +1,14 @@
 class ReviewsController < ApplicationController
   protect_from_forgery :except => 'new_batch_from_transcript'
 
-  # def show
-  #   if params[:id].to_i.nil?
-  #     not_found
-  #   end
-  #   # raises RecordNotFound exception if not found
-  #   @review = Review.find(params[:id],
-  #     :include => {:offering => [:professors, :courses]})
-  # end
+  def show
+    if params[:id].to_i.nil?
+      not_found
+    end
+    # raises RecordNotFound exception if not found
+    @review = Review.find(params[:id],
+      :include => {:offering => [:professors, :courses]})
+  end
 
 
   def course
@@ -373,6 +373,9 @@ class ReviewsController < ApplicationController
     return
   end
 
+  def show_old_review
+    @review = OldReview.find(params[:id], :include => {:offering => [:courses, :professors]})
+  end
 
 
 
