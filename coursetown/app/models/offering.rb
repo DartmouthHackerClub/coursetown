@@ -8,7 +8,7 @@ class Offering < ActiveRecord::Base
   has_many :distribs
   has_many :schedules
   has_many :reviews
-  has_many :old_reviews, :primary_key => :old_id, :foreign_key => :old_id
+  has_many :old_reviews, :primary_key => :old_id, :foreign_key => :old_offering_id
 
   validates :term, :inclusion => {:in => %w{F W S X}}, :presence => true
   validates :wc, :inclusion => {:in => [nil,'W','NW','CI']}

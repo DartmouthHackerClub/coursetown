@@ -1,5 +1,5 @@
 class OldReview < ActiveRecord::Base
-  belongs_to :offering, :foreign_key => :old_id, :primary_key => :old_id
+  belongs_to :offering, :foreign_key => :old_offering_id, :primary_key => :old_id
 
   @averageable_columns = %w(
       coverall cpace cwork cinterest ctas cmatchorc cdiversity
