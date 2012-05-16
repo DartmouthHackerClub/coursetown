@@ -56,16 +56,16 @@ class Offering < ActiveRecord::Base
     seeded_from_offerings = true
     q = {}
     if queries[:title].present?
-      q[:title] = "`courses`.`long_title` like '%#{queries[:title]}%'"
+      q[:title] = "courses.long_title like '%#{queries[:title]}%'"
     end
     if queries[:description].present?
       q[:desc] = queries[:description].split(",").
-          map { |name| "`courses`.`desc` like '%#{name.strip}%'" }.join(" OR ")
+          map { |name| "courses.desc like '%#{name.strip}%'" }.join(" OR ")
     end
     if queries[:professors].present?
-      q[:prof] = queries[:professors].split(",").map { |name| "`professors`.`name` like '%#{name.strip}%'" }.join(" OR ")
+      q[:prof] = queries[:professors].split(",").map { |name| "professors.name like '%#{name.strip}%'" }.join(" OR ")
     end
-    q[:course] = Hash[queries.slice(:department, :number).map{|k,v| ["`courses`.`#{k.to_s}`",v]}]
+    q[:course] = Hash[queries.slice(:department, :number).map{|k,v| ["courses.#{k.to_s}",v]}]
     q[:offering] = Hash[queries.slice(:period, :term, :year, :wc, :time).map{|k,v| ["offerings.#{k.to_s}",v]}]
     q[:distribs] = {'distribs.distrib_abbr' => queries[:distribs]} if queries[:distribs].present?
     # TODO: right now it returns null-grade courses too when user searches for median grade. good choice? bad choice?
