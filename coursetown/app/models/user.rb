@@ -20,6 +20,6 @@ class User < ActiveRecord::Base
     Digest::SHA1.hexdigest(netid)
   end
   def self.find_by_netid(netid)
-    self.find_by_netid_sha1(self.netid_to_sha1(netid))
+    self.find_by_hashed_netid(self.hash_netid(netid))
   end
 end
