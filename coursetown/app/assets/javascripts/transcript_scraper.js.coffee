@@ -1,36 +1,23 @@
 if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn.P_ViewTran'
-  submit_url = 'http://localhost:3000/reviews/batch_from_transcript'
+  app_root = 'http://localhost:3000/'
+  submit_url = "#{app_root}reviews/batch_from_transcript"
+  login_check_url = "#{app_root}am_i_logged_in"
+  course_picker_url = "http://localhost:3000/auth/cas?callback=#{app_root}reviews/batch_from_transcript"
 
   payload = document.documentElement.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 
-  not_logged_in = ->
-    alert("Looks like you aren't logged in on Course Picker. Please log in and then try again")
-
-  check_logged_in = ->
-    alert('#TODO: check if logged in')
-    $.ajax(
-        dataType: "json"
-        type: "GET"
-        url: '/am_i_logged_in'
-        success: (data) ->
-          if data == 'yes'
-            send_transcript_via_bookmarklet
-          else
-            not_logged_in()
-        error: (e) ->
-            not_logged_in()
-    )
-
-  remove_name = ->
-    $('table.datadisplaytable tr').each( (i, row) ->
-      kids = row.children
-      return if kids.length != 2
-      if $(kids[0]).attr('class') == 'ddlabel' && ($(kids[0]).html() == 'Name :' || $(kids[0]).html() == 'Birth Date:')
-        $(kids[1]).html('<span class="redacted-data" style="color:#2ad;">[removed]</span>')
-    )
+  # CONTROL FLOW:
+  #  load jQuery if necessary
+  #  check if user's logged in
+  #    if not, tell them to log in and EXIT
+  #  remove names from document
+  #  prompt about removing grades
+  #    if cancel, remove grades
+  #  actually send the data via POST & load the results (POST!)
 
   # replication of the hpricot parsing, but with jquery!
-  remove_grades = ->
+  remove_grades = ($) ->
+    # are we at the part of the page yet that has grades?
     at_grades_already = false
     $('table.datadisplaytable tr').each( (i, row) ->
       kids = row.children
@@ -47,6 +34,42 @@ if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn
       $(kids[6]).html('<span class="redacted-data" style="color:#2ad;">[removed]</span>')
     )
 
+  submit_transcript = ->
+    # send transcript (over https) to rails server for scraping
+    $("<form action='#{submit_url}' method='POST'>
+      <input type='hidden' name='transcript' value='#{payload}'>
+      </form>").submit()
+
+  remove_name = ->
+    $('table.datadisplaytable tr').each( (i, row) ->
+      kids = row.children
+      return if kids.length != 2
+      if $(kids[0]).attr('class') == 'ddlabel' && ($(kids[0]).html() == 'Name :' || $(kids[0]).html() == 'Birth Date:')
+        $(kids[1]).html('<span class="redacted-data" style="color:#2ad;">[removed]</span>')
+    )
+
+  not_logged_in = ->
+    alert("Looks like you aren't logged in on Course Picker. Please log in and then try again")
+
+  check_logged_in = ->
+    $.ajax(
+        dataType: "json"
+        type: "GET"
+        url: login_check_url
+        success: (data) ->
+          if data == 'yes'
+            remove_name()
+            prompt_about_removing_grades()
+          else
+            not_logged_in()
+        error: (e) ->
+            not_logged_in()
+    )
+
+  get_it_started = ->
+    remove_name()
+    prompt_about_removing_grades()
+
   prompt_about_removing_grades = ->
     str = "It's helpful to have reviewers report their grades to give their " +
       "reviews context. All of Course Picker's data is anonymized, so if you " +
@@ -57,35 +80,18 @@ if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn
       "\n\nPress CANCEL to have your grades removed from this transcript first " +
       "(just like we've already removed your name)."
     if !confirm(str)
-      remove_grades()
+      remove_grades(jQuery)
     submit_transcript()
-
-  send_transcript_via_bookmarklet = ->
-    # before anything else, check that the user's logged in
-    check_logged_in()
-
-    # remove their name
-    remove_name()
-
-    # prompt them about whether they want to report grades
-    prompt_about_removing_grades()
-
-  submit_transcript = ->
-    # send transcript (over https) to rails server for scraping
-    $("<form action='#{submit_url}' method='POST'>
-      <input type='hidden' name='transcript' value='#{payload}'>
-      </form>").submit()
-
 
   # RUN IT
 
   if typeof jQuery == 'undefined'
     script = document.createElement('script')
-    script.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'
-    script.onload = send_transcript_via_bookmarklet
+    script.src = 'https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'
+    script.onload = get_it_started
     document.body.appendChild(script)
   else
-    send_transcript_via_bookmarklet()
+    get_it_started
 
 else
   alert "It looks like you're using this in the wrong place.\n" +
