@@ -64,11 +64,11 @@ you fill out a a complete review for (rate all 3 star-ratings, add a reason)
 
           if data.instance_of? Schedule
             title = data.course.compact_title
-            profs = data.offering.prof_string
+            profs = data.offering.smart_prof_string
           else (offerings = data[1])
             title = data[0].compact_title
             options = options_for_select([['Select Prof...',0]] +
-              offerings.map{|o| [o.professors.size > 1 ? o.short_prof_string : o.prof_string, o.id]})
+              offerings.map{|o| [o.smart_prof_string, o.id]})
             profs = select_tag "#{prefix}[offering_id]", options
           end
           %>

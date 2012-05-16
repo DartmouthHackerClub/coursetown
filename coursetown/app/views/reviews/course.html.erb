@@ -6,7 +6,7 @@
 <div id='content' class='group-review-content'>
 
   <%= render :partial => 'review_summary',
-    :locals => {:avgs => @avgs, :reviews => @reviews, :old_reviews => @old_reviews} %>
+    :locals => {:avgs => @avgs, :review_count => @reviews.size, :old_review_count => @old_reviews.size} %>
 
   <!-- <h2 id="course_detail_header">Course</h2> -->
   <div id="course_detail">

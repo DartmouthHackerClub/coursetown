@@ -14,6 +14,13 @@ $glow: 0 0 10px 0;
   border-radius: 5px;
 }
 
+@mixin pop_deep {
+  background-color: #ccc;
+  box-shadow: inset 1px 1px 1px 0 rgba(0,0,0,0.2);
+  padding: 4px;
+  border-radius: 5px;
+}
+
 @mixin pop_out {
   background-color: #fff;
   padding: 7px;
@@ -202,6 +209,26 @@ h2 {
       background-color: #ccc;
       color: black;
     }
+  }
+}
+
+/* ----------- partial: search_results ----------- */
+
+.posted {
+  @include pop_in;
+}
+.write_review_link {
+  float: right !important;
+  margin-left: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  font-style: italic;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+.write_review_link:hover {
+  a {
+    color: black;
   }
 }
 

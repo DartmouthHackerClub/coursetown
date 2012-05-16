@@ -131,12 +131,6 @@ class ReviewsController < ApplicationController
       @review = Review.new
       @review.offering = Offering.find(params[:id])
     end
-
-    if @review.nil? || @review.offering.nil?
-      render :status => 404
-      return
-      # TODO redirect user to a course selection page (maybe)
-    end
   end
 
 

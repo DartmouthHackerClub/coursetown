@@ -1,8 +1,6 @@
 <%# HEADER %>
-<%= stylesheet_link_tag "review" %>
-
-<% if @review.offering %>
-	<% courses = @review.offering.courses %>
+<div class="PageTitle">
+		<% courses = @review.offering.courses %>
 	<% if courses.empty? || !(courses.first.is_a? Course)%>
 		<h1>"New Review for UNKNOWN COURSE"</h1>
 	<% else %>
@@ -12,25 +10,18 @@
 		<h3><%= "Cross-listed as: " + courses.map(&:compact_title).join(', ') %></h3>
 	<% end %>
 <% else %>
-	<h1>New Review</h1>
-<% end %>
+</div>
 
 <%# COURSE INFO %>
 
 <div id="course_info">
-	<% if @review.offering %>
-		<%# TODO make names link to their actual pages %>
-		<% professors = @review.professors %>
-		<%= (professors.length == 1 ? "Instructor: " : "Instructors: ") %>
-		<%=	raw professors.map{|prof|
-			link_to(prof.name, prof_reviews_path(:id => prof.id))}.join(', ') %>
-		<br/>
+	<% professors = @review.professors %>
+	<%= (professors.length == 1 ? "Instructor: " : "Instructors: ") %>
+	<%=	prof_links @review.offering %>
+	<br/>
 
-		<%= @review.offering.summary_string %>
-		<%# TODO [not when you took this course?] button %>
-	<% else %>
-		Please select a course offering to review.
-	<% end %>
+	<%= @review.offering.time_string %>
+	<%# TODO [not when you took this course?] button %>
 </div>
 
 <%# REVIEW %>

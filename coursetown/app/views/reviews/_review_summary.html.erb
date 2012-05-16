@@ -4,17 +4,18 @@
 # review page (course, offering, prof)
 
 avgs = local_assigns[:avgs]
-old_reviews = local_assigns[:old_reviews] || []
-reviews = local_assigns[:reviews]
-if reviews.blank?
-  puts "ERROR: missing arguments reviews from _review_summary"
-end
-review_count = old_reviews.size + reviews.size
+# old_reviews = local_assigns[:old_reviews] || []
+# reviews = local_assigns[:reviews]
+# review_count = old_reviews.size + reviews.size
+
+review_count = local_assigns[:review_count]
+old_review_count = local_assigns[:old_review_count]
+total = review_count + old_review_count
 %>
 
 <% if %w(prof_rating course_rating workload_rating median).any?{|s| avgs[s.to_sym]} %>
 
-<%= "Found #{review_count} reviews (#{old_reviews.size} of them from the old CourseGuide)" %>
+<%= "Found #{total} reviews (#{old_review_count} of them from the old CourseGuide)" %>
 <table id="review-summary-box">
   <tr class="labels">
     <td>Median</td>

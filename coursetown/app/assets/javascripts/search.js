@@ -73,10 +73,28 @@ function sort_divs(data) {
     return data.sort(f);
 }
 
+function loading() {
+    $('#loading_results').show();
+    $('#the_results').hide();
+    $('#no_results').hide()
+}
+
+function hide_loading() {
+    $('#loading_results').hide();
+}
+
 function show_results(results) {
     last_result = results
-    results = sort_divs(results);
-    $('#results_container').html(results);
+    hide_loading();
+    if(results.length === 0) {
+        $('#no_results').show();
+        $('#the_results').hide();
+    } else {
+        $('#no_results').hide();
+        $('#the_results').show();
+        results = sort_divs(results);
+        $('#the_results').html(results);
+    }
     return;
 }
 
@@ -84,7 +102,7 @@ function show_error(e) {
     //console.log(e);
     result_div = $('<div class="error_msg"><h3>OH NOES! AN ERROR!</h3><h4>Shield Your Eyes:</h4><div>');
     result_div.append(JSON.stringify(e));
-    $('#results_container').html(result_div);
+    $('#the_results').html(result_div);
     return true;
 }
 
@@ -382,7 +400,7 @@ function do_search(form_params) {
         "queries": queries
     };
     //console.log(JSON.stringify(search_params));
-    $('#results_container').html('<h1>Loading...</h1>');
+    loading();
     $.ajax({
         dataType: "html",
         type: "GET",
@@ -504,7 +522,7 @@ var search_options = {
 //RUN THIS STUFF AT PAGE LOAD
 $().ready(function () {
     if($.browser.msie) {
-        $('#results_container').html('<h1><a href="http://getfirefox.com">Get Firefox</a> or <a href="http://google.com/chrome">Get Chrome</a></h1>');
+        $('#results_container').append('<h1><a href="http://getfirefox.com">Get Firefox</a> or <a href="http://google.com/chrome">Get Chrome</a></h1>');
         alert("Course picker isn't written for Internet Explorer and may not work correctly.");
     }
 
@@ -564,7 +582,7 @@ $().ready(function () {
     $("input:radio[name=sortby]").change(function() {
             sortby = $(this).val();
             if (last_result) {
-                $('#results_container').html('Loading...');
+                loading();
                 show_results(last_result);
             }
     });
@@ -573,6 +591,8 @@ $().ready(function () {
     if(window.location.hash){
         the_params = JSON.parse(window.location.hash);
         do_search(the_params);
+    } else {
+        hide_loading();
     }
 });
 /*

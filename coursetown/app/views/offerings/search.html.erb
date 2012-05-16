@@ -1,3 +1,5 @@
+<%= javascript_include_tag 'search' %>
+
 <div class="PageTitle">
   <h1>Search</h1>
 </div>
@@ -19,6 +21,12 @@
   </div>
 
   <div id="results_container">
+    <h2 id="loading_results">Loading...</h2>
+    <div id="the_results">
+    </div>
+    <div id="no_results" style='visibility:hidden;'>
+      <%= not_found('No results. Try broadening your query or searching different fields') -%>
+    </div>
   </div>
 
   <div id="disclaimer">

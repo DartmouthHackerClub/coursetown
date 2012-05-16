@@ -90,16 +90,18 @@ class Offering < ActiveRecord::Base
         end
       end
       seed = seed.includes(:offerings => [:professors, :courses, :distribs])
+
     else
+      seeded_from_offerings = true
       seed = Offering
-      if (d = q.delete(:offering))
+      if (d = q.delete(:offering)).present?
         seed = seed.where(d)
       end
       seed = seed.includes(:professors, :courses, :distribs)
     end
 
     # add the remaining queries to this big ol' query
-    q.each_value{ |v| seed = seed.where(v) if v.present? }
+    q.each_value.select(&:present?).each{ |v| seed = seed.where(v) }
 
     if seeded_from_offerings
       return seed
@@ -114,6 +116,14 @@ class Offering < ActiveRecord::Base
 
   def short_prof_string
     professors.map{|prof| prof.last_name}.sort.join(', ')
+  end
+
+  def semi_short_prof_string
+    professors.map{|prof| "#{prof.name[0]}. #{prof.last_name}"}.sort.join(', ')
+  end
+
+  def smart_prof_string
+    self.professors.size > 1 ? semi_short_prof_string : prof_string
   end
 
   def time_string
@@ -158,6 +168,22 @@ class Offering < ActiveRecord::Base
 
   def is_after?(offering)
     self.class.compare_times(self, offering) > 0
+  end
+
+  def self.has_happened?(offering)
+    now = Time.now
+    yr = now.year
+    trm = ((now.month - 1) / 3) % 4
+    o = offering
+    puts "CURRENTLY : #{yr} #{trm} VS. #{o.year} #{o.term}"
+
+    return o.year < yr if o.year && yr && o.year != yr
+    return @terms[o.term] < trm if @terms[o.term]
+    false
+  end
+
+  def has_happened?
+    self.class.has_happened?(self)
   end
 
   # sorts an Enumerable<Offering> by time!
