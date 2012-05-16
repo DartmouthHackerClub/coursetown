@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
   validates_presence_of :offering
-  validates :grade, :inclusion => 0..24 # grades are weird
+  validates :grade, :inclusion => 0..24, :if => 'grade.present?' # grades are weird
   validates :prof_rating, :inclusion => 1..5
   validates :course_rating, :inclusion => 1..5
   validate :matches_schedule_offerings
@@ -37,6 +37,7 @@ class Review < ActiveRecord::Base
     grade = g if g
   end
   def self.letter_grade (num_grade)
+    return nil if !num_grade.instance_of?(Fixnum)
     @grade_to_letter[num_grade]
   end
   def self.number_grade (letter_grade)
