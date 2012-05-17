@@ -2,26 +2,40 @@
 <div class="PageTitle">
 <h1>Quick Review</h1>
 </div>
+<p class='prominent'>
+Quick Review makes it easy for you to write reviews... quickly.
+</p>
+<p class='prominent'>
+It's a real chore to have to search for every class you've taken just so you
+can review it. Well now you don't have to! If you follow the steps below,
+we'll figure out all the classes you've taken <em>for you</em>.
+</p>
+<p class='hint'>
+Of course, you also have the option of simply searching "the old-fashioned way"
+for classes you've taken using <%= link_to 'the search page', search_path %> and
+writing your reviews that way.
+</p>
+<h3>How does Quick Review work?</h3>
+<ol class='numbered'>
+  <li>You navigate to your own transcript on <%= link_to 'bannerstudent', 'https://dartmouth.edu/bannerstudent' %> and click QUICKREVIEW.
+  <li>QUICKREVIEW discards your grades and any identifying information on your
+    transcript. It sends what remains&mdash;a list of which courses you've taken&mdash;to Course Picker.<br/>
+    <span class='hint'>(If you want to report your grades on your reviews, you can tell
+    QUICKREVIEW <strong>not</strong> to discard your grades, but this is completely optional)</span>
+  <li>Course Picker uses this list to make you a super nifty page for you
+    to review <em>dozens of courses at a time, on one page, in a matter of minutes</em>.
+  <li>Every review you write gets you one raffle ticket closer to winning a <strong>Kindle</strong>,
+    or a <strong>free meal in town</strong>! Not to mention it helps other students
+    pick good classes from bad.
+</ol>
 
-Quick Review makes it easy for you to write reviews...quickly. No more wasting
-time searching for all the courses you've taken. Just follow the steps below
-to import your courses from Banner, and we'll make sure it's
-incredibly easy for you to review them in one fell swoop (we're talking seconds,
-not minutes).
-<br/><br/>
-Don't worry, we won't save any data that you don't want us to. Your information
-is safe with us.
-<br/><br/>
-
-<div class='well'>
-  <h2>
-  <a id="transcript_review_bookmarklet" href="javascript:(function()%7Bdocument.head.appendChild(document.createElement('script')).src='http://localhost:3000/assets/transcript_scraper_bookmarklet.js';%7D)();">REVIEWIFY</a>
-  </h2>
+<div>
+  <h2>Cool. Let's do it.</h2>
 
   <ul class="unordered type18">
 
   <li>
-  Drag the above link into your bookmark bar.
+  Drag this link into your bookmarks bar at the top of your web browser <span id='quickreview_bookmarklet'>&raquo;<a href="javascript:(function()%7Bdocument.head.appendChild(document.createElement('script')).src='http://localhost:3000/assets/transcript_scraper_bookmarklet.js';%7D)();">QUICKREVIEW</a></span>
   </li>
 
   <li>
@@ -30,7 +44,7 @@ is safe with us.
   </li>
 
   <li>
-  Go to <%= link_to 'bannerstudent', 'https://dartmouth.edu/bannerstudent' %> (or click the REVIEWIFY bookmark in your bookmarks bar to
+  Go to <%= link_to 'bannerstudent', 'https://dartmouth.edu/bannerstudent' %> (or click the QUICKREVIEW bookmark in your bookmarks bar to
   be taken there).
   </li>
 
@@ -40,7 +54,7 @@ is safe with us.
   </li>
 
   <li>
-  Click the REVIEWIFY bookmarklet.
+  Click the QUICKREVIEW bookmarklet.
   </li>
 
   <li>
@@ -55,3 +69,25 @@ is safe with us.
 
   </ul>
 </div>
+
+<div>
+  <h3>We take your security seriously</h3>
+  <ul>
+    <li>The Quick Review tool will anonymize your data before it sends it to Course Picker.
+      It removes your identifying data (name and birthdate) from the transcript before anything else.
+      In fact, <strong>we will <em>never</em> store <em>any</em> identifying information that could be used
+      to figure out the identity of your profile.</strong>
+    <li>You have the <em>option</em> to report your grades using the Quick Review tool,
+      but <strong>you don't have to</strong>. The tool will prompt you before it sends any
+      data, and you can follow its instructions to remove your grades from your transcript
+      <em>before the tool sends that data to Course Picker</em>.
+    <li>These aren't just empty promises. I'm...actually building this site as part of my
+      senior thesis, and if malicious things happened on Course Picker, I'd fail! And then I wouldn't
+      graduate! So trust me, I want your data to be secure <em>just as much as you do.</em>
+    <li>If you have a knack for technology, I welcome you to check out Course Picker's
+      <%= link_to 'source code', 'https://github.com/DartmouthHackerClub/coursetown' %> and see for
+      yourself that we're being cautious. If you can point out a real security vulnerability, we'll
+      buy you a cookie or something.
+  </ul>
+</div>
+

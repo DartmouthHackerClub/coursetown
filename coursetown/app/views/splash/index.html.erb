@@ -1,37 +1,72 @@
 
+
 <div class="PageTitle">
   <h1>Welcome!</h1>
 </div>
 
 <div id='content'>
-  <p>
+  <p class='tag-line'>
     Welcome to <%= link_to 'Hacker Club', 'http://dartmouthhackers.com' %>
     and
     <%= link_to 'Student Assembly', 'dartmouth.edu/~saportal' %>'s new Course Picker.
   </p>
-  <p>
-    We heard students' complaints about the old
-    <%= link_to 'SA Course Guide', 'http://hacktown.cs.dartmouth.edu/gudru' -%>
-    (Writing a review is a chore! Reading reviews is somehow even <i>worse</i>!)
-    and the newer <%= link_to 'Course Rank', 'https://www.courserank.com/dartmouth/main' %>
-    (It's too simple! Where'd all the old reviews go?)
-    so we tried to design a new site with that criticism in mind.
-  </p>
-  <p>
-    <h2>This is just a beta</h2>
-    Which really means two things:
+
+  <div class='shout'>
+    <h1><%= link_to 'Write reviews. Win prizes.', quick_start_reviews_path %></h1>
+    <p>
+      <strong>Reasons to write reviews:</strong>
+      <br/>To help other students avoid the course-selection mistakes you've made
+      <br/>To yell to the internet what you wish you could've said to That Prof You Hate
+      <br/>To show uninformed students the real gems of their departments
+      <br/>It takes like 20 seconds. Why not?
+      <br/><em>GIVEAWAYS!</em>
+    </p>
+    <p>
+      Every time you write a review, from now until the end of the Spring Term,
+      you will be entered into a raffle to win <em>fabulous prizes</em>, like an
+      Amazon Kindle or gift-cards to Canoe Club and Dirt Cowboy! The more courses
+      you review, the more likely you are to win, and the bigger the winnings!
+      Once the winners are selected, whichever one reviewed the most courses
+      gets the best prize, and so on.
+    </p>
+    <p>
+      To get started, either
+      <%= link_to %(search for classes you've taken), search_path %> or use
+      the incredibly convenient new <%= link_to 'Quick Review Tool', quick_start_reviews_path %>
+      to rate classes with <em>unprecedented ease</em>.
+    </p>
+  </div>
+
+  <div id='beta_note'>
+    <h2>Note: This site is in Beta</h2>
+    <p>
+
+      We built this site because we thought the other ones sucked, and we
+      know you agree. <%= link_to 'SA Course Guide', 'http://hacktown.cs.dartmouth.edu/gudru' -%>
+      makes writing reviews a <em>chore</em>, and somehow reading them is almost
+      as laborious. <%= link_to 'Course Rank', 'https://www.courserank.com/dartmouth/main' %>,
+      on the other hand, is <em>too</em> simple (and it's not very useful
+      without the old review data). We tried to design a new site with all the
+      criticism we'd heard from campus in mind, but we know it isn't
+      perfect yet.
+    </p>
     <ul class="unordered type10">
-      <li>We have a <i>bunch</i> of other features in the works that we'll be rolling
-        out soon.</li>
-      <li><strong>We want your feedback!</strong> If something's not working how it should or you
-        have any ideas on how to improve this site, send an email to
-        <a href='mailto:dartmouth-coursepicker@gmail.com'>dartmouth-coursepicker@gmail.com</a>!</li>
+      <li>
+        <strong>We want your feedback!</strong> If you do/don't like something,
+        tell us! We're building this site for you, so we want you
+        to be happy with it! <br/>
+        Shoot us an email at <a href='mailto:dartmouth-coursepicker@gmail.com'>dartmouth-coursepicker@gmail.com</a>!
+      <li>There might be some bugs, flaws, and missing data. If you find an issue,
+        again, <a href='mailto:dartmouth-coursepicker@gmail.com'>tell us about it</a>!
+      <li>We have a <i>bunch</i> of exciting features (course wishlists, search-by-rating, etc)
+        in the works that we'll hopefully be rolling out soon, so <em>stay tuned</em>
+        and be sure to tell us what you think of them.
     </ul>
-  </p>
+  </div>
 
 
       <!-- TODO: add the search & write_review blurbs -->
-
+<%#
   <div>
 
     <h2>Features in the works</h2>
@@ -52,4 +87,5 @@
     </ul>
 
   </div>
+  %>
 </div>
