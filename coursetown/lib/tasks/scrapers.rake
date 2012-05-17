@@ -8,14 +8,14 @@ namespace :scrape do
   end
 
   task :orc => :environment do
-    filename = '../scrapers/orc/course_set.json'
+    filename = '../scrapers/orc.json'
     Offering.transaction {
       File.open(filename, 'r') { |f|
         puts "loading the ORC JSON..."
         data = JSON.parse(f.read)
         puts "done."
-        puts "importing data into db (#{data['courses'].count} courses)..."
-        data['courses'].each { |course|
+        puts "importing data into db (#{(data['records'] || []).count} courses)..."
+        data['records'].each { |course|
           course_info = {
             :desc => course["description"],
             :long_title => course["title"]
@@ -38,7 +38,7 @@ namespace :scrape do
     puts "done: import finished. (#{Course.count} courses total)"
   end
   task :timetable => :environment do
-    filename = '../scrapers/timetable/timetable_test_data.json'
+    filename = '../scrapers/timetable.json'
     #TODO: DEBUG
     #filename = '../scrapers/timetable/timetable.json'
 
@@ -86,7 +86,8 @@ namespace :scrape do
           :building => offering['Building'],
           :room => offering['Room'],
           :enrollment_cap => offering['Lim'],
-          :enrolled => offering['Enrl']
+          :enrolled => offering['Enrl'],
+          :specific_title => offering['Title'],
         }
         year = offering['Term'][0,4]
         term = month_quarter_mappings[offering['Term'][4,6]]
@@ -106,7 +107,7 @@ namespace :scrape do
         }.select{|x| x}.first # filter out nils
         if o.nil?
           o = Offering.new({:year => year, :term => term, :section => offering['Sec']}.merge(offering_info))
-          puts "UH OH!!!!!!" if !o.save
+          puts "ERROR SAVING RECORD: \n#{o.attributes}\nfrom:\n#{offering}" if !o.save
         else
           o.update_attributes(offering_info)
         end

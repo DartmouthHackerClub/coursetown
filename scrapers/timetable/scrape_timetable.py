@@ -63,7 +63,7 @@ def get_timetable_html():
     return url_to_html_str(timetable_url)
 
 def main():
-    if(len sys.argv < 3)
+    if(len(sys.argv) < 3):
      print >> sys.stderr , "Usage: ./scrape_timetable.py year term # Term is as shown in the tables"
     print "opening output file..."
     fp = open(outfile, 'w')
