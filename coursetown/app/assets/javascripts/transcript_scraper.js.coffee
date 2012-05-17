@@ -4,8 +4,6 @@ if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn
   login_check_url = "#{app_root}am_i_logged_in"
   course_picker_url = "http://localhost:3000/auth/cas?callback=#{app_root}reviews/from_transcript"
 
-  payload = document.documentElement.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&apos;')
-
   # CONTROL FLOW:
   #  load jQuery if necessary
   #  check if user's logged in
@@ -35,6 +33,7 @@ if window.location.href == 'https://banner.dartmouth.edu/banner/groucho/bwskotrn
     )
 
   submit_transcript = ->
+    payload = document.documentElement.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&apos;')
     # send transcript (over https) to rails server for scraping
     $("<form action='#{submit_url}' method='POST'>
       <input type='hidden' name='transcript' value='#{payload}'>

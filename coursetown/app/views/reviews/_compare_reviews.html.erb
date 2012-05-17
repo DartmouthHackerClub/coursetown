@@ -3,6 +3,8 @@ grouped_avgs = local_assigns[:grouped_avgs]
 table_id = local_assigns[:table_id] # OPTIONAL
 header_id = local_assigns[:header_id] || 'compare-header'
 header_class = local_assigns[:header_class] || 'review-header'
+header_text = local_assigns[:header_text] || 'Compare'
+paths = local_assigns[:paths] || {}
 
 # rank in descending order of most reviews
 keys = grouped_avgs.each_key.sort_by{|k| -grouped_avgs[k][:num_reviews]}
@@ -12,7 +14,7 @@ i = 0
 
 <% if grouped_avgs.present? && grouped_avgs.size > 1 %>
 
-<h2 id="<%= header_id %>" class="<%= header_class %> section_divider_header">Compare Profs</h2>
+<%= content_tag :h2, header_text, :id => header_id, :class => "#{header_class} section_divider_header" %>
 <table class="compare_reviews" <%= %(id="#{table_id}") if table_id %>>
   <tr>
     <th></th>
@@ -25,7 +27,7 @@ i = 0
 <% keys.each do |key| %>
   <% a = grouped_avgs[key] %>
   <tr class='<%= 'bad_news' if a[:num_reviews] == 0 || a.each_value.all?{|x| x.nil?} %>'>
-    <th class='profs'><%= key %></th>
+    <th class='profs'><%= paths[key] || key %></th>
     <td><%= letter_grade(a[:median_grade], not_found('-')) %></td>
     <% prefix = "compare-star-count#{i += 1}" %>
     <td><%= star_count("#{prefix}-course", a[:course_rating], '-') %></td>

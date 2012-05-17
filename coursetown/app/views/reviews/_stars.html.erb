@@ -13,7 +13,7 @@
 field_name = local_assigns[:field_name] # name of hidden field where value will be kept
 hints = local_assigns[:hints]
 type = local_assigns[:type]
-if type.to_s == 'workload'
+if type.to_s == 'workload' || type.to_s == 'workload_hints'
     hints_arr = ['very light','pretty light','average','pretty heavy','intense']
 else
     hints_arr = %w(bad poor average good great)

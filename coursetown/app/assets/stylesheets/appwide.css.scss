@@ -89,4 +89,13 @@ p {
 .shout {
   @include pop_in;
   padding: 10px;
+
+  #review_count {
+    font-size: 1.3em;
+    font-style: italic;
+
+    strong {
+      font-size: 1.5em;
+    }
+  }
 }

@@ -35,7 +35,7 @@
           <%= link_to 'read reviews', course_reviews_path(:id => course.id, :offering_id => offering.id) -%>
         </span>
         <% if offering.has_happened? %>
-          <%= link_to 'write review', new_reviews_path(:id => offering.id), :class => 'write_review_link' %>
+          <%= link_to 'write review', new_reviews_path(:id => course.id, :offering_id => offering.id), :class => 'write_review_link' %>
         <% end %>
       </div>
 

@@ -130,6 +130,17 @@ class Offering < ActiveRecord::Base
     self.professors.size > 1 ? semi_short_prof_string : prof_string
   end
 
+  def course_string
+    titles = self.courses.map(&:compact_title).sort
+    if titles.empty?
+      ''
+    elsif titles.size == 1
+      titles.first
+    else
+      "#{titles.first} aka #{titles[1,titles.size].join(', ')}"
+    end
+  end
+
   def time_string
     prefix = "#{self.year}#{self.term}"
     if self.time
@@ -141,6 +152,11 @@ class Offering < ActiveRecord::Base
 
   def summary_string
     "#{time_string} - #{short_prof_string}"
+  end
+
+  def long_summary_string
+    return self.summary_string if self.section.blank?
+    "#{self.summary_string} (sec. #{self.section})"
   end
 
   # NOTE: don't call .title unless the course is INCLUDED
@@ -213,6 +229,7 @@ class Offering < ActiveRecord::Base
   end
 
   def self.average_reviews(offerings)
+    offerings = [*offerings] # take a single or multiple args
     reviews = offerings.map(&:reviews).flatten
     old_reviews = offerings.map(&:old_reviews).flatten
 
@@ -232,7 +249,7 @@ class Offering < ActiveRecord::Base
     # calculate the median separately (from offerings, not reviews)
     msum, mcount = 0, 0
     offerings.each do |o|
-      if o.median_grade.present?
+      if o.median_grade.present? && o.median_grade != 0
         msum += o.median_grade
         mcount += 1
       end
@@ -244,5 +261,23 @@ class Offering < ActiveRecord::Base
 
     # TODO would it make more sense to stuff reviews & old_reviews in the hash too?
     return avgs, reviews, old_reviews
+  end
+
+  # assumes offerings includes distribs (otherwise is super inefficient)
+  # returns hsh, where hsh[INT] = true if EVERY offering has an INT,
+  #   false if only some do, and non-existent if none do
+  def self.get_reqs(offerings)
+    return {} if offerings.size == 0
+    hsh = Hash[ [*%w(W NW CI), *Distrib.all_abbrs].map{|x| [x,0]} ]
+    offerings.each do |offering|
+      offering.get_reqs.each{|d| hsh[d] += 1}
+    end
+    hsh.delete_if{|k,v| v == 0}
+    hsh.each do |k,v|
+      hsh[k] = v == offerings.size
+    end
+  end
+  def get_reqs
+    [*self.wc,*self.distribs.map(&:distrib_abbr)]
   end
 end

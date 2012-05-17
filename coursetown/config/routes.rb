@@ -32,7 +32,7 @@ Coursetown::Application.routes.draw do
     collection do
       get 'prof/:id' => 'reviews#prof', :as => :prof
       # get 'offering/:id' => 'reviews#offering', :as => :offering
-      get 'offering/:id/new' => 'reviews#new', :as => :new
+      get 'course/:id/new' => 'reviews#new', :as => :new
       get 'course/:id' => 'reviews#course', :as => :course
 
       get 'quick_start' => 'reviews#batch_start', :as => :quick_start

@@ -2,29 +2,39 @@
 <%= javascript_include_tag "reviewComment" %>
 
 <% full_term_names = {'W' => 'Winter', 'F' => 'Fall', 'S' => 'Spring', 'X' => 'Summer'} %>
-<% workload_hints = ['super light','a little light','average','pretty heavy','very heavy'] %>
 
 <div class="PageTitle">
 <h1>Quick Review</h1>
 </div>
 
 <div id='content'>
-
+<p>
 We've fetched the courses we know you've taken. You don't have to review all of
 them right now, but if you choose to review a course then you must fill out
-everything on that course's row.<br/>
-
-If you want to give a course a more in-depth review, with comments and/or
-multiple stated reasons for taking the class, click "write full review."<br/>
-
-You don't have to review ALL your courses right now. We'll only save the ones
-you fill out a a complete review for (rate all 3 star-ratings, add a reason)
-
-<%# TODO bucketize reviews %>
+everything on that course's row.
+</p>
+<p>
+If you you can see your grades below, that is because you gave the Quick Review
+tool the 'OK' to report them. However, Course Picker will only actually <em>save</em>
+grades in courses you fill out a full review for.
+<br/>
+<span class="hint">In the future, we'll add more fine-grained control over
+  grade-reporting than this all-or-nothing approach.</span>
+</p>
+<p>
+  To review a course, you have to fill out <em>everything</em> on that course's
+  row <em>except</em> grade and comments (those are optional).
+  <br/>
+  <span class="hint">Right now the only
+  way to add multiple reasons for taking a course is to review it individually,
+  outside of Quick Review. We'll change that soon.</span>
+</p>
 
 <%= form_tag({:controller => :reviews, :action => 'create_batch'}, :id => 'batch_review_form') do %>
 
   <%= submit_tag 'Submit', :id => 'batch_review_submit' %>
+  <span id="alert_box"></span>
+  <span id="warning_box"></span>
 
   <table id="batch_reviews">
     <% is_dark = true
@@ -80,14 +90,17 @@ you fill out a a complete review for (rate all 3 star-ratings, add a reason)
             <td class='title'><%= title %></td>
             <td class='profs'><%= profs %></td>
             <td class='grade'>
-              <%= result[:grade] %>
-              <%= hidden_field_tag "#{prefix}[grade]", Review.number_grade(result[:grade]) %>
+              <%# convert letter_grade -> number -> letter to get rid of invalid letter_grades (e.g. when redacting grades) %>
+              <% if (number_grade = Review.number_grade(result[:grade])) %>
+                <%= Review.letter_grade(number_grade) %>
+                <%= hidden_field_tag "#{prefix}[grade]", number_grade %>
+              <% end %>
             </td>
             <td class='rating'><%= star_rating_tag "#{prefix}[course_rating]" %></td>
             <td class='comment-button'><button class="showCommentCourse" type="button" id="<%= "#{button_prefix}-course" %>"></button>
             <td class='rating'><%= star_rating_tag "#{prefix}[prof_rating]" %></td>
             <td class='comment-button'><button class="showCommentProf" type="button" id="<%= "#{button_prefix}-prof" %>"></button></td>
-            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]", :hints => workload_hints %></td>
+            <td class='rating'><%= star_rating_tag "#{prefix}[workload_rating]", :type => 'workload' %></td>
             <td class='comment-button'><button class="showCommentWork" type="button" id="<%= "#{button_prefix}-work" %>"></button>
             <td><%= reasons_tag "#{prefix}[reasons]" %></td>
           </tr>

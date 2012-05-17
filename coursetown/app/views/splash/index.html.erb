@@ -35,6 +35,9 @@
       the incredibly convenient new <%= link_to 'Quick Review Tool', quick_start_reviews_path %>
       to rate classes with <em>unprecedented ease</em>.
     </p>
+    <% if @current_user.present? %>
+      <span id="review_count">You've written <strong><%= @review_count || 0 %></strong> reviews so far.</span>
+    <% end %>
   </div>
 
   <div id='beta_note'>

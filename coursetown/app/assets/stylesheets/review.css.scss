@@ -165,6 +165,21 @@ h2 {
   margin-right: auto;
 }
 
+.group-review-content .new_review_link {
+  float: right;
+  @include pop_out;
+  text-decoration: none;
+  border-radius: 15px;
+  font-weight: bold;
+  background-color: #272;
+  color: #6c6;
+  padding: 3px 12px;
+}
+.group-review-content .new_review_link:hover {
+  background-color: #2a2;
+  color: white;
+}
+
 /* ----------- partial: old reviews ------- */
 
 .old-review-header {
@@ -269,6 +284,33 @@ h2 {
   td.bad_news {
     font-style: italic;
     color: #888;
+  }
+}
+
+/* ----------- partial: course_description - */
+
+#course_description {
+  @include pop_in;
+
+  #distrib_tags {
+    margin-top: 15px;
+
+    .label {
+      font-weight: bold;
+    }
+
+    .distrib_tag, .wc_tag {
+      font-weight: bold;
+      color: white;
+      background-color: #191;
+      border-radius: 6px;
+      padding: 2px 7px;
+      box-shadow: $pop_out rgba(0,0,0,0.2);
+    }
+
+    .wc_tag {
+      background-color: #060;
+    }
   }
 }
 
@@ -524,4 +566,20 @@ table#batch_reviews {
       margin: 10px;
     }
   }
+}
+
+#alert_box, #warning_box {
+  padding: 10px;
+  font-weight: bold;
+  font-style:italic;
+  color:#5a5;
+}
+#warning_box {
+  color:#b00;
+}
+
+td.grade, .grade_selector, .grade_selector option {
+  display:block;
+  width: 100px !important;
+  max-width: 100px !important;
 }

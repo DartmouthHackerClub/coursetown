@@ -1,33 +1,25 @@
 <%# HEADER %>
 <div class="PageTitle">
-		<% courses = @review.offering.courses %>
-	<% if courses.empty? || !(courses.first.is_a? Course)%>
-		<h1>"New Review for UNKNOWN COURSE"</h1>
-	<% else %>
-		<h1><%= "New Review for #{courses.first.compact_title}" %></h1>
-	<% end %>
-	<% if courses.length > 1 %>
-		<h3><%= "Cross-listed as: " + courses.map(&:compact_title).join(', ') %></h3>
-	<% end %>
+	<h1><%= "New Review for #{@course.compact_title}" %></h1>
 <% else %>
-</div>
-
-<%# COURSE INFO %>
-
-<div id="course_info">
-	<% professors = @review.professors %>
-	<%= (professors.length == 1 ? "Instructor: " : "Instructors: ") %>
-	<%=	prof_links @review.offering %>
-	<br/>
-
-	<%= @review.offering.time_string %>
-	<%# TODO [not when you took this course?] button %>
 </div>
 
 <%# REVIEW %>
 
 <div>
 	<%= form_for @review do |f| %>
+
+		<div id='which_offering' %>
+			<% opts = Offering.sort_by_time(@course.offerings).
+				reverse.map {|o| [o.long_summary_string, o.id]}.
+				uniq{|str,oid| str}
+
+				puts "REVIEW.OFFERING = #{@review.offering_id}"
+			default = @review.offering_id.to_s
+			%>
+			<%= f.label :offering_id, "When did you take this course?" %>
+			<%= f.select :offering_id, options_for_select([['',0],*opts], default) %>
+		</div>
 
 		<div id='review_motivations'>
 
@@ -75,8 +67,10 @@
 	  	:class => 'new_review_textarea',
 	  	:placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?") %>
 	  <br/>
-
-	  <%= f.hidden_field :offering_id %>
+	  <%= hidden_field_tag 'schedule_id', @sched.id if @sched.present? %>
+	  <%= hidden_field_tag 'course_id', @course.id %>
+	  <%# TODO rails might auto-generate this hidden field? %>
+	  <%= f.hidden_field :id, @review.id if @review.id.present? %>
 
 	  <%= f.submit "Submit" %>
 	<% end %>

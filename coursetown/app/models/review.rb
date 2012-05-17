@@ -41,8 +41,7 @@ class Review < ActiveRecord::Base
     @grade_to_letter[num_grade]
   end
   def self.number_grade (letter_grade)
-    return nil if letter_grade.blank?
-    val = letter_grade.chomp('*') # ignore citation stars
+    val = letter_grade.strip.chomp('*').strip # ignore whitespace and citation stars
     @letter_to_grade[val]
   end
 
