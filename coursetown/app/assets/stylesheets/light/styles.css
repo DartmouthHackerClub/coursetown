@@ -70,7 +70,7 @@ body:before		{
 				height:100%;
 				float:left;
 				width:0;
-				margin-top:-32767px;/
+				margin-top:-32767px;
 				}
 
 body			{
@@ -2098,7 +2098,7 @@ ul.unordered.type26 li	{background-image:url(../../icons/16x16/star_full.png);}
 				
 .table			{
 				*border-right:1px solid #d9d9d9;		/* ---- CSS Hack for IE7 ---- */
-				border-right:1px solid #d9d9d9\0/;		/* ---- CSS Hack for IE8 ---- */
+				/* border-right:1px solid #d9d9d9\0/;		/* ---- CSS Hack for IE8 ---- */
 				}
 				
 .table th		{
@@ -2127,13 +2127,13 @@ ul.unordered.type26 li	{background-image:url(../../icons/16x16/star_full.png);}
 .table tr:nth-child(even){background:#f0f0f0;}
 .table tr.odd td{
 				*background:#f0f0f0;		/* ---- CSS Hack for IE7 ---- */
-				background:#f0f0f0\0/;		/* ---- CSS Hack for IE8 ---- */
+				/*background:#f0f0f0\0/;		/* ---- CSS Hack for IE8 ---- */
 				color:#232323;
 				}
 .table tr:nth-child(-n+1) td{border-top:1px solid #D6D6D7;}
 .table tr td	{
 				*border-top:1px solid #D6D6D7;		/* ---- CSS Hack for IE7 ---- */
-				border-top:1px solid #D6D6D7\0/;	/* ---- CSS Hack for IE8 ---- */
+				/*border-top:1px solid #D6D6D7\0/;	/* ---- CSS Hack for IE8 ---- */
 				}
 				
 .table td		{

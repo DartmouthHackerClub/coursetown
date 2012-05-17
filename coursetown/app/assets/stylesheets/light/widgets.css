@@ -308,7 +308,7 @@ Author URI: http://themeforest.net/user/MixerTheme
 				line-height:1.515em;
 				border-top:1px dashed rgba(255, 255, 255, 0.2);
 				*border-top:1px dashed #4a4e4b;
-				border-top:1px dashed #4a4e4b\0/;
+				/*border-top:1px dashed #4a4e4b\0/; */
 				}
 
 #fsb .widget_recent_posts li:first-child {border-top:none;}
@@ -344,7 +344,7 @@ Author URI: http://themeforest.net/user/MixerTheme
 				background:url(../../images/fsb_bull.png) 3px 15px no-repeat;
 				border-top:1px dashed rgba(255, 255, 255, 0.2);
 				*border-top:1px dashed #4a4e4b;
-				border-top:1px dashed #4a4e4b\0/;
+				/* border-top:1px dashed #4a4e4b\0/; */
 				}
 				
 #fsb .widget_nav_menu li:first-child,
