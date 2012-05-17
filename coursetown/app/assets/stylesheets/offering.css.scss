@@ -1,0 +1,48 @@
+@mixin pop_in {
+  background-color: #ddd;
+  box-shadow: inset 1px 1px 1px 0 rgba(0,0,0,0.1);
+  padding: 7px !important;
+  border-radius: 5px;
+}
+
+form#search_form {
+
+  padding-bottom: 10px;
+
+  #number {width: 200px;}
+  #dept {width: 200px;}
+  #title {width: 400px;}
+  #prof {width: 805px;}
+}
+
+form#search_form > div > label {
+  display: block;
+  width: 100px;
+  float: left;
+  font-weight: bold;
+}
+
+form#search_form > div {
+  overflow: hidden;
+  padding: 7px;
+}
+
+form#search_form > div > span {
+  @include pop_in;
+  margin: 5px;
+}
+
+#results_container {
+  #no_results {
+    color: #c33;
+    background-color: #eaa;
+    border: 1px solid #c33;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+
+    span {
+      color: inherit;
+    }
+  }
+}

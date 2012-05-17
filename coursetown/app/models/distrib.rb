@@ -12,6 +12,7 @@ class Distrib < ActiveRecord::Base
     'TLA' => 'Technology or Applied Science (Lab)',
     'TMV' => 'Traditions of Thought, Meaning & Value'
   }
+  @abbr_list = %w(ART LIT INT SOC TMV QDS SCI SLA TAS TLA)
   @abbr_set = Set.new(@full_names.each_key.to_a)
   validates :distrib_abbr, :inclusion => {:in => @abbr_set,
     :message => "Invalid distrib abbreviation: '%{value}'"}
@@ -25,7 +26,7 @@ class Distrib < ActiveRecord::Base
   end
 
   def self.all_abbrs
-    @full_names.each_key
+    @abbr_list.each
   end
 
   def self.is_abbr?(str)

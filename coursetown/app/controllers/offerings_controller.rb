@@ -3,11 +3,20 @@ class OfferingsController < ApplicationController
   # returns json, to be rendered via ajax
   def search_results
     logger.debug "==================================="
-    queries = params[:queries]
-    logger.debug queries
+    query = params[:query] || {}
+
+    # process the groups
+    [:distrib, :wcult, :time, :term].each do |k|
+      if query[k].present?
+        query[k] = query[k].each_key.to_a
+      end
+    end
+    query.select!{|k,v| v.present?}
+
+    logger.debug query
     logger.debug "==================================="
 
-    @offerings = Offering.search_by_query(queries).uniq(&:id)
+    @offerings = Offering.search_by_query(query).uniq(&:id)
 
     respond_to do |format|
       format.json do

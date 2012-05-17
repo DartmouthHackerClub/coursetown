@@ -44,6 +44,10 @@ class Offering < ActiveRecord::Base
 
   # FIXME: HUGE SQL INJECTION VULNERABILITY. HUGE.
 
+  def self.list_times
+    %w{8 9L 9S 10 11 12 2 3A 10A 2A 3B}
+  end
+
   # TODO: median, nro, description
   def self.search_by_query(queries)
     return [] if queries.blank? || queries.each_value.all?{|v| v.blank?}
@@ -62,8 +66,8 @@ class Offering < ActiveRecord::Base
       q[:desc] = queries[:description].split(",").
           map { |name| "courses.desc like '%#{name.strip}%'" }.join(" OR ")
     end
-    if queries[:professors].present?
-      q[:prof] = queries[:professors].split(",").map { |name| "professors.name like '%#{name.strip}%'" }.join(" OR ")
+    if queries[:prof].present?
+      q[:prof] = queries[:prof].split(",").map { |name| "professors.name like '%#{name.strip}%'" }.join(" OR ")
     end
     q[:course] = Hash[queries.slice(:department, :number).map{|k,v| ["courses.#{k.to_s}",v]}]
     q[:offering] = Hash[queries.slice(:period, :term, :year, :wc, :time).map{|k,v| ["offerings.#{k.to_s}",v]}]

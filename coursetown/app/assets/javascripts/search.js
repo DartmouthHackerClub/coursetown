@@ -1,6 +1,4 @@
-var profs = null;
-var dept_abbrevs = null;
-var titles = null;
+
 var empty_rows = 0;
 var query_url = 'http://hacktown.cs.dartmouth.edu/search/courses/courses/_search';
 //TODO: delete the above when we're fully transitioned off of couch
@@ -86,7 +84,7 @@ function hide_loading() {
 function show_results(results) {
     last_result = results
     hide_loading();
-    if(results.length === 0) {
+    if(results.length <= 0) {
         $('#no_results').show();
         $('#the_results').hide();
     } else {
@@ -239,13 +237,13 @@ function add_search_row_if_we_need_one() {
     left_side.find("select").change();
     left_side.parent().hide();
   });
-    $('input[name="title"]').autocomplete({
+    $('input[id="title"]').autocomplete({
       source: '/courses.json',
     });
-    $('input[name="Professors"]').autocomplete({
+    $('input[id="prof"]').autocomplete({
       source: '/professors.json',
     });
-    $('input[name="department"]').autocomplete({
+    $('input[id="dept"]').autocomplete({
       source: '/departments.json',
     });
 }
@@ -254,13 +252,14 @@ function make_search_row_dom_element() {
     row = $(' <fieldset class="search_row"> </fieldset> ');
     left_side = $(' <fieldset class="left_side"> </fieldset> ');
     close_link = $('<a href="#" class="close_row">X</a>');
-    left_side.append(close_link);
-    close_link.hide();
+    // left_side.append(close_link);
+    // close_link.hide();
 	dropdown = make_left_side_dropdown();
     left_side.append(dropdown);
     right_side = $(' <fieldset class="right_side"></fieldset> ');
     row.append(left_side);
     row.append(right_side);
+    row.append(close_link)
 	return row[0];
 }
 
@@ -284,136 +283,6 @@ function insert_search_row_dom_element() {
     return row;
 }
 
-
-function do_search(form_params) {
-    window.location.hash = JSON.stringify(form_params);
-    periods = [];
-    distribs = [];
-
-    queries = {};
-    for (key in form_params) {
-        name = form_params[key]['name'];
-        val = form_params[key]['value'];
-        if (val == '' || !val){
-            continue;
-        }
-        if (name == 'department') {
-            var vals = val.split(',');
-
-            depts = [];
-            for (var k in vals) {
-                var val = $.trim(vals[k]);
-                if (val == '') continue;
-
-                // resolve dept
-                if (!dept_map[val]) {
-                    //try to resolve it
-                    for (key in dept_map) {
-                        if (dept_map[key]['name'].toLowerCase() == val.toLowerCase()) {
-                            val = key;
-                            break;
-                        }
-                    }
-                }
-                depts.push(val);
-            }
-
-            queries['department'] = depts;
-        }
-        else if (name == 'description') {
-          /*
-            var val = form_params[key]['value'];
-            splits = val.split(' ');
-            words = [];
-            for (s in splits) {
-                if (splits[s] != '')
-                    words.push(splits[s]);
-            }
-            queries['description'] = words;
-            */
-            queries['description'] = form_params[key]['value'];
-        }
-        else if (name == 'Professors') {
-          /*
-            var val = form_params[key]['value'];
-            splits = val.split(',');
-            profs = [];
-            for (s in splits) {
-                if (splits[s] != '')
-                    profs.push($.trim(splits[s]));
-            }
-            queries['professors'] = profs;
-            */
-          queries['professors'] = form_params[key]['value'];
-        }
-        else if (name == 'title') {
-          /*
-            var val = form_params[key]['value'];
-            splits = val.split(' ');
-            title_words = [];
-            for (s in splits) {
-                if (splits[s] != '')
-                    title_words.push(splits[s]);
-            }
-
-            queries['title'] = title_words;
-            */
-            queries['title'] = form_params[key]['value'];
-        }
-        else if (name == 'Number') {
-            var val = parseInt(form_params[key]['value']);
-            queries['number'] = val;
-        }
-        else if (name == 'avg_median') {
-            var val = parseFloat(form_params[key]['value']);
-            queries['avg_median'] = val;
-        }
-        else if (name.substring(0, 7) == 'period_') {
-            // grab the period param
-            if (val == '1') {
-                periods.push(name.substring(7));
-            }
-        }
-        else if (name.substring(0, 8) == 'distrib_') {
-            // grab the distrib param
-            if (val == '1') {
-                distribs.push(name.substring(8));
-            }
-        }
-        // don't pass our dummy dropdown thing!
-        else if (name == 'criteria') {
-            continue;
-        }
-        // for fields that don't require any special manipulation, like year
-        else {
-            queries[name] = val;
-        }
-    }
-
-    if (periods.length > 0) {
-        queries['time'] = periods;
-    }
-    if (distribs.length > 0) {
-        queries['distribs'] = distribs;
-    }
-    search_params = {
-        "queries": queries
-    };
-    //console.log(JSON.stringify(search_params));
-    loading();
-    $.ajax({
-        dataType: "html",
-        type: "GET",
-        url: search_query_url,
-        data: search_params,
-        success: function (data) {
-            show_results($(data).children('div.post'));
-        },
-        error: function (e) {
-            show_error(e);
-        }
-    });
-}
 
 function removeDups(arrVal) {
     var uniqueArr = [];
@@ -484,18 +353,18 @@ var search_options = {
 </select> \
 '
     },
-    'time': {
-        'long_name': 'Meeting Time',
-        'input_field': generate_input_field_time()
-    },
-    'term': {
-        'long_name': 'Quarter',
-        'input_field': generate_input_field_quarter()
-    },
-    'dist': {
-        'long_name': 'Distrib',
-        'input_field': generate_input_field_distrib()
-    },
+    // 'time': {
+    //     'long_name': 'Meeting Time',
+    //     'input_field': generate_input_field_time()
+    // },
+    // 'term': {
+    //     'long_name': 'Quarter',
+    //     'input_field': generate_input_field_quarter()
+    // },
+    // 'dist': {
+    //     'long_name': 'Distrib',
+    //     'input_field': generate_input_field_distrib()
+    // },
     'wc': {
         'long_name': 'World Culture',
         'input_field': '\
@@ -526,6 +395,10 @@ $().ready(function () {
         alert("Course picker isn't written for Internet Explorer and may not work correctly.");
     }
 
+    // hide the three results boxes (loading, results, no_results)
+    loading();
+    hide_loading();
+
     search_params = {
         "size": 9000
     };
@@ -537,7 +410,6 @@ $().ready(function () {
         url: search_query_url,
         data: JSON.stringify(search_params),
         success: function (data) {
-            data = data['hits']['hits'];
             profs = removeDups($.map(data , function(x){ return x['_source']['Professors']}));
             titles = removeDups($.map(data , function(x){ return x['_source']['title']}));
         },
@@ -552,7 +424,7 @@ $().ready(function () {
         dept_abbrevs.push(key);
         dept_abbrevs.push(dept_map[key]['name']);
     }
-        
+
     for (key in search_options) {
         search_options[key]['in_use'] = false;
     }
@@ -562,15 +434,26 @@ $().ready(function () {
 
     row1.find("select option:selected").removeAttr('selected');
     row1.find("select option[value='title']").attr('selected', 'selected');
-    row1.find("select").change();
+    row1.find("select").change(); // TODO: removing this line breaks autocomplete. HOW.
 
     //show_favorites();
     $("#search_form").submit(function(event) {
         event.preventDefault();
     	try{
             the_form = $('#search_form');
-            form_params = the_form.serializeArray();
-            do_search(form_params);
+            loading();
+            $.ajax({
+                dataType: "html",
+                type: "GET",
+                url: search_query_url,
+                data: the_form.serialize(),
+                success: function (data) {
+                    show_results($(data).children('div.post'));
+                },
+                error: function (e) {
+                    show_error(e);
+                }
+            });
         }catch(e){
         	console.log(e.message)
         }
@@ -587,49 +470,11 @@ $().ready(function () {
             }
     });
 
-    // if they already have a search encoded in the URL, execute it
-    if(window.location.hash){
-        the_params = JSON.parse(window.location.hash);
-        do_search(the_params);
-    } else {
-        hide_loading();
-    }
+    // // if they already have a search encoded in the URL, execute it
+    // if(window.location.hash){
+    //     the_params = JSON.parse(window.location.hash);
+    //     do_search(the_params);
+    // } else {
+    //     hide_loading();
+    // }
 });
-/*
-FOR LATER....
-var favorites = {
-    0 : {
-        'dept' : 'COSC',
-        'number' : '005',
-        'time' : '10',
-        'title' : 'Intro Computer Science',
-        'quarter' : '11F',
-        'prof' : 'Balkcom',
-        },
-};
-
-function show_favorites(){
-    show_in_here = $('#favorites');
-    favorites_dom_elem = $('<span></span>');
-    for(var key in favorites){
-        favorite = favorites[key];
-        favorite_li = $("<li>hi</li>");
-        timeslot_div = get_or_create_favorite_timeslot_div(favorite['timeslot']);
-        timeslot_div.append(favorite_li);
-    }
-    show_in_here.append(favorites_dom_elem);
-}
-
-function get_or_create_favorite_timeslot_div(timeslot){
-    class = 'favorite_timeslot_div_' + timeslot
-    existing_div = $('.' + class);
-    if(existing_div){
-        return existing_div;
-    }
-    else{
-        new_div = $('<div></div>');
-        new_div.attr('class', class);
-        $('#favorites').append();
-    }
-}
-*/

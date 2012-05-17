@@ -5,13 +5,64 @@
 </div>
 <!-- Content Area -->
 <div id="content">
-  <form method="" action="" id="search_form">
-    <fieldset class="rows">
-    </fieldset>
-    <p>
-    <input type="submit" value="Search &raquo;"/>
-    </p>
-  </form>
+
+  <%= form_tag(search_path, :id => 'search_form') do %>
+    <div>
+      <%= label_tag 'query[term]', 'Term' %>
+      <%= select_tag 'query[year]', options_for_select(['(ignore year)',2013,2012,2011,2010,2009].map{|x| [x,x]}, Time.now.year) %>
+      <span id='terms'>
+        <% %w(W S X F).each do |term| %>
+          <% name = "query[term][#{term}]" %>
+          <span><%= label_tag name, term %><%= check_box_tag name, 1 %></span>
+        <% end %>
+      </span>
+    </div>
+    <div>
+      <%= label_tag 'query[title]', 'Courses' %>
+      <%= text_field_tag 'query[department]', '', :id => 'dept',
+      :placeholder => 'department(s) (e.g. HIST)',
+      :autocomplete => 'off', 'aria-autocomplete' => 'list', :class => 'ui-autocomplete-input', 'aria-haspopup' => true %>
+      <%= text_field_tag 'query[number]', '', :placeholder => 'course number(s)', :id => 'number' %>
+      <%= text_field_tag 'query[title]', '', :id => 'title',
+      :placeholder => %(title(s) or partial title(s) (e.g. "Computer Graphics" or just "Graphics")),
+      :autocomplete => 'off', 'aria-autocomplete' => 'list', :class => 'ui-autocomplete-input', 'aria-haspopup' => true %>
+    </div>
+    <div>
+      <%= label_tag 'query[prof]', 'Professors' %>
+      <%= text_field_tag 'query[prof]', '', :id => 'prof',
+      :placeholder => 'e.g. John Adams, Jane B. Doe III' %>
+    </div>
+    <div>
+      <%= label_tag 'query[time]', 'Meeting Times' %>
+      <span id='times'>
+        <% Offering.list_times.each do |time| %>
+          <% name = "query[time][#{time}]" %>
+          <span><%= label_tag name, time %><%= check_box_tag name, 1 %></span>
+        <% end %>
+      </span>
+    </div>
+    <div>
+      <%= label_tag 'foo', 'Requirements' %>
+      <span id='distribs'>
+        <% Distrib.all_abbrs.each do |abbr| %>
+          <% name = "query[distrib][#{abbr}]" %>
+          <span><%= label_tag name, abbr %><%= check_box_tag name, 1 %></span>
+        <% end %>
+      </span>
+      <span id='wcult'>
+        <% %w(W NW CI).each do |abbr| %>
+          <% name = "query[wcult][#{abbr}]" %>
+          <span><%= label_tag name, abbr %><%= check_box_tag name, 1 %></span>
+        <% end %>
+      </span>
+    </div>
+    <div>
+      <%= label_tag 'query[median]', 'Avg. Median' %>
+      <%= select_tag 'query[median]', options_for_select([['',''],['A','A'],['A- or higher','A-'],
+        ['B+ or higher','B+'],['B or higher','B'],['B- or higher','B-']], '') %>
+    </div>
+    <%= submit_tag raw("Search &raquo;"), :id => :search_button %>
+  <% end %>
 
   <div>
     Sort by: <input type="radio" id="sortby_course" name="sortby" value="course" checked> <label for="sortby_course">course</label>
@@ -24,7 +75,7 @@
     <h2 id="loading_results">Loading...</h2>
     <div id="the_results">
     </div>
-    <div id="no_results" style='visibility:hidden;'>
+    <div id="no_results">
       <%= not_found('No results. Try broadening your query or searching different fields') -%>
     </div>
   </div>
