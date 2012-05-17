@@ -9,7 +9,9 @@
   <%= form_tag(search_path, :id => 'search_form') do %>
     <div>
       <%= label_tag 'query[term]', 'Term' %>
-      <%= select_tag 'query[year]', options_for_select(['(ignore year)',2013,2012,2011,2010,2009].map{|x| [x,x]}, Time.now.year) %>
+      <%# ideally `years` would be determined by what's IN the database... %>
+      <% years = ((Time.now.year-4)..(Time.now.year+1)).to_a.reverse %>
+      <%= select_tag 'query[year]', options_for_select(['(ignore year)',*years].map{|x| [x,x]}, Time.now.year) %>
       <span id='terms'>
         <% %w(W S X F).each do |term| %>
           <% name = "query[term][#{term}]" %>
