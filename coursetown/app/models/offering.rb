@@ -11,13 +11,19 @@ class Offering < ActiveRecord::Base
   has_many :old_reviews, :primary_key => :old_id, :foreign_key => :old_offering_id
 
   validates :term, :inclusion => {:in => %w{F W S X}}, :presence => true
-  validates :wc, :inclusion => {:in => [nil,'W','NW','CI']}
+  validates :wc, :inclusion => {:in => [nil,'W','NW','CI']}, :if => 'wc.present?'
   validates :old_id, :uniqueness => true, :unless => 'old_id.nil?'
   # validates all classes w/ old_id are same year & term
   # validates :time, :inclusion => {:in => [nil] + %w{9L 9S 10 11 12 2 3A 3B 10A 2A}}
 
   @terms = Hash[%w{W S X F}.each_with_index.to_a]
   @times = Hash[%w{8 9L 9S 10 11 12 2 3A 10A 2A 3B}.each_with_index.to_a]
+
+  before_validation do |o|
+    o.wc.upcase! if o.wc.present?
+    o.term.upcase! if o.term.present?
+    o.time.upcase! if o.time.present?
+  end
 
   # ATTRIBUTES (from schema).
   # sources: timetable, orc, transcript, courseguide, medians
