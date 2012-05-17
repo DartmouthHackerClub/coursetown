@@ -1,20 +1,20 @@
 // Dropdown Menu Plugin
-ddsmoothmenu.init({
-	mainmenuid: "menu", //menu DIV id
-	orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
-	classname: 'ddsmoothmenu', //class added to menu's outer DIV
-	contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
-})
+// ddsmoothmenu.init({
+// 	mainmenuid: "menu", //menu DIV id
+// 	orientation: 'h', //Horizontal or vertical menu: Set to "h" or "v"
+// 	classname: 'ddsmoothmenu', //class added to menu's outer DIV
+// 	contentsource: "markup" //"markup" or ["container_id", "path_to_menu_file"]
+// })
 
 jQuery(document).ready(function(){
-	
+
 	// Cufon Font Load
 	//Cufon.replace('h1, h2, h3, h4', { fontFamily: 'FrancophilSans', hover: false, color: '-linear-gradient(#ffffff, #bababa)' });	// Only for dark theme color
 	Cufon.replace('h1, h2, h3, h4', { fontFamily: 'FrancophilSans', hover: false, color: '-linear-gradient(#727171, #020202)' });	// Only for light theme color
 	Cufon.replace('.big_btn', { fontFamily: 'FrancophilSans', hover: true });
 	Cufon.replace('#fsb h3', { fontFamily: 'FrancophilSans', hover: true, textShadow: '1px 1px rgba(0, 0, 0, 0.8)', color: '-linear-gradient(#FCFCFC, #B8B8B8)' });
 	Cufon.replace('#fsb h4, .gallery h4, .partners h4, .header_full h2, .header_full h3, .overview h4', { fontFamily: 'FrancophilSans', hover: true, color: '-linear-gradient(#ffffff, #bababa)' });
-	
+
 	// Fluid Menu
 	if (jQuery(".ddsmoothmenu").length) {
 		jQuery('.ddsmoothmenu li').click(function(){
