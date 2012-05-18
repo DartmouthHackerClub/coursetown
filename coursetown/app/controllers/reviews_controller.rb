@@ -175,7 +175,7 @@ class ReviewsController < ApplicationController
 
     puts "review_id = #{review_id}"
 
-    if schedule_id
+    if schedule_id.present? && schedule_id > 0
       schedule = Schedule.find(schedule_id)
       if schedule.offering_id != offering_id
         raise Exception.new("Schedule and review have different offering id's")
