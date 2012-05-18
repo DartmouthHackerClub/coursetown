@@ -10,6 +10,13 @@
   padding: 4px;
 }
 
+@mixin pop_out_white {
+  box-shadow: 2px 2px 3px 0 rgba(0,0,0,0.3);
+  padding: 4px;
+  border-radius: 10px;
+  background-color: white;
+}
+
 @mixin pop_in {
   box-shadow: inset 1px 1px 2px 0 rgba(0,0,0,0.2);
   padding: 10px;
@@ -103,4 +110,34 @@ p {
 h1, h2, h3, h4, h5 {
   font-weight: bold;
   color: black;
+}
+
+.pull-left {
+  float:left;
+}
+
+#get_started {
+  overflow: hidden;
+  padding: 0 5px;
+  margin: 15px;
+
+  a {
+    width: 420px;
+    display: block;
+    overflow: hidden;
+
+    border-radius: 5px;
+    background-color: #ccc;
+    padding: 10px;
+    text-decoration: none;
+
+    h1 {
+      padding: 0px;
+      margin: 0px;
+    }
+  }
+
+  a:hover {
+    background-color: #aaa;
+  }
 }
