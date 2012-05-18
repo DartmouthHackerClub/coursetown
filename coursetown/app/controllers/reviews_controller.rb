@@ -295,7 +295,7 @@ class ReviewsController < ApplicationController
   def batch_start
     # make sure they're logged in when they first do it, so that they
     # don't run into that issue.
-    force_login && return if @current_user.nil?
+    force_login(request.fullpath) && return if @current_user.nil?
   end
 
   # receive POST w/ full transcript data in it

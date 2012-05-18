@@ -8,6 +8,7 @@ namespace :scrape do
   end
 
   task :orc => :environment do
+    num_new = 0
     filename = '../scrapers/orc.json'
     Offering.transaction {
       File.open(filename, 'r') { |f|
