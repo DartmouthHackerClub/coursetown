@@ -2,27 +2,34 @@
 avgs = local_assigns[:avgs]
 avg_counts = local_assigns[:counts]
 reviews = local_assigns[:reviews]
+
+header_id = local_assigns[:header_id] || 'old-review-header'
+header_class = local_assigns[:header_class] || 'section_divider_header review_header'
 %>
 
-<% if reviews.blank? %>
-  No old reviews.
-<% else %>
-  <%= reviews.size %> old reviews.
+<h2 id="<%= header_id %>" class="<%= header_class %>">
+  Old Reviews
+  <span class='pull-right'><%= "(#{reviews.size} old #{reviews.size == 1 ? 'review' : 'reviews'})" %></span>
+</h2>
+
+<div class='old_reviews_content'>
+<% if reviews.present? %>
 
 <%
+# the latter two labels are from the previous 'summary' idea (see logs)
 labels = [ # format: [key, label, low-star blurb, high-star blurb]
 %(coverall | Overall course rating | Horrible course | Great course),
 %(cpace | Was paced too quickly | Moved slowly | Moved quickly),
 %(cwork | Was more work than a typical course | Light workload | Heavy workload),
 %(cinterest | Course was interesting | Uninteresting | Very interesting),
 %(ctas | TAs were helpful | Unhelpful TA's | Really helpful TA's'),
-%(cmatchorc | Matched ORC | Didn't match its ORC description | Matched ORC description perfectly),
+%(cmatchorc | Matched ORC | Didn't match its ORC description | ),
 
 %(hlearn | Homework helped learn the material | Unhelpful homework | Very helpful homework),
 %(hhard | Homework was difficult | Really easy homework | Very difficult homework),
 %(hinterest | Homework was interesting | Boring homework | Very interesting homework),
 
-%(efair | Exams were fair assessments of course material | Unfair exams | Exams were very fair),
+%(efair | Exams were fair assessments | Unfair exams | Exams were very fair),
 %(ehard | Exams were difficult | Very easy exams | Very difficult exams),
 
 %(loverall | Overall lab rating | Horrible labs | Great labs),
@@ -33,23 +40,18 @@ labels = [ # format: [key, label, low-star blurb, high-star blurb]
 # %(reffort | Amount of effort the reviewers put into the coures (on average) | Reviewers put little effort into this course | Reviewers put a lot of effort into this course),
 # %(rattend | Amount of class attended (on average) | Reviewers missed many lectures | Reviewers attended most classes)
 ].map{|s| s.split(' | ')}
+
+comments = labels.map{ |key, _, lo_star, hi_star|
+  if (count = avg_counts[key]) && (avg = avgs[key]) && count > 0 && (avg <= 2 || avg >= 4)
+    avg <= 2 ? lo_star : hi_star
+  end
+}.select{|x| x.present?}
 %>
-
-
-<div class='old_reviews_highlights'>
-  <ul>
-    <% labels.each do |key, _, lo_star, hi_star| %>
-      <% if (count = avg_counts[key]) && (avg = avgs[key]) && count > 0 && (avg <= 2 || avg >= 4) %>
-        <li><%= avg < 2 ? lo_star : hi_star %></li>
-      <% end %>
-    <% end %>
-  </ul>
-</div>
 
 <div class='old_reviews_full'>
   <table>
     <% labels.each do |key, label, _, _| %>
-      <% next if avgs[key].nil? || avg_counts[key] == 0 %>
+      <% next if avgs[key].blank? || avg_counts[key] == 0 %>
       <tr>
         <td><%= label %></td>
         <td><%= star_count "star-count-#{key}", avgs[key] %></td>
@@ -58,4 +60,14 @@ labels = [ # format: [key, label, low-star blurb, high-star blurb]
   </table>
 </div>
 
+<div class='old_reviews_headlines'>
+  <h4>Read full reviews</h4>
+  <ul>
+    <% reviews.each do |r| %>
+      <% title_str = r.title.present? ? r.title : not_found('untitled') %>
+      <li><%= link_to title_str, old_review_path(r) %></li>
+    <% end %>
+  </ul>
+</div>
 <% end %>
+</div>

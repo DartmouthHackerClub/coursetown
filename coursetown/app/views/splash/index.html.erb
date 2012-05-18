@@ -1,143 +1,98 @@
 
+
 <div class="PageTitle">
-  <h1>Fullwidth</h1>
+  <h1>Welcome!</h1>
 </div>
-<div id="breadcrumbs">
-  <a href="index.html" title="Home">Home</a> &raquo; <a href="about.html" title="About Us">About Us</a> &raquo; Fullwidth
-</div>
-<!-- Content Area -->
-<div id="content">
-  <!-- Columns one half col + one half col -->
-  <div class="columns">
-    <div class="column">
-      <h3>Column 1</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 2</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
+
+<div id='content'>
+  <p class='tag-line'>
+    Welcome to <%= link_to 'Hacker Club', 'http://dartmouthhackers.com' %>
+    and
+    <%= link_to 'Student Assembly', 'dartmouth.edu/~saportal' %>'s new Course Picker.
+  </p>
+
+  <div id='get_started'>
+    <%= link_to search_path, :class => 'pull-left', :id => 'search_splash_button' do %>
+        <h1>Search for Courses</h2>
+        Find future classes to take, or past classes to review.
+    <% end %>
+    <%= link_to quick_start_reviews_path, :class => 'pull-right', :id => 'quick_start_review_button' do %>
+        <h1>Quick Review</h1>
+        Rate whole batches of classes at once with <em>unprecedented ease</em>.
+    <% end %>
   </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one third col + one third col + one third col -->
-  <div class="columns2">
-    <div class="column">
-      <h3>Column 1</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 2</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
+
+  <div class='shout'>
+    <h1><%= link_to 'Write reviews. Win a Kindle.', quick_start_reviews_path %></h1>
+    <p>
+      Every time you write a review, from now until the end of the Spring Term,
+      you will be entered into a raffle to win <em>fabulous prizes</em>, like an
+      Amazon Kindle or gift-cards to Canoe Club and Dirt Cowboy! The more courses
+      you review, the more likely you are to win, and the bigger the winnings!
+      Once the winners are selected, whichever one reviewed the most courses
+      gets the best prize, and so on.
+    </p>
+    <p>
+
+      To get started, either
+      <%= link_to %(search for classes you've taken), search_path, :class => 'big' %> or use
+      the incredibly convenient new <%= link_to 'Quick Review Tool', quick_start_reviews_path, :class => 'big' %>
+      to rate classes with <em>unprecedented ease</em>.
+    </p>
+    <% if @current_user.present? %>
+      <span id="review_count">You've written <strong><%= @review_count || 0 %></strong> reviews so far.</span>
+    <% end %>
   </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one fourth col + one fourth col + one fourth col + one fourth col -->
-  <div class="columns3">
-    <div class="column">
-      <h3>Column 1</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 2</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
+
+  <div id='beta_note'>
+    <h2>Note: This site is in Beta</h2>
+    <p>
+
+      We built this site because we thought the other ones sucked, and we
+      know you agree. <%= link_to 'SA Course Guide', 'http://hacktown.cs.dartmouth.edu/gudru' -%>
+      makes writing reviews a <em>chore</em>, and somehow reading them is almost
+      as laborious. <%= link_to 'Course Rank', 'https://www.courserank.com/dartmouth/main' %>,
+      on the other hand, is <em>too</em> simple (and it's not very useful
+      without the old review data). We tried to design a new site with all the
+      criticism we'd heard from campus in mind, but we know it isn't
+      perfect yet.
+    </p>
+    <ul class="unordered type10">
+      <li>
+        <strong>We want your feedback!</strong> If you do/don't like something,
+        tell us! We're building this site for you, so we want you
+        to be happy with it! <br/>
+        Shoot us an email at <a href='mailto:hackerclub-core@googlegroups.com'>hackerclub-core@googlegroups.com</a>!
+      <li>There might be some bugs, flaws, and missing data. If you find an issue,
+        again, <a href='mailto:hackerclub-core@googlegroups.com'>tell us about it</a>!
+      <li>We have a <i>bunch</i> of exciting features (course wishlists, search-by-rating, etc)
+        in the works that we'll hopefully be rolling out soon, so <em>stay tuned</em>
+        and be sure to tell us what you think of them.
+    </ul>
   </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one fifth col + one fifth col + one fifth col + one fifth col + one fifth col -->
-  <div class="columns4">
-    <div class="column">
-      <h3>Column 1</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 2</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column">
-      <h3>Column 5</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
+
+
+      <!-- TODO: add the search & write_review blurbs -->
+<%#
+  <div>
+
+    <h2>Features in the works</h2>
+    <ul>
+      <li> <strong>Wishlists</strong>. Ever found a class that you know you want to take _eventually_, but
+      this just isn't the right term? Well, wishlists should help solve that.
+
+      <li> <strong>Search by review rating</strong>. Looking for a class with a light
+      workload? Or thinking about taking a class in a new department and want to know who the
+      beloved, must-have profs are?
+
+      <li> <strong>Review break-downs</strong>. Break a classes' reviews down between majors
+      and non-majors, or students scoring above and below the median (for instance).
+
+      <li> <strong>Better! Faster! Stronger!</strong>. We're hoping to move the
+        site to a faster server soon. If you experience any slowness, I guess just be
+        patient. A faster site is coming!
+    </ul>
+
   </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one fourth col + three fourth col -->
-  <div class="columns5">
-    <div class="column">
-      <h3>Column 1/4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column" data-place="3">
-      <h3>Column 3/4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus. Sed vitae erat et tellus adipiscing lobortis vel in orci. Morbi semper, lacus ac rutrum tincidunt, eros ipsum ultricies lorem, quis dictum sem eros sed ante. Curabitur adipiscing vulputate euismod. Phasellus commodo nisi vitae tellus adipiscing faucibus at nec leo.</p>
-    </div>
-    <div class="clear"></div>
-  </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one third col + two third col -->
-  <div class="columns6">
-    <div class="column">
-      <h3>Column 1/3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column" data-place="2">
-      <h3>Column 2/3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus. Sed vitae erat et tellus adipiscing lobortis vel in orci. Morbi semper, lacus ac rutrum tincidunt, eros ipsum ultricies lorem, quis dictum sem eros sed ante.</p>
-    </div>
-    <div class="clear"></div>
-  </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns two third col + one third col -->
-  <div class="columns7">
-    <div class="column" data-place="2">
-      <h3>Column 2/3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus. Sed vitae erat et tellus adipiscing lobortis vel in orci. Morbi semper, lacus ac rutrum tincidunt, eros ipsum ultricies lorem, quis dictum sem eros sed ante.</p>
-    </div>
-    <div class="column">
-      <h3>Column 1/3</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
-  </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <!-- Columns one fourth col + two fourth col + one fourth col -->
-  <div class="columns8">
-    <div class="column">
-      <h3>Column 1/4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="column" data-place="2">
-      <h3>Column 2/4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus. Sed vitae erat et tellus adipiscing lobortis vel in orci. Morbi semper, lacus ac rutrum tincidunt, eros ipsum ultricies lorem, quis dictum sem eros sed.</p>
-    </div>
-    <div class="column">
-      <h3>Column 1/4</h3>
-      <p>Suspendisse potenti. Nullam in lectus nibh, in semper eros. Integer nec diam tellus. Quisque sit amet auctor purus.</p>
-    </div>
-    <div class="clear"></div>
-  </div>
-  <div class="gototop"><a href="#MainNav">top &uarr;</a></div>
-  <blockquote><p>And Many Other Column Variations Also Available...</p></blockquote>
+  %>
 </div>

@@ -1,46 +1,67 @@
-<% courses = @review.courses %>
+<% courses = @review.offering.courses %>
 <% course = courses.first %>
 <% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
 
-<h1><%= "#{course.department} #{course.number}: \
-	#{@review.offering.specific_title || course.long_title}"%></h1>
-<% if x_listings %>
-	<h2 class="x-listings"><%= "X-Listed as: #{x_listings.map(&:compact_title).join(', ')}" %></h2>
-<% end %>
-<h2><%= "taught by: #{@review.professors.map(&:name).join(', ')}"%></h2>
+<div class="PageTitle">
+<h1><%= course_link(course, @review.offering) %></h1>
+</div>
 
-<!-- offering info -->
-<table id="offering">
-	<tr>
-		<td>Term</td>
-		<td><%="#{@review.offering.year}#{@review.offering.term}"%></td>
-	</tr>
-	<tr>
-		<td>Time</td>
-		<td><%="#{@review.offering.time}"%></td>
-	</tr>
-	<%# TODO add distribs, etc%>
-</table>
+<div id="content">
+	<% if x_listings %>
+		<h2 class="x-listings">X-Listed as: <%=x_listings.map(&:compact_title).join(', ')%></h2>
+	<% end %>
+	<h2>taught by: <%= prof_links(@review.offering) %></h2>
 
-<br/>
+	<table id="show-review">
 
-<!-- review info -->
-<table id="review">
-	<tr>
-		<td>Grade</td>
-		<td><%= @review.letter_grade %></td>
-	</tr>
-	<tr>
-		<td>Professor</td>
-		<td><%= star_count(@review.prof_rating) %></td>
-	</tr>
-	<tr>
-		<td>Course</td>
-		<td><%= star_count(@review.course_rating) %></td>
-	</tr>
-	<tr>
-		<td>Comment</td>
-		<td><%= @review.comment %></td>
-	</tr>
-</table>
+		<!-- offering info -->
 
+		<tr class='compact'>
+			<td class='lhs'>Taken </td>
+			<td><%="#{@review.offering.year} #{@review.offering.term}"%></td>
+		</tr>
+		<%# TODO add distribs, etc%>
+		<tr class='compact'>
+			<td class='lhs'>Reasons </td>
+			<td><%= (reasons = @review.list_reasons).present? ? reasons.join(', ') : '(none listed)' %></td>
+		</tr>
+
+		<!-- review info -->
+
+		<tr>
+			<td>Grade</td>
+			<% if @review.grade.present? %>
+				<td class='lhs'>
+					<strong><%= @review.letter_grade %></strong>
+					<span class='hint pull-right'>
+						<% if @review.offering.median_grade.present? %>
+							<% compare = @review.grade <=> @review.offering.median_grade %>
+							<% str = compare > 0 ? 'above' : (compare < 0 ? 'below' : 'matching') %>
+							<%= raw "(#{str} the <strong>#{Review.letter_grade(@review.offering.median_grade)}</strong> median)" %>
+						<% else %>
+							(median not listed)
+						<% end %>
+					</span>
+				</td>
+			<% else %>
+				<td class='not-found'>not reported</td>
+			<% end %>
+		</tr>
+
+		<% [%w(course course), %w(prof professor), %w(workload workload)].each do |key, title| %>
+
+			<tr class='rating'>
+				<td class='lhs'><%= title.capitalize %></td>
+				<td><%= star_count("review-#{key}", @review.attributes["#{key}_rating"]) %></td>
+			</tr>
+			<% if (comment = @review.attributes["#{key}_comment"]).present? %>
+			<tr class='comment'>
+				<td class='lhs'/>
+				<td class='comment' id='prof-comment'><%= comment %></td>
+			<tr>
+			<% end %>
+		<% end %>
+
+	</table>
+
+</div>

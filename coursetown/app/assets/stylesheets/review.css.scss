@@ -14,6 +14,13 @@ $glow: 0 0 10px 0;
   border-radius: 5px;
 }
 
+@mixin pop_deep {
+  background-color: #ccc;
+  box-shadow: inset 1px 1px 1px 0 rgba(0,0,0,0.2);
+  padding: 4px;
+  border-radius: 5px;
+}
+
 @mixin pop_out {
   background-color: #fff;
   padding: 7px;
@@ -22,7 +29,7 @@ $glow: 0 0 10px 0;
 }
 
 #summary_box, #summary_box_fail,
-#course_detail_header, #prof_detail_header, #workload_detail_header {
+.section_divider_header {
   width: 100%;
   margin: 20px 0 7px 0;
   @include pop_out;
@@ -35,7 +42,17 @@ $glow: 0 0 10px 0;
   }
 }
 
-#course_detail_header, #prof_detail_header, #workload_detail_header {
+#review-summary-box {
+  width: 100%;
+  margin: 20px 0 7px 0;
+
+  td {
+    width: 25%;
+    text-align: center;
+  }
+}
+
+.section_divider_header {
   color: $label_color;
   font-weight: bold;
   text-align: left;
@@ -51,11 +68,6 @@ tr.labels, h1 {
   font-weight: bold;
   color: $label_color;
   font-style: normal;
-}
-
-h2 {
-  font-weight: normal;
-  color: $label2;
 }
 
 #course_info {
@@ -107,24 +119,25 @@ h2 {
   }
 
   .comment_bubble {
-    @include pop_out;
+    /*@include pop_out;
     background-color: #fafafa;
     border-radius: 15px / 10px;
-    border-bottom-right-radius: 0px;
+    border-bottom-right-radius: 0px;*/
     margin: 5px;
-    width: 305px; /* TODO */
+    margin-bottom: 10px;
+    width: 440px; /* TODO */
     float: left;
 
     .comment {
       margin-bottom: 5px;
       oferflow: hidden;
+      @include pop_in;
     }
 
     .author_details {
       float: right;
       .grade {
         margin-right: 10px;
-        float: left;
       }
       .rating {
         float: right;
@@ -147,6 +160,210 @@ h2 {
   margin-right: auto;
 }
 
+.group-review-content .new_review_link {
+  float: right;
+  @include pop_out;
+  text-decoration: none;
+  border-radius: 15px;
+  font-weight: bold;
+  background-color: #272;
+  color: #6c6;
+  padding: 3px 12px;
+}
+.group-review-content .new_review_link:hover {
+  background-color: #2a2;
+  color: white;
+}
+
+/* ----------- partial: old reviews ------- */
+
+.old-review-header {
+  width: 100%;
+}
+
+.old_reviews_content {
+  padding: 10px;
+  overflow: hidden;
+
+  .old_reviews_full {
+    float:left;
+    width: 48%;
+
+    tr td {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+
+  .old_reviews_headlines {
+    float:right;
+    width: 48%;
+
+    @include pop_in;
+
+    h4 {
+      padding: 5px;
+      margin: 5px;
+    }
+
+    li {
+      border-top:1px solid #ccc;
+      padding: 2px 10px;
+
+      a {
+        text-decoration: none;
+      }
+    }
+
+    li:hover, li:hover a {
+      background-color: #ccc;
+      color: black;
+    }
+  }
+}
+
+/* ----------- partial: search_results ----------- */
+
+.posted {
+  @include pop_in;
+}
+.write_review_link {
+  float: right !important;
+  margin-left: 15px;
+  font-weight: bold;
+  text-decoration: none;
+  font-style: italic;
+  padding-left: 20px;
+  padding-right: 10px;
+}
+.write_review_link:hover {
+  a {
+    color: black;
+  }
+}
+
+/* ----------- partial: compare_reviews ---------- */
+
+.compare_reviews {
+  width: 100%;
+  border-spacing: 0px inherit;
+
+  td, th {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    div {
+      margin: 0 auto;
+    }
+  }
+
+  tr:hover {
+    td, th {
+      background-color: #f0f0f0;
+    }
+  }
+  .bad_news:hover {
+    td, th {
+      background-color: #ddd;
+    }
+  }
+
+  th.profs, td.counts {
+    text-align: left;
+  }
+
+  .bad_news {
+    background-color: #eee;
+    border-bottom: 1px solid #ccc;
+  }
+
+  td.bad_news {
+    font-style: italic;
+    color: #888;
+  }
+}
+
+/* ----------- partial: course_description - */
+
+#course_description {
+  @include pop_in;
+
+  #distrib_tags {
+    margin-top: 15px;
+
+    .label {
+      font-weight: bold;
+    }
+
+    .distrib_tag, .wc_tag {
+      font-weight: bold;
+      color: white;
+      background-color: #191;
+      border-radius: 6px;
+      padding: 2px 7px;
+      box-shadow: $pop_out rgba(0,0,0,0.2);
+    }
+
+    .wc_tag {
+      background-color: #060;
+    }
+  }
+}
+
+/* ----------- partial: comments ---------- */
+
+.comments_header {
+  width: 100%;
+  /*margin: 20px 0 7px 0;*/
+  @include pop_out;
+  overflow: hidden;
+
+  .header_text {
+    float:left;
+    width: 50%;
+    margin-bottom:none;
+  }
+  .comments_count {
+    float:right;
+  }
+}
+
+#review-summary-box {
+  width: 100%;
+  margin: 20px 0 7px 0;
+
+  td {
+    width: 25%;
+    text-align: center;
+  }
+}
+/*
+#course_detail_header, #prof_detail_header, #workload_detail_header,
+.group-review-content > h2 {
+  color: $label_color;
+  font-weight: bold;
+  text-align: left;
+  padding: 5px 15px;
+  width: auto;
+}*/
+
+.comment_bubble > .author_details > .full-review-link {
+  float: left;
+}
+
+.comment_bubble > .author_details {
+  width: 100%;
+
+  .full-review-link {
+    float: left;
+    padding-left: 10px;
+    text-decoration: none;
+  }
+
+  .grade, .rating {
+    float: right;
+  }
+}
+
 /* ----------- view: new ------------------ */
 
 #review_motivations {
@@ -167,7 +384,6 @@ h2 {
   }
 }
 .new_review_textarea {
-  padding: 7px;
   width: 414px;
   border-radius:4px;
   border: 0px;
@@ -175,15 +391,86 @@ h2 {
   background-color: white;
 }
 
+/* ------------ view: show -------------------- */
+
+table {
+  border-collapse: separate;
+  border-spacing: 0px 3px;
+}
+
+table#show-review {
+
+  border-bottom: 1px solid #ddd;
+  min-width: 400px;
+  width: 700px;
+
+  td {
+    padding: 5px;
+  }
+
+  td.lhs {
+    width: 90px;
+  }
+
+  td.comment {
+    border-radius: 5px;
+    background-color: #eee;
+    margin: 5px;
+    @include pop_in;
+  }
+
+  tr.rating {
+    td {
+      border-top: 1px solid #ddd;
+    }
+  }
+}
+
+.hint, .not-found {
+  font-weight: normal;
+  font-style: italic;
+  color: #999;
+
+  strong {
+    color: #888;
+  }
+}
+
+.pull-right {
+  float: right;
+}
+
+/* ------------ view: show_old_review --------- */
+
+.old_reviews_full {
+  margin-bottom: 20px;
+}
+.old_reviews_comments {
+  width: 50%;
+}
+
 /* ------------ view: new_batch --------------- */
 
 table#batch_reviews {
-  @include pop_out;
+  /*@include pop_out;*/
   width: 100%;
-  border-spacing: 0;
+  /*border-spacing: 0;*/
+  border-spacing: 0px inherit;
+  border-collapse: separate;
 
-  .dark {
+  /*tr.dark {
     background-color: #ddd;
+  }*/
+
+  tr.data-row:hover {
+    background-color: #f3f3f3;
+  }
+  tr.oops:hover {
+    background-color: #d0d0d0;
+    color: #777;
+  }
+  tr.comment-row:hover {
+    background-color: #e7e7e7;
   }
 
   th {
@@ -194,6 +481,12 @@ table#batch_reviews {
 
   tr {
     margin: 7px 0px;
+    padding-top: 5px;
+
+    button {
+      width: 1.2em;
+      height: 1.2em;
+    }
 
     .full_review {
       a {
@@ -208,14 +501,87 @@ table#batch_reviews {
     td {
       margin: 0;
       border: none;
-      padding: 0;
+      padding: 5px 3px;
+      border-bottom: 1px solid #ccc;
     }
-
+    td.comment-button {
+      padding-left: 0px;
+    }
     .title {
-      width: 100px;
+      padding-right: 10px;
+      white-space: nowrap;
+      font-weight: bold;
+    }
+    .grade {
+      white-space: nowrap;
+      padding: 0px 10px;
+      font-weight: bold;
     }
     .rating {
-      width: 80px;
+      width: 90px;
+    }
+    th.term-name {
+      font-weight: bold;
     }
   }
+
+  tr.oops {
+    background-color: #ddd;
+    color: #888;
+
+    td {
+      border-bottom: 1px solid #bbb;
+    }
+
+    td.error {
+      font-style: italic;
+    }
+  }
+
+  tr.comment-row {
+    background-color: #eee;
+    padding: 5px;
+    border-radius: 10px;
+    td {
+      padding: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+    textarea {
+      width: 830px;
+      float: right;
+      resize: vertical;
+      font-size: 0.85em;
+    }
+    span {
+      padding-top: 7px;
+      text-align: right;
+      vertical-align: middle;
+    }
+  }
+
+  tr.term-divider {
+    height: 60px;
+    vertical-align: bottom;
+    td, th {
+      color: $label_color;
+      border-bottom: 1px solid gray;
+      margin: 10px;
+    }
+  }
+}
+
+#alert_box, #warning_box {
+  padding: 10px;
+  font-weight: bold;
+  font-style:italic;
+  color:#5a5;
+}
+#warning_box {
+  color:#b00;
+}
+
+td.grade, .grade_selector, .grade_selector option {
+  display:block;
+  width: 100px !important;
+  max-width: 100px !important;
 }

@@ -44,5 +44,14 @@ module Coursetown
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    # .precompile expects the TARGET names
+    config.assets.precompile += %w(
+        search.js
+        transcript_scraper_bookmarklet.js
+        dept_map.js
+        json-sans-eval.js
+        reviewComment.js
+    )
   end
 end

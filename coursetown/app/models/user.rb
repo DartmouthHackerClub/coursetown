@@ -12,9 +12,14 @@ class User < ActiveRecord::Base
 
   def self.create_with_omniauth(auth)
     create! do |user|
-      user.name = auth["extra"]["name"]
-      user.netid = auth["extra"]["netid"]
+      user.hashed_netid = self.hash_netid(auth["extra"]["netid"])
     end
   end
 
+  def self.hash_netid(netid)
+    Digest::SHA1.hexdigest(netid)
+  end
+  def self.find_by_netid(netid)
+    self.find_by_hashed_netid(self.hash_netid(netid))
+  end
 end

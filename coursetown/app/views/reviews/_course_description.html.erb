@@ -1,0 +1,34 @@
+<%
+course = local_assigns[:course]
+offerings = local_assigns[:offerings] || course.offerings
+%>
+
+<h2 class='section_divider_header'>Course Description</h2>
+
+<div id="course_description">
+  <% if course.desc %>
+    <%= course.desc %>
+  <% else %>
+    <span class="not_found">None available.</span>
+  <% end %>
+  <div id="distrib_tags">
+    <span class='label'>SATISFIES:</span>
+    <% distribs = Offering.get_reqs(offerings) %>
+    <% Distrib.all_abbrs.select{ |d| distribs.has_key?(d) }.each do |d| %>
+      <span class="distrib_tag"><%= d %></span>
+      <%= content_tag :span, "#{d}#{'*' if !distribs[d]}", :class => "distrib_tag" %>
+    <% end %>
+    <% %w(W NW CI).select{ |wc| distribs.has_key?(wc) }.each do |wc| %>
+      <%= content_tag :span, "#{wc}#{'*' if !distribs[wc]}", :class => "wc_tag" %>
+    <% end %>
+    <%# if some distrib has an asterisk, explain its meaning %>
+    <% if distribs.each_value.any?{|x| !x} %>
+      <div class="hint">
+        *sometimes
+      </div>
+    <% end %>
+    <% if distribs.size == 0 %>
+      <%= not_found 'No distribs/wc (as far as we know)' %>
+    <% end %>
+  </div>
+</div>

@@ -1,5 +1,9 @@
 module ReviewHelper
-  def star_count (id, stars, options = {})
+
+  @workload_labels = ['really light', 'pretty light', 'average', 'heavy', 'intense']
+
+  def star_count (id, stars, default = nil, options = {})
+    return default || (raw '<span class="not-found">no ratings</span>') if stars.nil?
     render :partial => 'stars', :locals => options.merge({
       :id => id, :read_only => true, :score => stars
       })
@@ -8,6 +12,7 @@ module ReviewHelper
   # to be called from within the scope of form_for
   def star_rating (form, field_name, options = {})
     full_name = "#{form.object_name}[#{field_name}]"
+    options[:score] ||= form.object.attributes[field_name.to_s]
     star_rating_tag(full_name, options)
   end
 
@@ -22,21 +27,23 @@ module ReviewHelper
     render :partial => 'stars', :locals => options.merge({:field_name => name.to_s})
   end
 
-  # TODO format grade according to above/below/at median
-  def letter_grade (raw_grade, median = 8)
-    Review.letter_grade(raw_grade+1) || '?'
+  # if grade's not valid/DNE, return default instead
+  def letter_grade (number_grade, default = '?')
+    return default if number_grade.blank? || !number_grade.instance_of?(Fixnum)
+    Review.letter_grade(number_grade) || default
   end
 
   def reasons_tag(name, selected_field = :for_interest)
     reasons = [
-      ['Interest',:for_interest],
+      ['',''],
       ['Major/Minor',:for_major],
-      ['Distrib/WC', :for_distrib],
-      ['Prof',:for_prof],
+      ['Distrib/WC/Other Req.', :for_distrib],
       ['Easy A',:for_easy_a],
-      ['Prereqs',:for_prereqs]
+      ['Prof',:for_prof],
+      ['Prereqs',:for_prereq],
+      ['Interest',:for_interest],
     ]
-    select_tag name, options_for_select(reasons, selected_field)
+    select_tag name, options_for_select(reasons, ''), :class => 'select-reasons'
   end
 
 end

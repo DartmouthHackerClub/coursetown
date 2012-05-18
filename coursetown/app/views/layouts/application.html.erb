@@ -4,11 +4,14 @@
     <link rel="shortcut icon" href="images/favicon.ico" />
     <title>Dartmouth Course Picker by Hacker Club</title>
     <%= stylesheet_link_tag    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css" %>
+    <link rel='stylesheet' type='text/css' href="/stylesheets/light/styles.css" />
     <%= stylesheet_link_tag    "application" %>
     <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" %>
     <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" %>
-    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag  "application" %>
     <%= javascript_include_tag "/js/cufon/cufon-yui.js" %>
+
+    <%# public assets %>
     <%= csrf_meta_tags %>
 <script type="text/javascript">
 
@@ -32,13 +35,21 @@
         <a href="/" class="logo"><h1>course picker</h1></a>
         <div id="menu">
           <ul class="ddsmoothmenu">
-            <li><span class="menuslide"></span><a href="/" title="Home">Home<span class="menu_description">Front Page</span></a></li>
-            <li><span class="menuslide"></span><a href="/search" title="Search">Search<span class="menu_description">Course Search</span></a></li>
-            <li><span class="menuslide"></span><a href="<%= batch_start_reviews_path %>" title="Write Reviews">Write Review<span class="menu_description">Only takes a minute!</span></a></li>
+            <li>
+              <%= link_to root_path, :title => 'Home' do %>
+              Home<span class="menu_description">Front Page</span>
+              <% end %>
+            </li>
+            <li><%= link_to search_path do %>
+              Search<span class='menu_description'>Course Search</span>
+              <% end %>
+              <!-- <a href="/" title="Home">Home<span class="menu_description">Front Page</span></a></li>
+            <li><span class="menuslide"></span><a href="/search" title="Search">Search<span class="menu_description">Course Search</span></a></li> -->
+            <li><a href="<%= quick_start_reviews_path %>" title="Write Reviews">Write Reviews<span class="menu_description">Only takes a minute!</span></a></li>
             <% if @current_user.present? %>
-              <li><span class="menuslide"></span><a href="<%= signout_path %>" title="Logout">Logout</a></li>
+              <li><a href="<%= signout_path %>" title="Logout">Logout</a></li>
             <% else %>
-              <li><span class="menuslide"></span><a href="<%= login_path(request.fullpath) %>" title="Login">Login</a></li>
+              <li><a href="<%= login_path(request.fullpath) %>" title="Login">Login<span class='menu_description'>To Read Reviews</span></a></li>
             <% end %>
           </ul>
         </div>
@@ -62,7 +73,7 @@
     <!-- End Content Wrapper -->
 
     <!-- Start Footer Sidebar -->
-    <div class="fsb_full">	
+    <div class="fsb_full">
       <div id="fsb">
       </div>
     </div>
@@ -71,7 +82,8 @@
     <div class="footer_full">
       <div id="footer">
         <div class="copy">
-          <p class="developed_by">Developed By <a href="http://hacktown.cs.dartmouth.edu/">Hacker Club</a></p>
+          <p class="developed_by">Developed By <a href="http://hacktown.cs.dartmouth.edu/">Hacker Club</a>
+            (with the support of <a href="dartmouth.edu/~saportal">Student Assembly</a>)</p>
         </div>
         <div class="clear"></div>
       </div>

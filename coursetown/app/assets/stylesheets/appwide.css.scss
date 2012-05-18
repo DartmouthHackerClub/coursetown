@@ -1,0 +1,143 @@
+@mixin menu_pop {
+  background-color: #ddd;
+  box-shadow: inset 1px 1px 3px 0 rgba(0,0,0,0.1);
+  padding: 4px;
+  border-radius: 15px;
+}
+
+@mixin pop_out {
+  box-shadow: 2px 2px 3px 0 rgba(0,0,0,0.3);
+  padding: 4px;
+}
+
+@mixin pop_out_white {
+  box-shadow: 2px 2px 3px 0 rgba(0,0,0,0.3);
+  padding: 4px;
+  border-radius: 10px;
+  background-color: white;
+}
+
+@mixin pop_in {
+  box-shadow: inset 1px 1px 2px 0 rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 7px;
+  background-color: #eee;
+  margin-bottom: 20px;
+}
+
+.ddsmoothmenu {
+  li:hover {
+    a {
+      @include menu_pop;
+      color: black !important;
+    }
+    span {
+      color: #888;
+    }
+  }
+}
+
+#quickreview_bookmarklet {
+  @include pop_out;
+  background-color: #383;
+
+  border-radius: 17px;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 1.1em;
+
+  color: #141;
+  border: 1px solid #262;
+
+  a {
+    padding: 8px;
+    color: #141;
+    text-decoration: none;
+    font-style: italic;
+  }
+}
+#quickreview_bookmarklet:hover,
+#quickreview_bookmarklet:active {
+  color: white;
+  border-color: #7c5;
+  background-color: #492;
+
+  a {
+    color: white;
+  }
+}
+
+p, .prominent, .tag_line, .tag-line, .shout {
+  a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #444;
+  }
+  a:hover {
+    text-decoration: underline;
+    color: black;
+  }
+}
+
+p.prominent {
+  font-size: 1.2em;
+}
+.tag_line, .tag-line {
+  font-size: 1.1em;
+  font-style: italic;
+}
+p.hint {
+  color: #a0a0a0;
+  font-style: italic;
+}
+p {
+  bottom-margin: 1.3em; /* instead of 1.5 */
+}
+.shout {
+  @include pop_in;
+  padding: 10px;
+
+  #review_count {
+    font-size: 1.3em;
+    font-style: italic;
+
+    strong {
+      font-size: 1.5em;
+    }
+  }
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: bold;
+  color: black;
+}
+
+.pull-left {
+  float:left;
+}
+
+#get_started {
+  overflow: hidden;
+  padding: 0 5px;
+  margin: 15px;
+
+  a {
+    width: 420px;
+    display: block;
+    overflow: hidden;
+
+    border-radius: 5px;
+    background-color: #ccc;
+    padding: 10px;
+    text-decoration: none;
+
+    h1 {
+      padding: 0px;
+      margin: 0px;
+    }
+  }
+
+  a:hover {
+    background-color: #aaa;
+  }
+}

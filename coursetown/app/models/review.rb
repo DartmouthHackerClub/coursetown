@@ -1,6 +1,6 @@
 class Review < ActiveRecord::Base
   validates_presence_of :offering
-  validates :grade, :inclusion => 0..24 # grades are weird
+  validates :grade, :inclusion => 0..24, :if => 'grade.present?' # grades are weird
   validates :prof_rating, :inclusion => 1..5
   validates :course_rating, :inclusion => 1..5
   validate :matches_schedule_offerings
@@ -37,10 +37,11 @@ class Review < ActiveRecord::Base
     grade = g if g
   end
   def self.letter_grade (num_grade)
+    return nil if !num_grade.instance_of?(Fixnum)
     @grade_to_letter[num_grade]
   end
   def self.number_grade (letter_grade)
-    val = letter_grade.chomp('*') # ignore citation stars
+    val = letter_grade.strip.chomp('*').strip # ignore whitespace and citation stars
     @letter_to_grade[val]
   end
 
@@ -54,18 +55,34 @@ class Review < ActiveRecord::Base
   # TODO issue: when creating a review, isn't hooked up to schedule UNTIL saved.
   # so this only works if the schedule already exists
   def matches_schedule_offerings
-    if schedule && offering_id != schedule.offering_id
+    if self.schedule && self.offering_id != self.schedule.offering_id
+      puts "OFFERING MISMATCH: #{self.offering_id} vs. #{self.schedule.offering_id}"
       errors.add(:offering_mismatch, '. Review offering must match schedule offering')
     end
   end
 
+  # STUFF ABOUT REASONS
+
+  @reason_names = {'for_interest' => 'Interest', 'for_prof' => 'Prof',
+    'for_easy_a' => 'Easy A', 'for_distrib' => 'Distrib/WC',
+    'for_major' => 'Major/Minor', 'for_prereq' => "Prereqs"}
+
+  # list of all reasons this review offers (as human-readable strings)
+  def self.list_reasons(review)
+    @reason_names.map{|key, value| value if review.attributes[key]}.compact
+  end
+  # hacky, but I think this is the best way to do it?
+  def list_reasons
+    self.class.list_reasons(self)
+  end
   # each review must mark at least one motivation for taking the course
   def has_reasons
-    if !(for_major || for_prof || for_interest ||
-        for_distrib || for_easy_a || for_prereq)
+    if !(for_major || for_prof || for_interest || for_distrib || for_easy_a || for_prereq)
+      puts "HAS NO REASONS: incomplete review"
       errors.add(:incomplete, '. Review must list at least one motivation')
     end
   end
+
 
   @dimensions_for_average = [:grade, :course_rating, :prof_rating, :workload_rating]
   def self.average_reviews(reviews)
@@ -76,20 +93,24 @@ class Review < ActiveRecord::Base
   # TODO this is a HORRIBLE place to put this function, but I don't know where
   # it _should_ go, so in the interest of time I'm putting it here
   def self.average_records(records, dimensions)
-  # TODO this is really not the right place to put this, but
-  # it's better than in a controller?
+    # TODO this is really not the right place to put this, but
+    # it's better than in a controller?
+
+    return {}, {} if records.blank?
+
     sum, count = {}, {}
     dimensions.each { |dim| sum[dim] = count[dim] = 0 }
     records.each do |record|
       dimensions.each do |dim|
-        if record[dim]
+        if record[dim].present? && record[dim] != 0
           sum[dim] += record[dim].to_f
           count[dim] += 1
         end
       end
     end
+
     # turn sum into avg
-    sum.each_key { |key| count[key] != 0 ? sum[key] /= count[key].to_f : nil }
+    sum.each_key { |key| (count[key] != 0) ? (sum[key] /= count[key].to_f) : nil }
     return sum, count
   end
 

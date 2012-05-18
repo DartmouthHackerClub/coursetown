@@ -9,13 +9,6 @@ class ApplicationController < ActionController::Base
     @current_user = User.find_by_id(session[:user_id])
   end
 
-  # doesn't do anything smart to figure out the term
-  def current_year_and_term
-    now = Time.now
-    terms = %w{W S X F}
-    return now.year, terms[(now.month - 1) / 3]
-  end
-
   # TODO
   def not_found
     raise ActiveRecord::RoutingError.new(:not_found)
