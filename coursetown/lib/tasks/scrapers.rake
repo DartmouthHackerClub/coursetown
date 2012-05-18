@@ -17,10 +17,6 @@ namespace :scrape do
         puts "done."
         puts "importing data into db (#{(data['records'] || []).count} courses)..."
         data['records'].each { |course|
-          course_info = {
-            :desc => course["description"],
-            :long_title => course["title"]
-          }
           # unused:
           #   course["note"] #ex "Identical to Latin American  and Caribbean Studies 4"
           #   course["instances"]
@@ -30,18 +26,25 @@ namespace :scrape do
           #   course["wcults"] #ex["NW"]
           #   course["profs"] #ex [["Rodolfo A. Franconi"],["Beatriz Pastor","11W"],["Buéno"]
           c = Course.find_or_initialize_by_department_and_number(course['subject'], course['number'])
-          c.update_attributes(course_info)
+
+          # mass-assignment doesn't work in prod! have to manually assign
+          c.desc = course['description']
+          c.long_title = course['title']
+          num_new += 1 if c.save
 
           # TODO: add wcult & distribs to the course's offerings
         }
       }
     }
-    puts "done: import finished. (#{Course.count} courses total)"
+    puts "done: import finished. Updated #{num_new} courses. (#{Course.count} total)"
   end
   task :timetable => :environment do
     filename = '../scrapers/timetable.json'
     #TODO: DEBUG
     #filename = '../scrapers/timetable/timetable.json'
+
+    courses_count = 0
+    offerings_count = 0
 
     File.open(filename, 'r') do |f|
       puts "loading timetable JSON..."
@@ -69,8 +72,13 @@ namespace :scrape do
             next nil
           end
           c = Course.find_or_initialize_by_department_and_number(dept, num)
-          if !c.update_attributes(course_info) # saves to DB
+
+          c.short_title = offering['Title'] if offering['Title'].present?
+
+          if !c.save
             puts "Course [#{c.compact_title}] is invalid!"
+          else
+            courses_count += 1
           end
           c
         end
@@ -81,17 +89,9 @@ namespace :scrape do
         end
 
         ### THE OFFERING
-        offering_info = {
-          :time => offering['Period'],
-          :wc => offering['WC'],
-          :building => offering['Building'],
-          :room => offering['Room'],
-          :enrollment_cap => offering['Lim'],
-          :enrolled => offering['Enrl'],
-          :specific_title => offering['Title'],
-        }
         year = offering['Term'][0,4]
         term = month_quarter_mappings[offering['Term'][4,6]]
+        section = offering['Sec']
         # Unused fields:
         #   offering['Status'] ex: "IP" for "In Progress"
         #   offering['Xlist'] ex: "WGST 034 02"
@@ -104,15 +104,28 @@ namespace :scrape do
         # but that creates duplicates! so let's be explicit
 
         o = courses.map{|c|
-          c.offerings.find_by_year_and_term_and_section(year, term, offering['Sec'])
+          c.offerings.find_by_year_and_term_and_section(year, term, section)
         }.select{|x| x}.first # filter out nils
         if o.nil?
-          o = Offering.new({:year => year, :term => term, :section => offering['Sec']}.merge(offering_info))
-          puts "ERROR SAVING RECORD: \n#{o.attributes}\nfrom:\n#{offering}" if !o.save
-        else
-          o.update_attributes(offering_info)
+          o = Offering.new({:year => year, :term => term, :section => section})
         end
+        # update attributes only if you're writing a real value
+        v = nil
+        o.time = v            if (v = offering['Period']).present?
+        o.wc = v              if (v = offering['WC']).present?
+        o.building = v        if (v = offering['Building']).present?
+        o.room = v            if (v = offering['Room']).present?
+        o.enrollment_cap = v  if (v = offering['Lim']).present?
+        o.enrolled = v        if (v = offering['Enrl']).present?
+        o.specific_title = v  if (v = offering['Title']).present?
         o.courses |= courses # add any courses to the offering that weren't already
+
+        if o.save
+          offerings_count += 1
+        else
+          puts "ERROR SAVING RECORD: \n#{o.attributes}\nfrom:\n#{offering}"
+        end
+
 
         ### DISTRIBS
         distrib_str = offering['Dist'] || ''
