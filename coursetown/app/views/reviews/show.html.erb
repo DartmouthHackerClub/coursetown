@@ -17,12 +17,12 @@
 		<!-- offering info -->
 
 		<tr class='compact'>
-			<td>Taken </td>
+			<td class='lhs'>Taken </td>
 			<td><%="#{@review.offering.year} #{@review.offering.term}"%></td>
 		</tr>
 		<%# TODO add distribs, etc%>
 		<tr class='compact'>
-			<td>Reasons </td>
+			<td class='lhs'>Reasons </td>
 			<td><%= (reasons = @review.list_reasons).present? ? reasons.join(', ') : '(none listed)' %></td>
 		</tr>
 
@@ -31,7 +31,7 @@
 		<tr>
 			<td>Grade</td>
 			<% if @review.grade.present? %>
-				<td>
+				<td class='lhs'>
 					<strong><%= @review.letter_grade %></strong>
 					<span class='hint pull-right'>
 						<% if @review.offering.median_grade.present? %>
@@ -51,12 +51,12 @@
 		<% [%w(course course), %w(prof professor), %w(workload workload)].each do |key, title| %>
 
 			<tr class='rating'>
-				<td><%= title.capitalize %></td>
+				<td class='lhs'><%= title.capitalize %></td>
 				<td><%= star_count("review-#{key}", @review.attributes["#{key}_rating"]) %></td>
 			</tr>
-			<% if (comment = @review.attributes["#{key}_comment"]) %>
+			<% if (comment = @review.attributes["#{key}_comment"]).present? %>
 			<tr class='comment'>
-				<td/>
+				<td class='lhs'/>
 				<td class='comment' id='prof-comment'><%= comment %></td>
 			<tr>
 			<% end %>

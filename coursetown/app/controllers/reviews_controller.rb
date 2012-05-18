@@ -154,6 +154,14 @@ class ReviewsController < ApplicationController
 
   # receives data from 'new' and creates review
   def create
+    return create_or_update
+  end
+
+  def update
+    return create_or_update
+  end
+
+  def create_or_update
     force_login(request.fullpath) && return if @current_user.nil?
 
     # FAILURE
@@ -161,31 +169,35 @@ class ReviewsController < ApplicationController
       raise Exception.new('You gave me a phony review!')
     end
 
-    sched = params[:schedule_id]
-    id = params[:review].delete(:id)
+    schedule_id = params[:schedule_id].to_i
+    review_id = params[:review][:id].to_i
+    offering_id = params[:review][:offering_id].to_i
 
-    if sched
-      schedule = Schedule.find(sched)
-      if schedule.offering_id != params[:review][:offering_id] ||
-          (schedule.review_id.present? && schedule.review_id != 0 && id.present? && id != schedule.review_id)
-        raise Exception.new("Schedule and review don't have the same review id")
+    puts "review_id = #{review_id}"
+
+    if schedule_id
+      schedule = Schedule.find(schedule_id)
+      if schedule.offering_id != offering_id
+        raise Exception.new("Schedule and review have different offering id's")
+      elsif schedule.review_id.present? && schedule.review_id != 0 && schedule.review_id != review_id
+        raise Exception.new("Schedule and review have different review id's")
       end
     else
       schedule = Schedule.find_or_create_by_user_id_and_offering_id(@current_user.id, params[:review][:offering_id])
     end
 
     # can't have review w/o schedule, so don't bother checking w/ review id
-    if (@review = schedule.review)
-      @review.update_attributes(params[:review])
+    if (review = schedule.review)
+      review.update_attributes(params[:review])
     else
-      @review = Review.new(params[:review])
+      review = Review.new(params[:review])
     end
 
     # TODO wrap everything after this point in one DB transaction?
-    @review.save!
+    review.save!
     schedule.review = @review
     puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
-    redirect_to course_reviews_path(:id => params[:course_id], :offering_id => @review.offering.id)
+    redirect_to course_reviews_path(:id => params[:course_id], :offering_id => review.offering.id)
   end
 
 

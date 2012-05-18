@@ -67,10 +67,10 @@
 	  	:class => 'new_review_textarea',
 	  	:placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips?") %>
 	  <br/>
-	  <%= hidden_field_tag 'schedule_id', @sched.id if @sched.present? %>
+	  <%= (hidden_field_tag 'schedule_id', @sched.id) if @sched.present? %>
 	  <%= hidden_field_tag 'course_id', @course.id %>
 	  <%# TODO rails might auto-generate this hidden field? %>
-	  <%= f.hidden_field :id, @review.id if @review.id.present? %>
+	  <%= (f.hidden_field :id) if @review.id.present? %>
 
 	  <%= f.submit "Submit" %>
 	<% end %>

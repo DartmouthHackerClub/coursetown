@@ -70,11 +70,6 @@ tr.labels, h1 {
   font-style: normal;
 }
 
-h2 {
-  font-weight: normal;
-  color: $label2;
-}
-
 #course_info {
   #offerings, #description {
     /*padding: 0px 5px 20px 10px;*/
@@ -406,15 +401,22 @@ table {
 table#show-review {
 
   border-bottom: 1px solid #ddd;
+  min-width: 400px;
+  width: 700px;
 
   td {
     padding: 5px;
+  }
+
+  td.lhs {
+    width: 90px;
   }
 
   td.comment {
     border-radius: 5px;
     background-color: #eee;
     margin: 5px;
+    @include pop_in;
   }
 
   tr.rating {

@@ -34,6 +34,7 @@ Coursetown::Application.routes.draw do
       # get 'offering/:id' => 'reviews#offering', :as => :offering
       get 'course/:id/new' => 'reviews#new', :as => :new
       get 'course/:id' => 'reviews#course', :as => :course
+      post 'course/:id' => 'reviews#create', :as => :update
 
       get 'quick_start' => 'reviews#batch_start', :as => :quick_start
       post 'from_transcript' => 'reviews#new_batch_from_transcript', :as => :from_transcript

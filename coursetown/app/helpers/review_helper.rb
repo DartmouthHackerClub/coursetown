@@ -12,6 +12,7 @@ module ReviewHelper
   # to be called from within the scope of form_for
   def star_rating (form, field_name, options = {})
     full_name = "#{form.object_name}[#{field_name}]"
+    options[:score] ||= form.object.attributes[field_name.to_s]
     star_rating_tag(full_name, options)
   end
 
