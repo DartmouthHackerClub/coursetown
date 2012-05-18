@@ -9,14 +9,15 @@ namespace :scrape do
 
   task :orc => :environment do
     num_new = 0
-    filename = '../scrapers/orc.json'
+    # TODO where did this mysterious course_set file come from?
+    filename = '../scrapers/orc/course_set.json'
     Offering.transaction {
       File.open(filename, 'r') { |f|
         puts "loading the ORC JSON..."
         data = JSON.parse(f.read)
         puts "done."
-        puts "importing data into db (#{(data['records'] || []).count} courses)..."
-        data['records'].each { |course|
+        puts "importing data into db (#{(data['courses'] || []).count} courses)..."
+        data['courses'].each { |course|
           # unused:
           #   course["note"] #ex "Identical to Latin American  and Caribbean Studies 4"
           #   course["instances"]
@@ -28,8 +29,8 @@ namespace :scrape do
           c = Course.find_or_initialize_by_department_and_number(course['subject'], course['number'])
 
           # mass-assignment doesn't work in prod! have to manually assign
-          c.desc = course['description']
-          c.long_title = course['title']
+          c.desc = course['description'] if course['description']
+          c.long_title = course['title'] if course['title']
           num_new += 1 if c.save
 
           # TODO: add wcult & distribs to the course's offerings
