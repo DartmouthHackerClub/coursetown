@@ -5,13 +5,13 @@ class Offering < ActiveRecord::Base
   # warning: other_offerings is a misnomer. it will include this offering too!
   has_many :other_offerings, :through => :courses, :source => :offerings, :uniq => true
   has_many :professors, :through => :offering_professors
-  has_many :distribs
+  has_many :distribs, :dependent => :destroy
   has_many :schedules
   has_many :reviews
   has_many :old_reviews, :primary_key => :old_id, :foreign_key => :old_offering_id
 
   validates :term, :inclusion => {:in => %w{F W S X}}, :presence => true
-  validates :wc, :inclusion => {:in => [nil,'W','NW','CI']}, :if => 'wc.present?'
+  validates :wc, :inclusion => {:in => ['W','NW','CI']}, :if => 'wc.present?'
   validates :old_id, :uniqueness => true, :unless => 'old_id.nil?'
   # validates all classes w/ old_id are same year & term
   # validates :time, :inclusion => {:in => [nil] + %w{9L 9S 10 11 12 2 3A 3B 10A 2A}}
@@ -20,9 +20,9 @@ class Offering < ActiveRecord::Base
   @times = Hash[%w{8 9L 9S 10 11 12 2 3A 10A 2A 3B}.each_with_index.to_a]
 
   before_validation do |o|
-    o.wc.upcase! if o.wc.present?
-    o.term.upcase! if o.term.present?
-    o.time.upcase! if o.time.present?
+    o.wc = o.wc.strip.upcase if o.wc
+    o.term = o.term.strip.upcase if o.term
+    o.time = o.time.strip.upcase if o.time
   end
 
   # ATTRIBUTES (from schema).
@@ -121,7 +121,7 @@ class Offering < ActiveRecord::Base
   end
 
   def prof_string
-    professors.map{|prof| prof.name}.sort.join(', ')
+    Professor.prof_string(self.professors)
   end
 
   def short_prof_string

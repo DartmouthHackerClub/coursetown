@@ -147,10 +147,159 @@ namespace :scrape do
       puts "done: import finished. (#{Offering.count} offerings total)"
     end
   end
+
+  # TODO it's probably easy to write an elasticsearch query that has _just_ what
+  # we want in it, rather than writing an empty query.
+  task :picker => :environment do
+    filename = '../scrapers/data/picker.json'
+
+    data = nil
+    File.open(filename, 'r') do |f|
+      puts "loading coursepicker couch-dump JSON..."
+      data = JSON.parse(f.read)
+      puts "done."
+    end
+
+    course_count, offering_count = 0, 0
+
+    results = data['hits']['hits']
+    puts "importing data into db (#{results.size} offerings)..."
+
+    all_distribs = Set.new(Distrib.all_abbrs.to_a)
+    quarter_remappings = {'Winter' => 'W','Fall' => 'F','Spring' => 'S','Summer' => 'X'}
+
+    key_mappings = {
+      'title' => 'specific_title',
+      'description' => 'specific_desc',
+      'year' => 'year',
+      'term' => 'term',
+      'period' => 'time',
+      'nro' => 'nroable',
+      'wc' => 'wc',
+      'CRN' => 'crn',
+      # 'lab' => 'lab',
+      'limit' => 'enrollment_cap',
+      'enroll' => 'enrolled',
+    }
+
+    results.each do |result|
+      result = result['_source']
+      values = Hash[ key_mappings.map { |k,v|
+        [v, result[k] && result[k].ascii_only? ? result[k].strip : nil] # ran into some ascii issues
+      } ]
+      values['term'] = quarter_remappings[values['term']]
+      %w(year limit enroll).each {|key| values[key] = values[key].to_i if values[key]}
+
+      courses = result['names'].map do |course_hash|
+        found_course = Course.find_by_department_and_number(
+          course_hash['Department'].upcase,
+          course_hash['Number'].to_i,
+          :include => {:offerings => [:distribs, :professors]}
+        )
+        if found_course.nil?
+          found_course = Course.create({
+            :department => course_hash['Department'].upcase,
+            :number => course_hash['Number'].to_i
+          })
+          course_count += 1
+        end
+        found_course
+      end
+
+      course_str = courses.map{|o| "#{o.id} (#{o.compact_title})"}.join(', ')
+
+      c = result['names']
+      c = c.first if c
+      c = c['Section'] if c
+      c = c.to_i if c
+      section = c
+      year = values['year']
+      term = values['term']
+
+      search_term = { 'year' => values['year'], 'term' => values['term']}
+      # if section's nil, don't include it in the query
+      search_term['section'] = section if section.present? && section.size > 1
+
+      ## TRY TO FIND AN OFFERING THAT MATCHES
+
+      all_offerings = courses.map(&:offerings).flatten.uniq
+
+      # find offering amongst courses
+      offerings = all_offerings.select {|o|
+        o.year == year &&
+        o.term == term &&
+        (o.section.nil? || section.nil? || o.section == section)
+      }
+      prof_names = result['Professors']
+      profs = Professor.find_or_create_by_fuzzy_names(prof_names)
+      prof_string = Professor.prof_string(profs)
+
+      # try to find an exact match (on section)
+      offering = offerings.select{|o| o.section == result['section']}.first
+
+      # find an offering that matches the profs
+      if offering.nil? && offerings.present?
+        offering = offerings.select { |o| o.prof_string == prof_string }.first
+      end
+
+      # SAVE the offering
+
+      if offering.present?
+        assign_all(offering, values)
+        offering.save!
+        # assume profs already match
+        offering.courses = courses
+        distrib_set = offering.distribs.map(&:distrib_abbr)
+      else
+        puts "Creating new offering: COURSES #{course_str} : #{year}-#{term}:#{section}"
+        offering = Offering.new(values)
+        offering.save!
+        offering.professors = profs # TODO I think this saves the join-table relationship automatically?
+        offering.courses = courses
+        distrib_set = []
+        offering_count += 1
+      end
+
+      # Offering.new
+
+      # # add all missing distribs
+      result['dist'].each do |d|
+
+        if !distrib_set.include? d.upcase!
+          distrib = Distrib.new
+          distrib.distrib_abbr = d
+          distrib.offering_id = offering.id
+          distrib.save
+        end
+      end
+    end
+
+    puts "Created #{offering_count} offering (#{Offering.count} total)"
+    puts "Created #{course_count} courses (#{Course.count} total)"
+  end
+
+  # bypasses mass-assignment security in a horrible, hacky way
+  # will break and throw errors if a method name is misspelled will not overwrite w/ nil
+  # does NOT save the record
+  # args:
+  #   object: an ActiveRecord object
+  #   new_attributes: { attribute_name => setter_value }
+  #   method_to_value: a method_name => setter_value hash, e.g. 'year' => 2005
+  def assign_all(object, new_attributes, overwrite=true)
+    new_attributes.each do |field_name, value|
+      next if !value.present?
+      if overwrite
+        object.send("#{field_name}=", value)
+      else
+        object.send("#{field_name}=", value) if !object.send(field_name).present?
+      end
+    end
+  end
+
 #  task :nro => :environment {
 #    year = 2011
 #    term = "F"
-#    
+#
 #    filename = '../scrapers/nro/nro.json'
 #    File.open(filename, 'r') { |f|
 #      data = JSON.parse(f.read)

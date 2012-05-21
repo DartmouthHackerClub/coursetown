@@ -44,10 +44,6 @@ class CourseguideImporter
     new_courses = Hash.new
     course_rows.each do |row|
 
-      if row['courseid'] == 17053
-        puts "FOUND IT! #{%w{courseid code coursenumber}.map{|s| "#{s}:#{row[s]}"}}"
-      end
-
       # try to find something with either "code" or "deptclass" as the 4-letter
       # department code. "deptclass" is often null, so we should rely on "code"
       course = Course.find_by_department_and_number([row['code'], row['deptclass']],row['coursenumber'])
