@@ -5,6 +5,8 @@ class OfferingsController < ApplicationController
     logger.debug "==================================="
     query = params[:query] || {}
 
+    logger.info "QUERYING IN ENVIRONMENT: #{ENV['RAILS_ENV']}"
+
     # process the groups
     [:distrib, :wcult, :time, :term].each do |k|
       if query[k].present?
