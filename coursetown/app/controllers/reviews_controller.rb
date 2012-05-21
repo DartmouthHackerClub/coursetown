@@ -393,15 +393,10 @@ class ReviewsController < ApplicationController
       # find offerings (ideally just one) for this course & term/time
       offerings = courses.nil? ? [] : courses.map(&:offerings).flatten
       offerings.select! do |o|
-        o.year == res[:year] && o.term == res[:term] && # times match
-        ( o.median_grade == res[:median] || # medians match (or one doesn't exist)
-          o.median_grade.nil? ||
-          o.median_grade == 0 ||
-          res[:median].nil? ) &&
-        ( o.enrolled == res[:enrollment] || # enrollments match (or one doesn't exist)
-          o.enrolled.nil? ||
-          o.enrolled == 0 ||
-          res[:enrollment].nil? )
+        o.year == res[:year] && o.term == res[:term] # times match
+        # could get fancier (prev code was) to find matchings, but it's better
+        # to let a human decide which course they took rather than let the
+        # computer mis-guess because reported medians/enrollment don't match
       end
       # FIXME: the user will think something's wrong if they see multiple listings
       # for the same prof, so we'll just assign them to an arbitrary one.
