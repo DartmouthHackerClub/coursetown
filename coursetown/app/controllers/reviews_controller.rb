@@ -2,6 +2,7 @@ class ReviewsController < ApplicationController
   protect_from_forgery :except => 'new_batch_from_transcript'
 
   def show
+    force_login(request.fullpath) && return if @current_user.nil?
     if params[:id].to_i.nil?
       not_found
     end
@@ -12,6 +13,7 @@ class ReviewsController < ApplicationController
 
 
   def course
+    force_login(request.fullpath) && return if @current_user.nil?
     puts "current user: #{@current_user ? @current_user.id : 'NONE'}"
     @course = Course.find(params[:id],
       :include => {:offerings => [:professors, :reviews, :old_reviews, :distribs]})
@@ -43,6 +45,7 @@ class ReviewsController < ApplicationController
 
   # TODO set up a view
   def prof
+    force_login(request.fullpath) && return if @current_user.nil?
     @prof = Professor.find( params[:id],
       :include => {:offerings => [:courses, :reviews, :old_reviews]} )
     @avgs, @reviews, @old_reviews = Offering.average_reviews(@prof.offerings)
@@ -312,11 +315,13 @@ class ReviewsController < ApplicationController
     render :json => successes
   end
 
+
   def batch_start
     # make sure they're logged in when they first do it, so that they
     # don't run into that issue.
     force_login(request.fullpath) && return if @current_user.nil?
   end
+
 
   # receive POST w/ full transcript data in it
   def new_batch_from_transcript
@@ -445,6 +450,7 @@ class ReviewsController < ApplicationController
   end
 
   def show_old_review
+    force_login(request.fullpath) && return if @current_user.nil?
     @review = OldReview.find(params[:id], :include => {:offering => [:courses, :professors]})
   end
 
