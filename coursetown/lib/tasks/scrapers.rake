@@ -41,8 +41,6 @@ namespace :scrape do
   end
   task :timetable => :environment do
     filename = '../scrapers/timetable.json'
-    #TODO: DEBUG
-    #filename = '../scrapers/timetable/timetable.json'
 
     courses_count = 0
     offerings_count = 0
@@ -205,6 +203,10 @@ namespace :scrape do
         end
         found_course
       end
+      if courses.blank?
+        puts "NO COURSES FOR RESULT: #{result}"
+        next
+      end
 
       course_str = courses.map{|o| "#{o.id} (#{o.compact_title})"}.join(', ')
 
@@ -249,6 +251,7 @@ namespace :scrape do
         offering.save!
         # assume profs already match
         offering.courses = courses
+        offering.professors = profs # this should already be the case, but...just in case
         distrib_set = offering.distribs.map(&:distrib_abbr)
       else
         puts "Creating new offering: COURSES #{course_str} : #{year}-#{term}:#{section}"

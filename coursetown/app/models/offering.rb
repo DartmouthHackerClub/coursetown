@@ -55,7 +55,7 @@ class Offering < ActiveRecord::Base
   end
 
   # TODO: median, nro, description
-  def self.search_by_query(queries)
+  def self.search_by_query(queries, limit=300)
     return [] if queries.blank? || queries.each_value.all?{|v| v.blank?}
 
     # for most keys (professor, course, description), it's better do a left
@@ -114,9 +114,9 @@ class Offering < ActiveRecord::Base
     q.each_value.select(&:present?).each{ |v| seed = seed.where(v) }
 
     if seeded_from_offerings
-      return seed
+      return seed.limit(limit)
     else
-      return seed.map(&:offerings).flatten.uniq
+      return seed.limit(limit).map(&:offerings).flatten.uniq
     end
   end
 
@@ -201,7 +201,6 @@ class Offering < ActiveRecord::Base
     yr = now.year
     trm = ((now.month - 1) / 3) % 4
     o = offering
-    puts "CURRENTLY : #{yr} #{trm} VS. #{o.year} #{o.term}"
 
     return o.year < yr if o.year && yr && o.year != yr
     return @terms[o.term] < trm if @terms[o.term]

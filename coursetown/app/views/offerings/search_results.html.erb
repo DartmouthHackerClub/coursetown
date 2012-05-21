@@ -1,6 +1,15 @@
 <div id='search-results'>
+
   <% @offerings.each do |offering| %>
     <% course = offering.courses.first %>
+
+    <%
+    if course.blank?
+      logger.warn "OFFERING #{offering.id} has NO COURSES. skipping for search results"
+      next
+    end
+    %>
+
     <%# attach metadata for sorting w/ HTML5's data-* attributes %>
     <%= content_tag :div, :id => "search-result-#{offering.id}", :class => 'post',
       'data-department' => course.department,
@@ -15,7 +24,7 @@
       <% if offering.courses.size > 1 %>
         <h4 class='x-listings'>X-Listed as:
           <%= raw offering.courses.select{|c| c != course}.
-            map{|c| link_to c.compact_title, course_reviews_path(:id => c.id)}.
+            map{|c| link_to c.compact_title, course_reviews_path(:id => course.id, :offering_id => offering.id)}.
             join(', ') -%>
         </h4>
       <% end %>
