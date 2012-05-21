@@ -12,9 +12,24 @@ class ReviewsController < ApplicationController
 
 
   def course
+    puts "current user: #{@current_user ? @current_user.id : 'NONE'}"
     @course = Course.find(params[:id],
       :include => {:offerings => [:professors, :reviews, :old_reviews, :distribs]})
+    puts "offering ids: #{@course.offerings.map(&:id)}"
     @avgs, @reviews, @old_reviews = Offering.average_reviews(@course.offerings)
+
+    ### GET THIS USER'S REVIEW, if it exists
+
+    if @current_user.present?
+      sched = nil
+      scheds = @current_user.schedules.find_all_by_offering_id(@course.offerings.map(&:id))
+      if scheds.size > 1 && params[:offering_id].present?
+        sched = scheds.select{|s| s.offering_id == params[:offering_id].to_i}.first
+      end
+      puts "SCHEDS: #{scheds}"
+      sched ||= scheds.select{|s| s.review.present?}.first
+      @my_review = sched.review if sched.present?
+    end
 
     @offerings_by_profs = @course.offerings.group_by(&:prof_string)
 
@@ -151,6 +166,18 @@ class ReviewsController < ApplicationController
     end
   end
 
+  def edit
+    force_login(request.fullpath) && return if @current_user.nil?
+    @sched = @current_user.schedules.find_by_review_id(params[:id],
+      :include => [:course, {:offering => :professors}])
+    # TODO panic if user didn't review this...
+    @review = @sched.review
+    @course = @sched.course
+    @edit = true
+
+    render :new
+  end
+
 
   # receives data from 'new' and creates review
   def create
@@ -169,22 +196,15 @@ class ReviewsController < ApplicationController
       raise Exception.new('You gave me a phony review!')
     end
 
-    schedule_id = params[:schedule_id].to_i
+    # schedule_id = params[:schedule_id].to_i
     review_id = params[:review][:id].to_i
     offering_id = params[:review][:offering_id].to_i
+    course_id = params[:course_id].to_i
 
     puts "review_id = #{review_id}"
 
-    if schedule_id.present? && schedule_id > 0
-      schedule = Schedule.find(schedule_id)
-      if schedule.offering_id != offering_id
-        raise Exception.new("Schedule and review have different offering id's")
-      elsif schedule.review_id.present? && schedule.review_id != 0 && schedule.review_id != review_id
-        raise Exception.new("Schedule and review have different review id's")
-      end
-    else
-      schedule = Schedule.find_or_create_by_user_id_and_offering_id(@current_user.id, params[:review][:offering_id])
-    end
+    hsh = course_id == 0 ? {} : { :course_id => course_id }
+    schedule = @current_user.schedules.find_or_create_by_offering_id(offering_id, hsh)
 
     # can't have review w/o schedule, so don't bother checking w/ review id
     if (review = schedule.review)
@@ -195,7 +215,7 @@ class ReviewsController < ApplicationController
 
     # TODO wrap everything after this point in one DB transaction?
     review.save!
-    schedule.review = @review
+    schedule.review = review
     puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
     redirect_to course_reviews_path(:id => params[:course_id], :offering_id => review.offering.id)
   end

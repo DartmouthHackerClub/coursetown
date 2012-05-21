@@ -27,7 +27,7 @@ Coursetown::Application.routes.draw do
 
   get "/old_reviews/:id" => 'reviews#show_old_review', :as => :old_review
 
-  resources :reviews, :only => [:show, :create, :update] do
+  resources :reviews, :only => [:show, :create, :update, :edit] do
     # aggregate pages
     collection do
       get 'prof/:id' => 'reviews#prof', :as => :prof

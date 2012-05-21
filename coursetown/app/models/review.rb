@@ -7,7 +7,7 @@ class Review < ActiveRecord::Base
   validate :has_reasons
 
   belongs_to :offering
-  belongs_to :schedule
+  has_one :schedule
   has_one :user, :through => :schedule
   has_many :courses, :through => :offering
   has_many :professors, :through => :offering
@@ -26,7 +26,7 @@ class Review < ActiveRecord::Base
   # letter-grade/number pairs: for use in <select> menus
   # ignore "split" values, e.g. B/B+
   @grade_number_pairs = (@grade_to_letter.each_with_index.
-    select{|letter, index| letter && index.even?}.to_a << ['',-1]).reverse
+    select{|letter, index| letter && index.even?}.to_a << ['','']).reverse
 
   # convert from number_grade in 0..24 to letter grade
   def letter_grade # getter

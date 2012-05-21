@@ -160,7 +160,8 @@ tr.labels, h1 {
   margin-right: auto;
 }
 
-.group-review-content .new_review_link {
+.group-review-content .new_review_link,
+.group-review-content .edit_review_link {
   float: right;
   @include pop_out;
   text-decoration: none;
@@ -169,6 +170,14 @@ tr.labels, h1 {
   background-color: #272;
   color: #6c6;
   padding: 3px 12px;
+}
+.group-review-content .edit_review_link {
+  background-color: #999;
+  color: #ccc;
+}
+.group-review-content .edit_review_link:hover {
+  background-color: #ccc;
+  color: #fff;
 }
 .group-review-content .new_review_link:hover {
   background-color: #2a2;

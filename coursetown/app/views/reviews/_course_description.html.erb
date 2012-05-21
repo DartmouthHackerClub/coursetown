@@ -15,7 +15,6 @@ offerings = local_assigns[:offerings] || course.offerings
     <span class='label'>SATISFIES:</span>
     <% distribs = Offering.get_reqs(offerings) %>
     <% Distrib.all_abbrs.select{ |d| distribs.has_key?(d) }.each do |d| %>
-      <span class="distrib_tag"><%= d %></span>
       <%= content_tag :span, "#{d}#{'*' if !distribs[d]}", :class => "distrib_tag" %>
     <% end %>
     <% %w(W NW CI).select{ |wc| distribs.has_key?(wc) }.each do |wc| %>

@@ -275,14 +275,22 @@ class Offering < ActiveRecord::Base
     return {} if offerings.size == 0
     hsh = Hash[ [*%w(W NW CI), *Distrib.all_abbrs].map{|x| [x,0]} ]
     offerings.each do |offering|
-      offering.get_reqs.each{|d| hsh[d] += 1}
+      offering.get_reqs.each do |d|
+        if hsh[d]
+          hsh[d] += 1
+        elsif d.present?
+          logger.warn "Offering #{offering.id} has invalid WC/DISTRIB: '#{d}'"
+        end
+      end
     end
     hsh.delete_if{|k,v| v == 0}
+    puts "DISTRIBS/WC: #{hsh}"
     hsh.each do |k,v|
       hsh[k] = v == offerings.size
     end
+    hsh
   end
   def get_reqs
-    [*self.wc,*self.distribs.map(&:distrib_abbr)]
+    [*self.wc, *self.distribs.map(&:distrib_abbr)]
   end
 end

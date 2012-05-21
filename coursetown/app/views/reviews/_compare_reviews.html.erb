@@ -28,7 +28,7 @@ i = 0
   <% a = grouped_avgs[key] %>
   <tr class='<%= 'bad_news' if a[:num_reviews] == 0 || a.each_value.all?{|x| x.nil?} %>'>
     <th class='profs'><%= paths[key] || key %></th>
-    <td><%= letter_grade(a[:median_grade], not_found('-')) %></td>
+    <td><%= letter_grade(a[:median], not_found('-')) %></td>
     <% prefix = "compare-star-count#{i += 1}" %>
     <td><%= star_count("#{prefix}-course", a[:course_rating], '-') %></td>
     <td><%= star_count("#{prefix}-prof",   a[:professor_rating], '-') %></td>

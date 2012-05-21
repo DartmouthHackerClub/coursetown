@@ -5,7 +5,12 @@
 
 <div id='content' class='group-review-content'>
 
-  <%= link_to 'review this course', new_reviews_path(:id => @course.id, :offering_id => params[:offering_id]), :class => 'new_review_link' %>
+  <% if @my_review.present? %>
+    <%= link_to %(you've reviewed this course), edit_review_path(:id => @my_review.id),
+    :class => 'edit_review_link', :title => 'edit review' %>
+  <% else %>
+    <%= link_to 'review this course', new_reviews_path(:id => @course.id, :offering_id => params[:offering_id]), :class => 'new_review_link' %>
+  <% end %>
 
   <%= render :partial => 'review_summary',
     :locals => {:avgs => @avgs, :review_count => @reviews.size, :old_review_count => @old_reviews.size} %>
