@@ -52,6 +52,7 @@ module Coursetown
         dept_map.js
         json-sans-eval.js
         reviewComment.js
+
     )
   end
 end
