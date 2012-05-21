@@ -40,11 +40,11 @@ grades in courses you fill out a full review for.
     <% is_dark = true
       row_num = 0 %>
 
-    <% @years.each do |year| %>
+    <% @years.reverse.each do |year| %>
 
       <%# TODO: split table entirely by years %>
 
-      <% %w(W S X F).each do |term| %>
+      <% %w(W S X F).reverse.each do |term| %>
 
         <% next if (results = @results_by_term[[year,term]]).nil? %>
         <tr class='term-divider'>
