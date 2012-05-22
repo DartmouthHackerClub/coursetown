@@ -12,6 +12,10 @@ class Review < ActiveRecord::Base
   has_many :courses, :through => :offering
   has_many :professors, :through => :offering
 
+  attr_accessible :course_rating, :prof_rating, :workload_rating, :grade,
+    :course_comment, :prof_comment, :workload_comment, :offering_id,
+    :for_major, :for_prof, :for_prereq, :for_easy_a, :for_interest, :for_distrib
+
   # grades_table = { letter => 6 * GPA }
   # 6* because there are 3 levels for each letter (B-,B,B+), plus APPARENTLY
   # medians can be listed as "B+/B" which is why each letter's multiplied by 2

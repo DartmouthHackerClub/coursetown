@@ -141,3 +141,16 @@ h1, h2, h3, h4, h5 {
     background-color: #aaa;
   }
 }
+
+.warning {
+  color: #c33;
+  background-color: #eaa;
+  border: 1px solid #c33;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+
+  span {
+    color: inherit;
+  }
+}

@@ -176,7 +176,6 @@ class ReviewsController < ApplicationController
     # TODO panic if user didn't review this...
     @review = @sched.review
     @course = @sched.course
-    @edit = true
 
     render :new
   end
@@ -195,32 +194,48 @@ class ReviewsController < ApplicationController
     force_login(request.fullpath) && return if @current_user.nil?
 
     # FAILURE
-    if params[:review].blank? || params[:course_id].blank?
+    if params[:review].blank? || params[:course_id].blank? || params[:course_id].to_i == 0
       raise Exception.new('You gave me a phony review!')
     end
 
     # schedule_id = params[:schedule_id].to_i
-    review_id = params[:review][:id].to_i
     offering_id = params[:review][:offering_id].to_i
     course_id = params[:course_id].to_i
-
-    puts "review_id = #{review_id}"
 
     hsh = course_id == 0 ? {} : { :course_id => course_id }
     schedule = @current_user.schedules.find_or_create_by_offering_id(offering_id, hsh)
 
     # can't have review w/o schedule, so don't bother checking w/ review id
     if (review = schedule.review)
-      review.update_attributes(params[:review])
+      review.attributes.merge(params[:review])
     else
       review = Review.new(params[:review])
     end
 
-    # TODO wrap everything after this point in one DB transaction?
-    review.save!
-    schedule.review = review
-    puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
-    redirect_to course_reviews_path(:id => params[:course_id], :offering_id => review.offering.id)
+    if review.save
+
+      schedule.review = review
+      puts schedule.save ? "SAVE SUCCESSFUL" : "SAVE FAILURE!!!"
+      redirect_to course_reviews_path(:id => params[:course_id], :offering_id => review.offering.id)
+
+    else
+      @review = review
+      logger.debug 'INCOMPLETE REVIEW'
+      missing_fields = [
+        ['Prof. Rating', 'prof_rating'],['Course Rating', 'course_rating'],
+        ['Workload Rating', 'workload_rating'], ['Which Offering?', 'offering_id']
+      ].select{|_,k| (v = @review.attributes[k]).blank? || v == 0 }.map{|k,_| k}
+      missing_fields << 'Reasons Why' if !@review.has_reasons
+
+      if missing_fields.present?
+        @warning = "You forgot to fill out: #{missing_fields.join(', ')}"
+      else
+        @warning = "For one reason or another we couldn't process your form. Try fixing it and resubmitting"
+      end
+      @sched = schedule
+      @course = Course.find(course_id)
+      render :new
+    end
   end
 
 

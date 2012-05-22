@@ -31,18 +31,3 @@ form#search_form > div > span {
   @include pop_in;
   margin: 5px;
 }
-
-#results_container {
-  #no_results {
-    color: #c33;
-    background-color: #eaa;
-    border: 1px solid #c33;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px;
-
-    span {
-      color: inherit;
-    }
-  }
-}
