@@ -38,24 +38,33 @@ class CourseguideImporter
     # weirdly, courses.count is only correct the FIRST time it's called
     # so we need to manually count, because each_row calls .count
     added_count = 0
-
-    # add any missing courses to DB
-    # & build courses hash: old_offering_id => new_courses
+    all_courses = Course.includes(:offerings).group_by(&:number)
     new_courses = Hash.new
-    course_rows.each do |row|
 
-      # try to find something with either "code" or "deptclass" as the 4-letter
-      # department code. "deptclass" is often null, so we should rely on "code"
-      course = Course.find_by_department_and_number([row['code'], row['deptclass']],row['coursenumber'])
-      if course.nil?
-        puts "created new course: #{row['code']} #{row['coursenumber']}"
-        course = Course.new({:department => row['code'], :number => row['coursenumber']})
-        course.save!
-        added_count += 1
+    Course.transaction do
+      # add any missing courses to DB
+      # & build courses hash: old_offering_id => new_courses
+      course_rows.each do |row|
+
+        # try to find something with either "code" or "deptclass" as the 4-letter
+        # department code. "deptclass" is often null, so we should rely on "code"
+        cs = all_courses[row['coursenumber']]
+        all_courses[row['coursenumber']] = (cs = []) if cs.blank?
+
+        course = cs.blank? ? nil : cs.select{|c|
+          (d = c.department) && (d == row['code'] || d == row['deptclass'])}.first
+        if course.nil?
+          puts "created new course: #{row['code']} #{row['coursenumber']}"
+          course = Course.new({:department => row['code'], :number => row['coursenumber']})
+          course.save!
+          added_count += 1
+          # put it in the set so we don't create another one if it's searched for again
+          cs << course
+        end
+
+        # new_courses[row['courseid']] << course
+        (new_courses[row['courseid']] ||= []) << course
       end
-
-      # new_courses[row['courseid']] << course
-      (new_courses[row['courseid']] ||= []) << course
     end
     puts "Added #{added_count} new courses"
 
@@ -77,86 +86,91 @@ class CourseguideImporter
     use_target
     offering_rows = offerings.each_row.to_a
 
-    term_conversion = {'Winter' => 'W', 'Summer' => 'X',
-      'Spring' => 'S', 'Fall' => 'F'}
+    term_conversion = {'Winter' => 'W', 'Summer' => 'X', 'Spring' => 'S', 'Fall' => 'F'}
 
     puts "CourseGuide has #{offering_rows.size} total offerings"
     added_count = 0
 
     attributes = %w{courseid year term listedas enrollment median}
 
+    # pull offerings into memory
+    offerings_by_old_id = Offering.all.group_by(&:old_id)
+    offerings_by_old_id.delete(nil) # unnecessary...
+    new_offering = Hash[offerings_by_old_id.map{|k,v| [k, v.first]}.to_a]
+
     # add old offerings
     # and record the new offering_id they're mapped to
-    new_offering = Hash.new
-    offering_rows.each do |row|
+    Offering.transaction do
+      offering_rows.each do |row|
 
-      # first try to find by old_id
-      offering = Offering.find_by_old_id(row['courseid'])
-      # if an offering's found, check it matches (or warn the dev)
-      if offering
-        if offering.year != row['year'] ||
-          offering.term != term_conversion[row['term']]
+        # first try to find by old_id
+        offering = new_offering[row['courseid']]
+        # if an offering's found, check it matches (or warn the dev)
+        if offering.present? && (offering.year != row['year'] || offering.term != term_conversion[row['term']])
+            puts "\n\nERROR: offering w/ old_id #{row['courseid']} doesn't match."
+            puts "#{offering.attributes} \n -- VS -- \n#{%w{year term}.map{|x| "#{x}: #{row[x]}"}}"
+            # Ignore/give up on this offering.
+            # raise Exception.new "offering w/ old_id #{row['courseid']} doesn't match"
+            next
+        elsif offering.blank? # coudn't find an offering w/ this old_id
+          # try to find an existing offering, via courses, that matches this one
+          if (courses = new_courses[row['courseid']]).nil?
+            # some courses are missing departments. just drop them.
+            puts "No courses match offering #{ attributes.map{|a| "#{a}: #{row[a]}"} }"
+            next
+          end
+          course = courses.first
+          # find offerings that match the course & section AND don't have an old id
+          where_clause = {
+            :year => row['year'],
+            :term => term_conversion[row['term']],
+            :old_id => nil, # if it matched old_id, we'd have found it already
+          }
+          potential_offerings = course.offerings.where(where_clause)
 
-          puts "\n\nERROR: offering w/ old_id #{row['courseid']} doesn't match."
-          puts "#{offering.attributes} \n -- VS -- \n#{%w{year term}.map{|x| "#{x}: #{row[x]}"}}"
-          # Ignore/give up on this offering.
-          # raise Exception.new "offering w/ old_id #{row['courseid']} doesn't match"
-          next
-        end
-      else # coudn't find an offering w/ this old_id
-        # try to find an existing offering, via courses, that matches this one
-        if (courses = new_courses[row['courseid']]).nil?
-          # some courses are missing departments. just drop them.
-          puts "No courses match offering #{ attributes.map{|a| "#{a}: #{row[a]}"} }"
-          next
-        end
-        course = courses.first
-        # find offerings that match the course & section AND don't have an old id
-        where_clause = {
-          :year => row['year'],
-          :term => term_conversion[row['term']],
-          :old_id => nil, # if it matched old_id, we'd have found it already
-        }
-        potential_offerings = course.offerings.where(where_clause)
-
-        if !potential_offerings.empty?
-          # grab something that matches the section, else an arbitrary offering
-          if potential_offerings.size == 1
-            offering = potential_offerings.first
-          else
-            # TODO find by prof if multiple matches exist
-            potential_offerings.select! do |o|
-              (row['median'].nil? || o.median_grade.nil? ||
-                row['median'] == o.median_grade) &&
-              (row['enrollment'].nil? || o.enrolled.nil? ||
-                row['enrollment'] == o.enrolled)
-            end
+          if !potential_offerings.empty?
+            # grab something that matches the section, else an arbitrary offering
             if potential_offerings.size == 1
               offering = potential_offerings.first
             else
-              raise Exception.new "Multiple offerings for #{where_filter}"
+              # TODO find by prof if multiple matches exist
+              potential_offerings.select! do |o|
+                (row['median'].nil? || o.median_grade.nil? ||
+                  row['median'] == o.median_grade) &&
+                (row['enrollment'].nil? || o.enrolled.nil? ||
+                  row['enrollment'] == o.enrolled)
+              end
+              if potential_offerings.size == 1
+                offering = potential_offerings.first
+              else
+                raise Exception.new "Multiple offerings for #{where_filter}"
+              end
             end
           end
         end
+
+        # if that didn't work, create an offering
+        if offering.nil?
+          offering = Offering.new({:year => row['year'], :term => term_conversion[row['term']]})
+          added_count += 1
+        end
+
+        # set any offering attributes that aren't yet set
+        offering.old_id = row['courseid']
+        offering.median_grade ||= row['median'] # old reviews uses the same 0-24 system
+        offering.enrolled ||= row['enrollment']
+        offering.specific_desc ||= row['coursedesc']
+        offering.specific_title ||= row['listedas']
+        # save on courses not offerings b/c that relationship's already loaded
+        # so we don't need to query to check for its existence
+        new_courses[offering.old_id].each do |c|
+          c.offerings << offering if !c.offerings.any?{|o| o.old_id == offering.old_id}
+        end
+
+        offering.save!
+
+        new_offering[offering.old_id] = offering
       end
-
-      # if that didn't work, create an offering
-      if offering.nil?
-        offering = Offering.new({:year => row['year'], :term => term_conversion[row['term']]})
-        added_count += 1
-      end
-
-      # set any offering attributes that aren't yet set
-      offering.old_id = row['courseid']
-      offering.median_grade ||= row['median'] # old reviews uses the same 0-24 system
-      offering.enrolled ||= row['enrollment']
-      offering.specific_desc ||= row['coursedesc']
-      offering.specific_title ||= row['listedas']
-      offering.courses = new_courses[offering.old_id]
-
-      offering.save!
-
-      new_offering[offering.old_id] = offering
     end
     puts "Added #{added_count} new offerings."
 
@@ -181,38 +195,41 @@ class CourseguideImporter
 
     # add profs
     new_profs = Hash.new # prof_id (from courseguide) => Professor object
-    professors.each_row do |row|
-      name = row['name']
-      prof = Professor.find_by_fuzzy_name(name)
-      if prof.nil?
-        prof = Professor.new({:name => name})
-        prof.save!
-        added_count += 1
-      end
-      new_profs[row['id']] = prof
-    end
-    puts "Added #{added_count} new profs"
 
-    added_count = 0
-    # tie profs to offerings
-    teach_whats.each_row do |row|
-      prof = new_profs[row['profid']]
-      if prof.nil?
-        puts "WARNING: no prof w/ id #{row['profid']}"
-        next
+    Professor.transaction do
+      professors.each_row do |row|
+        name = row['name']
+        prof = Professor.find_by_fuzzy_name(name)
+        if prof.nil?
+          prof = Professor.new({:name => name})
+          prof.save!
+          added_count += 1
+        end
+        new_profs[row['id']] = prof
       end
-      offering = new_offerings[row['courseid']]
-      if offering.nil?
-        puts "WARNING: no offering for courseid #{row['courseid']}"
-        misses << row['courseid']
-      elsif !prof.offerings.include?(offering)
-        prof.offerings << offering
-        prof.save # TODO does this save do anything? it's many-to-many...
-        added_count += 1
+      puts "Added #{added_count} new profs"
+
+      added_count = 0
+      # tie profs to offerings
+      teach_whats.each_row do |row|
+        prof = new_profs[row['profid']]
+        if prof.nil?
+          puts "WARNING: no prof w/ id #{row['profid']}"
+          next
+        end
+        offering = new_offerings[row['courseid']]
+        if offering.nil?
+          puts "WARNING: no offering for courseid #{row['courseid']}"
+          misses << row['courseid']
+        elsif !prof.offerings.include?(offering)
+          prof.offerings << offering
+          prof.save # TODO does this save do anything? it's many-to-many...
+          added_count += 1
+        end
       end
     end
     puts "Added #{added_count} new prof/offering pairings"
-    puts "#{misses.size} MISSES: #{misses.to_a}"
+    puts "#{misses.size} different misses"
   end
 
 
@@ -246,19 +263,21 @@ class CourseguideImporter
 
     # just wipe the whole table clean before redoing it
     # this is the only thing that touches this table anyways
-    OldReview.delete_all
+    OldReview.transaction do
+      OldReview.delete_all
 
-    reviews.each_row do |row|
-      attrs = {:old_id => row['id'], :old_offering_id => row['course']}
-      keys.each {|key| attrs[key] = row[key]}
-      review = OldReview.new(attrs)
-      if !review.save
-        puts "Trouble saving review for old_id #{review.old_id}: #{review.attributes}"
-      else
-        added_count += 1
+      reviews.each_row do |row|
+        attrs = {:old_id => row['id'], :old_offering_id => row['course']}
+        keys.each {|key| attrs[key] = row[key]}
+        review = OldReview.new(attrs)
+        if !review.save
+          puts "Trouble saving review for old_id #{review.old_id}: #{review.attributes}"
+        else
+          added_count += 1
+        end
       end
-    end
 
+    end
     # puts "Added #{added_count} new reviews."
   end
 end
