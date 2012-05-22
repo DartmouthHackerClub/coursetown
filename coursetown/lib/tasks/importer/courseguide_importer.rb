@@ -40,7 +40,7 @@ class CourseguideImporter
     added_count = 0
 
     # add any missing courses to DB
-    # & build courses hash: old_offering_id => new_course_ids
+    # & build courses hash: old_offering_id => new_courses
     new_courses = Hash.new
     course_rows.each do |row|
 
@@ -48,6 +48,7 @@ class CourseguideImporter
       # department code. "deptclass" is often null, so we should rely on "code"
       course = Course.find_by_department_and_number([row['code'], row['deptclass']],row['coursenumber'])
       if course.nil?
+        puts "created new course: #{row['code']} #{row['coursenumber']}"
         course = Course.new({:department => row['code'], :number => row['coursenumber']})
         course.save!
         added_count += 1
@@ -97,8 +98,10 @@ class CourseguideImporter
           offering.term != term_conversion[row['term']]
 
           puts "\n\nERROR: offering w/ old_id #{row['courseid']} doesn't match."
-          puts "#{offering.attributes} \n -- VS -- \n#{%w{year term section}.map{|x| [x,row[x]]}}"
-          raise Exception.new "offering w/ old_id #{row['courseid']} doesn't match"
+          puts "#{offering.attributes} \n -- VS -- \n#{%w{year term}.map{|x| "#{x}: #{row[x]}"}}"
+          # Ignore/give up on this offering.
+          # raise Exception.new "offering w/ old_id #{row['courseid']} doesn't match"
+          next
         end
       else # coudn't find an offering w/ this old_id
         # try to find an existing offering, via courses, that matches this one
@@ -174,6 +177,8 @@ class CourseguideImporter
     puts "CourseGuide has #{professors.size} total professors and #{teach_whats.size} prof/offering pairings"
     added_count = 0
 
+    misses = Set.new
+
     # add profs
     new_profs = Hash.new # prof_id (from courseguide) => Professor object
     professors.each_row do |row|
@@ -199,6 +204,7 @@ class CourseguideImporter
       offering = new_offerings[row['courseid']]
       if offering.nil?
         puts "WARNING: no offering for courseid #{row['courseid']}"
+        misses << row['courseid']
       elsif !prof.offerings.include?(offering)
         prof.offerings << offering
         prof.save # TODO does this save do anything? it's many-to-many...
@@ -206,6 +212,7 @@ class CourseguideImporter
       end
     end
     puts "Added #{added_count} new prof/offering pairings"
+    puts "#{misses.size} MISSES: #{misses.to_a}"
   end
 
 
@@ -242,9 +249,6 @@ class CourseguideImporter
     OldReview.delete_all
 
     reviews.each_row do |row|
-      # skip if the review already exists
-      # next if OldReview.find_by_old_id(row['id'])
-
       attrs = {:old_id => row['id'], :old_offering_id => row['course']}
       keys.each {|key| attrs[key] = row[key]}
       review = OldReview.new(attrs)
@@ -268,7 +272,7 @@ class Row
   end
 
   def [](key)
-    @values[@indexes[key]]
+    @values[@indexes[key]] if @indexes[key]
   end
 end
 
