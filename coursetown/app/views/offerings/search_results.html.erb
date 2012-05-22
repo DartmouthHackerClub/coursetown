@@ -19,7 +19,7 @@
       <%# TODO it would make more sense to use whatever course was the initial result of the search
         so if I search CS 19, the results don't show Math 19 %>
       <h2 class="department_num_title">
-        <%= link_to (raw "#{course.compact_title}: #{offering.title}"), course_reviews_path(:id => course.id) -%>
+        <%= link_to (raw "#{course.compact_title}: #{offering.title}"), course_reviews_path(:id => course.id, :offering => offering.id) -%>
       </h2>
       <% if offering.courses.size > 1 %>
         <h4 class='x-listings'>X-Listed as:
