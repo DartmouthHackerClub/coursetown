@@ -16,10 +16,10 @@ markCompleteRows = (data) ->
     $('#alert_box').show()
     $('#warning_box').hide()
     for row_id in data
-      $("#review_row_#{row_id}").remove()
-      $("#review_row_#{row_id}_prof_comment").remove()
-      $("#review_row_#{row_id}_workload_comment").remove()
-      $("#review_row_#{row_id}_course_comment").remove()
+      $("#review_row_#{row_id}").addClass('submitted')
+      $("#review_row_#{row_id}_prof_comment").addClass('submitted-comment-row')
+      $("#review_row_#{row_id}_workload_comment").addClass('submitted-comment-row')
+      $("#review_row_#{row_id}_course_comment").addClass('submitted-comment-row')
 
 $(document).ready ->
   $('#alert_box').hide()

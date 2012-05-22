@@ -580,6 +580,28 @@ table#batch_reviews {
       margin: 10px;
     }
   }
+
+  tr.submitted {
+    background-color: #ada;
+    color:#797;
+    border-bottom: 1px solid #797;
+  }
+  tr.submitted:hover{
+    background-color: #9c9;
+  }
+  tr.submitted-comment-row {
+    background-color: #9c9;
+    color:#797;
+    border-bottom: 1px solid #797;
+
+    textarea {
+      background-color: #bdb;
+      color:#797;
+    }
+  }
+  tr.submitted-comment-row:hover {
+    background-color: #8b8;
+  }
 }
 
 #alert_box, #warning_box {
