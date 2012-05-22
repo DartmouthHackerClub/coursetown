@@ -74,7 +74,7 @@
 	  <br/>
 
 	  <%= f.label "Workload" %>
-	  <%= star_rating f, :workload_rating, :html_class => 'inline' %>
+	  <%= star_rating f, :workload_rating, :html_class => 'inline', :type => :workload %>
 	  <br/>
 	  <%= f.text_area(:workload_comment, :rows => 6, :cols => 50,
 	  	:class => 'new_review_textarea',

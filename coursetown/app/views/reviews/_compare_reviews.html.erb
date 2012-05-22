@@ -32,7 +32,7 @@ i = 0
     <% prefix = "compare-star-count#{i += 1}" %>
     <td><%= star_count("#{prefix}-course", a[:course_rating], '-') %></td>
     <td><%= star_count("#{prefix}-prof",   a[:prof_rating], '-') %></td>
-    <td><%= star_count("#{prefix}-work",   a[:workload_rating], '-') %></td>
+    <td><%= star_count("#{prefix}-work",   a[:workload_rating], '-', :type => :workload) %></td>
     <td class='count'><%= "#{a[:num_reviews]} reviews" %></td>
   </tr>
 <% end %>
