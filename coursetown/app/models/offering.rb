@@ -77,7 +77,7 @@ class Offering < ActiveRecord::Base
     end
     q[:course] = Hash[queries.slice(:department, :number).map{|k,v| ["courses.#{k.to_s}",v]}]
     q[:offering] = Hash[queries.slice(:period, :term, :year, :wc, :time).map{|k,v| ["offerings.#{k.to_s}",v]}]
-    q[:distribs] = {'distribs.distrib_abbr' => queries[:distribs]} if queries[:distribs].present?
+    q[:distrib] = {'distribs.distrib_abbr' => queries[:distrib]} if queries[:distrib].present?
     # TODO: right now it returns null-grade courses too when user searches for median grade. good choice? bad choice?
     if (med = queries[:median]).present? && med.to_i.to_s == med.to_s
       q[:median] = "offerings.median_grade >= #{(queries[:median].to_f * 6).round} OR offerings.median_grade IS NULL"
