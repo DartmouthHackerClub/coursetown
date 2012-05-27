@@ -51,7 +51,6 @@ namespace :scrape do
       puts "done."
       puts "importing data into db (#{data.size} offerings)..."
 
-      all_distribs = Set.new(Distrib.all_abbrs.to_a)
       month_quarter_mappings = {'01' => 'W','09' => 'F','03' => 'S','06' => 'X'}
 
       data.each { |offering|
@@ -128,8 +127,8 @@ namespace :scrape do
 
         ### DISTRIBS
         distrib_str = offering['Dist'] || ''
-        distrib_abbrs = distrib_str.split(' ').select{|d| Distrib.is_abbr?(d.upcase!)}
-        distrib_abbrs.each { |d| o.distribs.find_or_create_by_distrib_abbr(d) }
+        distrib_abbrs = distrib_str.split(' ').select{|d| Distrib.is_abbr?(d.upcase)}
+        distrib_abbrs.each { |d| o.distribs.find_or_create_by_distrib_abbr(d.upcase) }
 
         ### PROFESSORS
         professor_names = offering['Instructor'].split(', ')
@@ -268,7 +267,7 @@ namespace :scrape do
       # # add all missing distribs
       result['dist'].each do |d|
 
-        if !distrib_set.include? d.upcase!
+        if !distrib_set.include? d.upcase
           distrib = Distrib.new
           distrib.distrib_abbr = d
           distrib.offering_id = offering.id
