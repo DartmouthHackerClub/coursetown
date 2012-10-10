@@ -1,0 +1,7 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+campbell:
+  name: Andrew Campbell
+
+van_erp:
+  name: Eric Van Erp

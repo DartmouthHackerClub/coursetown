@@ -1,0 +1,32 @@
+/*
+ * This is a manifest file that'll automatically include all the stylesheets available in this directory
+ * and any sub-directories. You're free to add application-wide styles to this file and they'll appear at
+ * the top of the compiled file, but it's generally better to create a new file per style scope.
+ *= require_self
+ *= require appwide
+ *= require_tree .
+*/
+#content {
+  min-height: 500px;
+}
+.search_row * {
+  display: inline;
+}
+.search_row .left_side {
+  margin-right: 20px;
+}
+.search_row .left_side .close_row {
+  margin-right: 10px;
+}
+.search_row .right_side {
+  width: 400px;
+}
+.search_row .right_side input[type='text'] {
+  width: 100%;
+}
+.search_form input[type='submit'] {
+  float: right;
+}
+.close_row {
+  display: none;
+}

@@ -1,0 +1,119 @@
+#menu ul.ddsmoothmenu{
+margin:0;
+padding:0;
+list-style:none;
+float:left;
+position:relative;
+z-index:10000;
+}
+
+/*Top level list items*/
+#menu ul.ddsmoothmenu li{
+position: relative;
+display: inline;
+float: left;
+}
+
+/*Top level menu link items style*/
+#menu ul.ddsmoothmenu li li {
+width:auto;
+font:11px Arial, Helvetica, sans-serif !important;
+text-transform:capitalize;
+margin:0;
+padding:0;
+}
+
+#menu ul.ddsmoothmenu li li a{
+width: 130px; /*width of sub menus*/
+height:auto;
+float:none;
+display: block;
+text-align:left;
+color: #fff;
+text-shadow:none;
+margin:0;
+padding:6px 18px;
+text-decoration: none;
+background:none;
+position:relative;
+border-bottom:1px solid #EEEEEE;
+}
+
+* html #menu ul.ddsmoothmenu li li a{ /*IE6 hack to get sub menu links to behave correctly*/
+display: inline-block;
+}
+
+#menu ul.ddsmoothmenu li li a:link, #menu ul.ddsmoothmenu li li a:visited{
+color: #888888;
+background:url(../images/submenu_px.gif) top repeat-x #fff;
+}
+
+#menu ul.ddsmoothmenu li li a.selected,
+#menu ul.ddsmoothmenu li li a:hover { /*CSS class that's dynamically added to the currently active menu items' LI A element*/
+color: #fff;
+background:#4E4E4F;
+}
+	
+/*1st sub level menu*/
+#menu ul.ddsmoothmenu li ul{
+border-top:1px solid #EEEEEE;
+margin:0;
+padding:0;
+position: absolute;
+left: 0;
+display: none; /*collapse all sub menus to begin with*/
+visibility: hidden;
+background:#E3E3E3; /*background of menu items (default state)*/
+}
+
+/*Sub level menu list items (undo style from Top level List Items)*/
+#menu ul.ddsmoothmenu li ul li{
+display: list-item;
+float: none;
+}
+
+/*All subsequent sub menu levels vertical offset after 1st level sub menu */
+#menu ul.ddsmoothmenu li ul li ul{
+padding-top:0;
+background:#E3E3E3;
+border-top:1px solid #EEEEEE;
+*margin-top:0;
+margin-top:-1px;
+}
+
+/* Holly Hack for IE \*/
+* html .ddsmoothmenu{height: 1%;} /*Holly Hack for IE7 and below*/
+
+
+/* ######### CSS classes applied to down and right arrow images  ######### */
+
+.downarrowclass{
+display:block;
+position: absolute;
+width:0; height:0;
+overflow:hidden;
+top: 0; right: 0;
+display:none !important;
+}
+
+.rightarrowclass{
+display:block;
+width:5px;
+height:7px;
+position: absolute;
+margin-top:-3px;
+top: 50%;
+right: 8px;
+background:url(../images/right.gif) 0 0 no-repeat;
+}
+
+/* ######### CSS for shadow added to sub menus  ######### */
+
+.ddshadow{
+width:0;
+height:0;
+position: absolute;
+left: 0;
+top: 0;
+display:none;
+}

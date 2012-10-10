@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+<% [[:campbell,[:cs69,:cs50_1,:cs50_2]],
+	[:van_erp, [:m63]]
+	].each do |prof, offerings|
+		offerings.each do |offering| %>
+<%= "#{prof}_x_#{offering}" %>:
+  professor_id: <%= professors(prof).id %>
+  offering_id: <%= offerings(offering).id %>
+
+<% end end %>

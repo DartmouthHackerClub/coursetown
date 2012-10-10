@@ -1,0 +1,126 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="shortcut icon" href="images/favicon.ico" />
+    <title>Dartmouth Course Picker by Hacker Club</title>
+    <%= stylesheet_link_tag    "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/smoothness/jquery-ui.css" %>
+    <link rel='stylesheet' type='text/css' href="/stylesheets/light/styles.css" />
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" %>
+    <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js" %>
+    <%= javascript_include_tag  "application" %>
+    <%= javascript_include_tag "/js/cufon/cufon-yui.js" %>
+
+    <%# public assets %>
+    <%= csrf_meta_tags %>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-31878988-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  <!-- GOOGLE ANALYTICS -->
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23367713-3']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+  </script>
+
+  </head>
+
+  <body id="sp">
+    <!-- Start Main Nav -->
+    <div class="mainnav_full">
+      <div id="MainNav">
+        <a href="/" class="logo"><h1>course picker</h1></a>
+        <div id="menu">
+          <ul class="ddsmoothmenu">
+            <li>
+              <%= link_to root_path, :title => 'Home' do %>
+              Home<span class="menu_description">Front Page</span>
+              <% end %>
+            </li>
+            <li><%= link_to search_path do %>
+              Search<span class='menu_description'>Course Search</span>
+              <% end %>
+              <!-- <a href="/" title="Home">Home<span class="menu_description">Front Page</span></a></li>
+            <li><span class="menuslide"></span><a href="/search" title="Search">Search<span class="menu_description">Course Search</span></a></li> -->
+            <li><a href="<%= quick_start_reviews_path %>" title="Write Reviews">Write Reviews<span class="menu_description">Only takes a minute!</span></a></li>
+            <% if @current_user.present? %>
+              <li><a href="<%= signout_path %>" title="Logout">Logout</a></li>
+            <% else %>
+              <li><a href="<%= login_path(request.fullpath) %>" title="Login">Login<span class='menu_description'>To Read Reviews</span></a></li>
+            <% end %>
+          </ul>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+    <!-- End Main Nav -->
+
+    <!-- Begin Header -->
+    <div class="header_full sample_02">
+      <div class="head_top_shadow"></div>
+      <div class="head_bot_shadow"></div>
+      <div id="header"></div>
+    </div>
+    <!-- End Header -->
+
+    <!-- Start Content Wrapper -->
+    <div class="content_wrapper">
+      <%= yield %>
+    </div>
+    <!-- End Content Wrapper -->
+
+    <!-- Start Footer Sidebar -->
+    <div class="fsb_full">
+      <div id="fsb">
+      </div>
+    </div>
+    <!-- End Footer Sidebar -->
+    <!-- Start Footer  -->
+    <div class="footer_full">
+      <div id="footer">
+        <div class="copy">
+          <p class="developed_by">Developed By <a href="http://hacktown.cs.dartmouth.edu/">Hacker Club</a>
+            (with the support of <a href="http://dsa.dartmouth.edu/">Student Assembly</a>)</p>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+    <!-- End Footer  -->
+
+    <!-- Theme Hook -->
+    <script type="text/javascript" src="/js/Includer.js"></script>
+    <script type="text/javascript">Cufon.now();</script>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-23367713-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+       })();
+
+</script>
+   </body>
+ </html>

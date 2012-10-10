@@ -1,0 +1,14 @@
+.bundle
+db/*.sqlite3
+db/*.sqlite
+log/*.log
+tmp/
+*.swp
+*.swo
+*.pyc
+*.sql
+*~
+*.DS_Store
+*.sass-cache
+.rvmrc
+

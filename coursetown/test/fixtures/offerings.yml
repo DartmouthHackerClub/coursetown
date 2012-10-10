@@ -1,0 +1,49 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+cs69:
+  year: 2012
+  term: W
+  time: 11
+  median_grade: 3.5
+  specific_title:
+  wc:
+  specific_desc:
+  unconfirmed: false
+  crn: 9000
+  section: 1
+
+cs50_1:
+  year: 2012
+  term: W
+  time: 9L
+  median_grade: 3.0
+  specific_title:
+  wc:
+  specific_desc:
+  unconfirmed: false
+  crn: 90001
+  section: 1
+
+cs50_2:
+  year: 2012
+  term: W
+  time: 2A
+  median_grade: 2.5
+  specific_title:
+  wc:
+  specific_desc:
+  unconfirmed: false
+  crn: 90002
+  section: 2
+
+m63:
+  year: 2012
+  term: W
+  time: 2A
+  median_grade: 1.0
+  specific_title:
+  wc:
+  specific_desc:
+  unconfirmed: false
+  crn: 90003
+  section: 1

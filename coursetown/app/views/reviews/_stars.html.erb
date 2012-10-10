@@ -1,0 +1,51 @@
+<%
+# USAGE NOTE: use ReviewHelper method to call this.
+# don't call directly
+
+# REQUIRED ARGS:
+# field_name (required for input-stars)
+
+# optional arg:
+#  type => [workload, nil]
+
+# for more info on plugin, see: http://www.wbotelhos.com/raty/
+
+field_name = local_assigns[:field_name] # name of hidden field where value will be kept
+hints = local_assigns[:hints]
+type = local_assigns[:type]
+if type.to_s == 'workload' || type.to_s == 'workload_hints'
+    hints_arr = ['very light','pretty light','average','pretty heavy','intense']
+else
+    hints_arr = %w(bad poor average good great)
+end
+hints = hints.blank? ? hints_arr : hints
+cancel = local_assigns[:cancel] ? 'true' : 'false'
+cancel_place = local_assigns[:cancel_place] || 'left'
+classes = "star-rating #{local_assigns[:html_class]}".strip
+score = local_assigns[:score]
+
+
+# replace underscores and brackets. they break html id stuff
+stars_id = local_assigns[:id] || "ratystars#{field_name}".gsub(/[\[\]\_]/,'-')
+read_only = (!field_name || local_assigns[:read_only]) ? 'true' : 'false'
+%>
+
+<div id='<%= stars_id %>' class='<%= classes %>'></div>
+<script type="text/javascript">
+  jQuery("#<%= stars_id %>").raty({
+    <% if field_name %>
+    scoreName: "<%= field_name %>",
+    <% end %>
+
+    <% if score %>
+    score: <%= score %>,
+    <% end %>
+    readOnly: <%= read_only %>,
+
+    cancelPlace: '<%= cancel_place %>',
+    cancel: <%= cancel %>,
+    hints: <%= raw "#{hints_arr}" %>,
+
+    path: "/assets/raty"
+  });
+</script>

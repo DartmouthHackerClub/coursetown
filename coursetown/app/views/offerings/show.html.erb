@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Course:</b>
+  <%= @offering.courses.map{|course|"#{course.department} #{course.number}" }.join(", ")  + ": " + @offering.courses.first.long_title%>
+</p>
+
+<p>
+  <b>Year:</b>
+  <%= @offering.year %>
+</p>
+
+<p>
+  <b>Season:</b>
+  <%= @offering.term %>
+</p>
+
+<p>
+  <b>Professor:</b>
+  <%= @offering.professors.map(&:name).join(", ") %>
+</p>
+
+<p>
+  <b>Time:</b>
+  <%= @offering.time %>
+</p>
+
+<p>
+  <b>Distrib:</b>
+  <%= @offering.distribs.map(&:distrib_name).join(", ") %>
+</p>
+
+
+<%= link_to 'Edit', edit_offering_path(@offering) %> |
+<%= link_to 'Back', offerings_path %>

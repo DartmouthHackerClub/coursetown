@@ -1,0 +1,73 @@
+<% courses = @review.offering.courses %>
+<% course = courses.first %>
+<% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
+
+<div class="PageTitle">
+<h1><%= course_link(course, @review.offering) %></h1>
+</div>
+
+<div id="content">
+  <% if x_listings %>
+    <h2 class="x-listings">X-Listed as: <%=x_listings.map(&:compact_title).join(', ')%></h2>
+  <% end %>
+  <h2>taught by: <%= prof_links(@review.offering) %></h2>
+
+  <table id="show-review">
+
+    <!-- offering info -->
+
+    <tr class='compact'>
+      <td>Taken </td>
+      <td><%="#{@review.offering.year} #{@review.offering.term}"%></td>
+    </tr>
+    <%# TODO major, office hours, basically anything with an 'r' prefix %>
+  </table>
+
+   <%
+  labels = [ # format: [key, label, low-star blurb, high-star blurb]
+  %(coverall | Overall course rating | Horrible course | Great course),
+  %(cpace | Was paced too quickly | Moved slowly | Moved quickly),
+  %(cwork | Was more work than a typical course | Light workload | Heavy workload),
+  %(cinterest | Course was interesting | Uninteresting | Very interesting),
+  %(ctas | TAs were helpful | Unhelpful TA's | Really helpful TA's'),
+  %(cmatchorc | Matched ORC | Didn't match its ORC description | ),
+
+  %(hlearn | Homework helped learn the material | Unhelpful homework | Very helpful homework),
+  %(hhard | Homework was difficult | Really easy homework | Very difficult homework),
+  %(hinterest | Homework was interesting | Boring homework | Very interesting homework),
+
+  %(efair | Exams were fair assessments | Unfair exams | Exams were very fair),
+  %(ehard | Exams were difficult | Very easy exams | Very difficult exams),
+
+  %(loverall | Overall lab rating | Horrible labs | Great labs),
+  %(lhard | Labs were difficult | Really easy labs | Very difficult labs),
+  %(ledvalue | Labs were valuable | Labs were wastes of time | Valuable labs),
+  %(ltas | Lab TAs were helpful | Unhelpful lab TA's | Really helpful lab TA's),
+
+  # %(reffort | Amount of effort the reviewers put into the coures (on average) | Reviewers put little effort into this course | Reviewers put a lot of effort into this course),
+  # %(rattend | Amount of class attended (on average) | Reviewers missed many lectures | Reviewers attended most classes)
+  ].map{|s| s.split(' | ')}
+  %>
+
+  <% scores = @review.attributes %>
+
+  <div class='old_reviews_full'>
+    <table>
+      <% labels.each do |key, label, _, _| %>
+        <%# NOTE: for some reason some reviews save a zero instead of null? only happens with labs? %>
+        <% next if scores[key].blank? || scores[key] < 1 %>
+        <% val = key.ends_with?('overall') ? (scores[key] * 5.0) / 24.0 : scores[key] %>
+        <tr>
+          <td><%= label %></td>
+          <td><%= star_count "star-count-#{key}", val %></td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+
+  <div class='old_reviews_comments'>
+    <h2>Comment</h2>
+    <h4><%= @review.title.blank? ? not_found('untitled') : @review.title %></h4>
+    <p><%= @review.creview.blank? ? not_found('no comment') : @review.creview %></p>
+  </div>
+</div>

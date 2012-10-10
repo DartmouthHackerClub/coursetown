@@ -1,0 +1,91 @@
+<%# HEADER %>
+<% edit = @review.present? && @review.id.present? %>
+
+<div class="PageTitle">
+	<h1><%= "#{edit ? 'Edit Your' : 'New'} Review for #{@course.compact_title}" %></h1>
+<% else %>
+</div>
+
+<h4>All fields are required unless stated otherwise</h4>
+
+<% if @warning.present? %>
+	<div class='warning'><%= @warning %></div>
+<% end %>
+
+<%# REVIEW %>
+
+<div>
+	<%= form_for @review do |f| %>
+
+		<% if !edit || @sched.blank? || @sched.offering.blank? %>
+			<div id='which_offering' %>
+				<% opts = Offering.sort_by_time(@course.offerings).
+					reverse.map {|o| [o.long_summary_string, o.id]}.
+					uniq{|str,oid| str}
+
+					puts "REVIEW.OFFERING = #{@review.offering_id}"
+				default = @review.offering_id.to_s
+				%>
+				<%= f.label :offering_id, "When did you take this course?" %>
+				<%= f.select :offering_id, options_for_select([['',''],*opts], default) %>
+			</div>
+		<% else %>
+			<h3>with <%= prof_links @sched.offering %></h3>
+			<%= f.hidden_field :offering_id %><%# shouldn't be necessary, but JUST in case %>
+		<% end %>
+
+		<div id='review_motivations'>
+
+			<h4>Why did you take this class? (pick at least one)</h4>
+			<table>
+				<% [{:for_interest => 'Interest', :for_prof => 'Prof',
+					:for_easy_a => 'Easy A'}, {:for_distrib => 'Distrib/WC',
+					:for_major => 'Major/Minor', :for_prereq => "Prereqs"}].each do |h| %>
+					<tr>
+					<% h.each do |tag, title| %>
+						<td>
+							<%= f.check_box tag %>
+							<%= f.label tag, title %>
+						</td>
+					<% end %>
+					</tr>
+				<% end %>
+			</table>
+		</div>
+
+	  <%= f.label 'Grade (optional)' %>
+	  <%= f.select :grade, Review.grade_number_pairs %>
+	  <br/>
+
+	  <%= f.label 'Course' %>
+	  <%= star_rating f, :course_rating, :html_class => 'inline' %>
+	  <br/>
+	  <%= f.text_area(:course_comment, :rows => 6, :cols => 50,
+			:class => 'new_review_textarea',
+			:placeholder => "How interesting, well-paced, and useful was the course? Would you recommend it? (optional)") %>
+	  <br/>
+
+	  <%= f.label "Professor"%>
+	  <%= star_rating f, :prof_rating, :html_class => 'inline' %>
+	  <br/>
+	  <%= f.text_area(:prof_comment, :rows => 6, :cols => 50,
+	  	:class => 'new_review_textarea',
+	  	:placeholder => "#{@review.professors.size > 1 ? 'Were the professors' : 'Was the professor'} helpful? Knowledgeable? Fair? How were the lectures/discussions? (optional)") %>
+	  <br/>
+
+	  <%= f.label "Workload" %>
+	  <%= star_rating f, :workload_rating, :html_class => 'inline', :type => :workload %>
+	  <br/>
+	  <%= f.text_area(:workload_comment, :rows => 6, :cols => 50,
+	  	:class => 'new_review_textarea',
+	  	:placeholder => "Was the workload manageable? Consistent throughout the term? Difficult? Did it seem like busy-work? Any tips? (optional)") %>
+	  <br/>
+	  <%= (hidden_field_tag 'schedule_id', @sched.id) if @sched.present? %>
+	  <%= hidden_field_tag 'course_id', @course.id %>
+	  <%# TODO rails might auto-generate this hidden field? %>
+	  <%= (f.hidden_field :id) if @review.id.present? %>
+
+	  <%= f.submit "Submit" %>
+	<% end %>
+	<%# TODO cancel button? %>
+</div>

@@ -1,0 +1,97 @@
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "courses" (
+  "id" int(10) unsigned NOT NULL AUTO_INCREMENT,
+  "year" year(4) DEFAULT NULL,
+  "term" enum('Winter','Spring','Summer','Fall') DEFAULT NULL,
+  "lab" enum('No','Yes') DEFAULT 'No',
+  "median" smallint(5) unsigned DEFAULT NULL,
+  "listedas" varchar(255) DEFAULT NULL,
+  "enrollment" int(11) DEFAULT NULL,
+  "allowreview" enum('No','Yes') DEFAULT 'No',
+  "type" enum('Dartmouth','FSP','LSA','LSA+','Freshman Seminar') DEFAULT NULL,
+  "note" varchar(255) DEFAULT NULL,
+  "officehours" varchar(255) DEFAULT NULL,
+  "syllabus" text,
+  "coursedesc" text,
+  "site" enum('Blackboard','SA','URL','NONE') DEFAULT 'NONE',
+  "openwhen" datetime DEFAULT NULL,
+  "closewhen" datetime DEFAULT NULL,
+  "viewlevel" int(10) DEFAULT '0',
+  PRIMARY KEY ("id"),
+  KEY "id" ("id","listedas"),
+  KEY "listedas" ("listedas","id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "departments" (
+  "id" int(10) unsigned NOT NULL AUTO_INCREMENT,
+  "name" varchar(120) DEFAULT NULL,
+  "code" varchar(5) DEFAULT NULL,
+  "deptclass" varchar(7) DEFAULT NULL,
+  "note" varchar(255) DEFAULT NULL,
+  "url" varchar(255) DEFAULT NULL,
+  "email" varchar(255) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "whatsubject" (
+  "id" int(10) unsigned NOT NULL AUTO_INCREMENT,
+  "dept" int(10) unsigned DEFAULT NULL,
+  "coursenumber" int(10) unsigned DEFAULT NULL,
+  "section" int(10) unsigned DEFAULT NULL,
+  "courseid" int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "bycourse" ("courseid","dept","coursenumber","section"),
+  KEY "bydept" ("dept","coursenumber","section","courseid")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "teachwhat" (
+  "id" int(10) unsigned NOT NULL AUTO_INCREMENT,
+  "profid" int(10) unsigned NOT NULL DEFAULT '0',
+  "courseid" int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id"),
+  KEY "byprof" ("profid","courseid"),
+  KEY "bycourse" ("courseid","profid")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "professors" (
+  "id" int(10) unsigned NOT NULL DEFAULT '0',
+  "name" varchar(120) DEFAULT NULL,
+  "dept" int(10) unsigned DEFAULT NULL,
+  "note" varchar(255) DEFAULT NULL,
+  "officehours" varchar(255) DEFAULT NULL,
+  "bio" varchar(255) DEFAULT NULL,
+  "cname" varchar(100) DEFAULT NULL,
+  "prefs" varchar(255) DEFAULT 'FF9900,',
+  PRIMARY KEY ("id")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE "profreviews" (
+  "id" int(10) unsigned NOT NULL AUTO_INCREMENT,
+  "reviewer" int(10) unsigned DEFAULT NULL,
+  "professor" int(10) unsigned DEFAULT NULL,
+  "course" int(10) unsigned DEFAULT NULL,
+  "reviewid" int(10) unsigned DEFAULT NULL,
+  "plectures" smallint(5) unsigned DEFAULT NULL,
+  "punderstand" smallint(5) unsigned DEFAULT NULL,
+  "phelp" smallint(5) unsigned DEFAULT NULL,
+  "pinclass" smallint(5) unsigned DEFAULT NULL,
+  "pinspire" smallint(5) unsigned DEFAULT NULL,
+  "poverall" smallint(5) unsigned DEFAULT NULL,
+  "interpretas" smallint(5) unsigned DEFAULT NULL,
+  "pdiversity" smallint(5) unsigned DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "professor" ("professor","reviewid"),
+  KEY "reviewid" ("reviewid","professor")
+);
+/*!40101 SET character_set_client = @saved_cs_client */;

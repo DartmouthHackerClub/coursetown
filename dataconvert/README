@@ -1,0 +1,9 @@
+convert-from-old produces a series of INSERT statements.
+schema.sql is the basic schema (that convert-from-old( wants, imported from courseguide and adapted to sqlite3)
+
+
+HOWTO:
+make a file called "password" and put the root password in.
+Copy empty sqlite3 to development.sqlite3
+./convert-from-old.sh | sqlite3 development.sqlite3
+Now you have lots of stuff

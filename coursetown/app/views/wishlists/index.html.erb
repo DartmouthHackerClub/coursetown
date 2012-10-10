@@ -1,0 +1,26 @@
+
+<% if @current_user.nil? %>
+<p>Login and create your wishlist!</p>
+<%= link_to "Login", "/auth/cas"%>
+<% else %>
+
+<h1><%= "#{@current_user.name}'s Wishlist" %></h1>
+
+<% if @courses.empty? %>
+  You have no courses on your wishlist.
+<% else %>
+  <table>
+    <% @courses.each do |course| %>
+      <tr>
+        <td><%= course.department %></td>
+        <td><%= course.number %></td>
+        <td><%= course.long_title %></td>
+        <td><%= link_to 'Details', course %></td>
+        <td><%= link_to 'Remove', course, :confirm => 'Are you sure?', :method => :delete %></td>
+      </tr>
+    <% end %>
+  </table>
+<%end%>
+<br />
+
+<% end %>

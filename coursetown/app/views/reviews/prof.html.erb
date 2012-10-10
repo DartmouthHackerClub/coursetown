@@ -1,0 +1,49 @@
+<div class="PageTitle">
+<h1><%= @prof.name %></h1>
+</div>
+
+<div id='content' class='group-review-content'>
+
+  <%= render :partial => 'review_summary',
+    :locals => {:avgs => @avgs, :review_count => @reviews.size, :old_review_count => @old_reviews.size} %>
+
+  <!-- <h2 id="course_detail_header">Course</h2> -->
+  <div id="course_detail">
+    <%= render :partial => 'comments',
+      :locals => {
+        :reviews => @reviews,
+        :header_text => 'Course',
+        :rating_field => 'course_rating',
+        :comment_field => 'course_comment',
+      } %>
+  </div>
+
+  <div id='prof_detail'>
+    <%= render :partial => 'comments',
+      :locals => {
+        :reviews => @reviews,
+        :header_text => 'Professor',
+        :rating_field => 'prof_rating',
+        :comment_field => 'prof_comment',
+      } %>
+  </div>
+
+  <div id="workload_detail">
+    <%= render :partial => 'comments',
+      :locals => {
+        :reviews => @reviews,
+        :header_text => 'Workload',
+        :rating_field => 'workload_rating',
+        :comment_field => 'workload_comment',
+      } %>
+  </div>
+
+  <%= render :partial => 'compare_reviews',
+    :locals => {:grouped_avgs => @grouped_avgs, :review_counts => @review_counts,
+      :header_text => 'Courses Taught'} %>
+
+  <%= render :partial => 'old_reviews',
+    :locals => {:avgs => @old_avgs, :counts => @old_counts,
+      :reviews => @old_reviews} %>
+
+</div>

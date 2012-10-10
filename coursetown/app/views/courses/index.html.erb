@@ -1,0 +1,36 @@
+<h1>Course Listings</h1>
+
+<% if @current_user.present? %>
+  <table>
+  <tr>
+    <th></th>
+    <th width="50px"></th>
+    <th width="30px"></th>
+  </tr>
+
+  <% @courses.each do |course| %>
+    <% course_in_wishlist = @wishlist.try(:any?) {|w| w.course_id == course.id} %>
+    <%= content_tag :tr, :course_id => course.id do %>
+      <td><%= check_box_tag "course[#{course.id}][wishlist]", true.to_s, course_in_wishlist, :course_in_wishlist => course_in_wishlist %></td>
+      <td><%= course.number %></td>
+      <td><%= course.department %></td>
+    <% end %>
+  <% end %>
+</table>
+
+
+<% else %>
+<table>
+  <tr>
+    <th width="50px"></th>
+    <th width="30px"></th>
+  </tr>
+
+  <% @courses.each do |course| %>
+    <%= content_tag :tr, :course_id => course.id do %>
+      <td><%= course.number %></td>
+      <td><%= course.department %></td>
+    <% end %>
+  <% end %>
+</table>
+<% end %>
