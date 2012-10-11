@@ -79,3 +79,4 @@ Option 2) Git add your .bundle and vendor/bundle directories after running
 code or ensure they can run on RHEL x86_64.
 
 
+Note, a lot of this is redundant with openshift
