@@ -52,7 +52,7 @@
         <% if offering.specific_desc.present? %>
           <%= offering.specific_desc -%>
         <% elsif (d = offering.courses.map(&:desc).find(&:present?)) %>
-          <%= d %>
+          <%= raw d %>
         <% else %>
           (Course description unavailable)
         <% end %>

@@ -8,7 +8,8 @@ gem 'json'
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
-gem 'omniauth', '0.2.6'
+gem 'omniauth'
+gem 'omniauth-cas'
 
 
 # Gems used only for assets and not required
@@ -28,7 +29,7 @@ gem 'hpricot'
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
 # Use unicorn as the web server
-# gem 'unicorn'
+gem 'unicorn'
 
 # Deploy with Capistrano
 # gem 'capistrano'

@@ -10,7 +10,7 @@ development:
   database: coursetown_dev
   pool: 5
   username: coursetown
-  password: foo
+  password: BLP80ZKB8nB8
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -22,14 +22,13 @@ test:
   database: coursetown_test
   pool: 5
   username: coursetown
-  password: foo
+  password: BLP80ZKB8nB8
 
 production:
   adapter: mysql2
-  encoding: utf8
-  reconnect: false
+  host: localhost
+  port: 3306
+  database: coursetown
   pool: 5
-  database: <%=ENV['OPENSHIFT_APP_NAME']%>
-  username: <%=ENV['OPENSHIFT_DB_USERNAME']%>
-  password: <%=ENV['OPENSHIFT_DB_PASSWORD']%>
-  socket: <%=ENV['OPENSHIFT_DB_SOCKET']%>
+  username: coursetown
+  password: BLP80ZKB8nB8

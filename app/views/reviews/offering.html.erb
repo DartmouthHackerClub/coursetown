@@ -56,7 +56,7 @@
 		<td id="description">
 			<h2>Course Description</h2>
 			<% if @description %>
-				<%= @description %>
+				<%= raw @description %>
 			<% else %>
 				<span class="not_found">None available.</span>
 			<% end %>

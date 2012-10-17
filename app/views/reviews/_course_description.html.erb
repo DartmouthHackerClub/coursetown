@@ -7,7 +7,7 @@ offerings = local_assigns[:offerings] || course.offerings
 
 <div id="course_description">
   <% if course.desc %>
-    <%= course.desc %>
+    <%= raw course.desc %>
   <% else %>
     <span class="not_found">None available.</span>
   <% end %>
