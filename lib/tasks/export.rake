@@ -1,6 +1,6 @@
 namespace :export do
   task :reviews => :environment do
-    filename = '../scrapers/reviews.csv'
+    filename = 'scrapers/reviews.csv'
     # OUTPUT:
     # user id, course id, course-prof id, course rating, workload rating
     # user course-prof id if dense enough data, just course id if not
