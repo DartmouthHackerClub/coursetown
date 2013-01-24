@@ -25,6 +25,7 @@ end
 
 gem 'jquery-rails'
 gem 'pg'
+gem 'mysql2'
 gem 'hpricot'
 gem 'thin'
 
