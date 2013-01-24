@@ -26,7 +26,7 @@ if env == "production"
 
   # feel free to point this anywhere accessible on the filesystem
   user 'deploy'
-  shared_path = "/home/deployer/coursetown/shared"
+  shared_path = "/home/deploy/coursetown/shared"
 
   stderr_path "#{shared_path}/log/unicorn.stderr.log"
   stdout_path "#{shared_path}/log/unicorn.stdout.log"
