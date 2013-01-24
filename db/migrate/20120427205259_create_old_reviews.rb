@@ -25,17 +25,17 @@ class CreateOldReviews < ActiveRecord::Migration
       t.text :creview 
       t.text :lreview
       t.text :fsreview
-      t.string :approved,     :limit => 0
-      t.string :modified,     :limit => 0
+      t.string :approved
+      t.string :modified
       t.text :note
       t.integer :reviewer
       t.integer :rterm,       :limit => 2
       t.datetime :date
       t.timestamp :modifiedat,      :null => false
-      t.string :rnotify,      :limit => 0
+      t.string :rnotify
       t.integer :ltas,        :limit => 2
       t.integer :interpretas, :limit => 2
-      t.string :rhappygrade,  :limit => 0
+      t.string :rhappygrade
       t.integer :cmatchorc,   :limit => 2
       t.string :ip,           :limit => 18
       t.string :hostname,     :limit => 200
