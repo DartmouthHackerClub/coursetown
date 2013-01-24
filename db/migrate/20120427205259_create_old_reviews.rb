@@ -22,9 +22,9 @@ class CreateOldReviews < ActiveRecord::Migration
       t.string :roffice,      :limit => 2
       t.integer :rattend,     :limit => 2
       t.string :title
-      t.text :creview,        :limit => 16777215
-      t.text :lreview,        :limit => 16777215
-      t.text :fsreview,       :limit => 16777215
+      t.text :creview, 
+      t.text :lreview,
+      t.text :fsreview,
       t.string :approved,     :limit => 0
       t.string :modified,     :limit => 0
       t.text :note
