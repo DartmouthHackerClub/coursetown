@@ -67,3 +67,8 @@ $ rake scrape:orc
 $ rake scrape:timetable
 $ rake scrape:departments
 ```
+Deploy
+------
+
+Just push your changes to the repository and our continuous deployment
+bot will automatically integrate it into the production app.
