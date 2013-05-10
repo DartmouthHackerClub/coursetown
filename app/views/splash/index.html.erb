@@ -21,33 +21,13 @@
     <% end %>
   </div>
 
-  <div class='shout'>
-    <h1>How It Works</h1>
-    <p>
-
-      To get started, either
-      <%= link_to %(search for classes you've taken), simple_search_path, :class => 'big' %> or use
-      the incredibly convenient new <%= link_to 'Quick Review Tool', quick_start_reviews_path, :class => 'big' %>
-      to rate classes with <em>unprecedented ease</em>.
-    </p>
     <% if @current_user.present? %>
-      <span id="review_count">You've written <strong><%= @review_count || 0 %></strong> reviews so far.</span>
+      <div class='shout'><span id="review_count">You've written <strong><%= @review_count || 0 %></strong> reviews so far.</span></div>
     <% end %>
-  </div>
+  
 
   <div id='beta_note'>
     <h2>Note: This site is in Beta</h2>
-    <p>
-
-      We built this site because we thought the other ones sucked, and we
-      know you agree. <%= link_to 'SA Course Guide', 'http://hacktown.cs.dartmouth.edu/gudru' -%>
-      makes writing reviews a <em>chore</em>, and somehow reading them is almost
-      as laborious. <%= link_to 'Course Rank', 'https://www.courserank.com/dartmouth/main' %>,
-      on the other hand, is <em>too</em> simple (and it's not very useful
-      without the old review data). We tried to design a new site with all the
-      criticism we'd heard from campus in mind, but we know it isn't
-      perfect yet.
-    </p>
     <ul class="unordered type10">
       <li>
         <strong>We want your feedback!</strong> If you do/don't like something,
