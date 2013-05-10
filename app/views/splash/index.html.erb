@@ -11,7 +11,7 @@
   </p>
 
   <div id='get_started'>
-    <%= link_to search_path, :class => 'pull-left', :id => 'search_splash_button' do %>
+    <%= link_to simple_search_path, :class => 'pull-left', :id => 'search_splash_button' do %>
         <h1>Search for Courses</h2>
         Find future classes to take, or past classes to review.
     <% end %>
@@ -26,7 +26,7 @@
     <p>
 
       To get started, either
-      <%= link_to %(search for classes you've taken), search_path, :class => 'big' %> or use
+      <%= link_to %(search for classes you've taken), simple_search_path, :class => 'big' %> or use
       the incredibly convenient new <%= link_to 'Quick Review Tool', quick_start_reviews_path, :class => 'big' %>
       to rate classes with <em>unprecedented ease</em>.
     </p>

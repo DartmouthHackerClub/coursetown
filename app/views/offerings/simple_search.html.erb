@@ -1,0 +1,83 @@
+<div class="PageTitle">
+  <h1>Search</h1>
+</div>
+<!-- Content Area -->
+<div id="content">
+
+  <%= form_tag(simple_search_path, :id => 'simple_search_form') do %>
+    <input id="search" type="text" name="q">
+    <input type="submit" value="Search" />
+    <a href="<%= search_path %>">Advanced Search</a>
+  <% end %>
+
+  <script type="text/javascript">
+    $(function() {
+      $('#search').focus();
+    });
+  </script>
+
+  <div id='search-results'>
+
+    <% @offerings.each do |offering| %>
+      <% course = offering.courses.first %>
+
+      <%
+        if course.blank?
+          logger.warn "OFFERING #{offering.id} has NO COURSES. skipping for search results"
+          next
+        end
+      %>
+
+      <%# attach metadata for sorting w/ HTML5's data-* attributes %>
+      <%= content_tag :div, :id => "search-result-#{offering.id}", :class => 'post',
+      'data-department' => course.department,
+        'data-number' => course.number,
+        'data-period' => offering.time,
+        'data-avg-median' => offering.median_grade do -%>
+          <%# TODO it would make more sense to use whatever course was the initial result of the search
+          so if I search CS 19, the results don't show Math 19 %>
+          <h2 class="department_num_title">
+            <%= link_to (raw "#{course.compact_title}: #{offering.title}"), course_reviews_path(:id => course.id, :offering => offering.id) -%>
+          </h2>
+          <% if offering.courses.size > 1 %>
+            <h4 class='x-listings'>X-Listed as:
+              <%= raw offering.courses.select{|c| c != course}.
+              map{|c| link_to c.compact_title, course_reviews_path(:id => course.id, :offering_id => offering.id)}.
+              join(', ') -%>
+            </h4>
+          <% end %>
+
+          <%# BAR %>
+          <div class='posted'>
+            <span class='author'>
+              <%= prof_links(offering) -%>
+            </span>
+            <span class='date'>
+              <%= "#{offering.year}#{offering.term}#{": #{offering.time}" if offering.time.present? }" -%>
+            </span>
+            <span class='category'>
+              <%= (d = [*offering.wc, *offering.distribs.map{|d| d.distrib_abbr}]).present? ? d.join(', ') : 'no distribs/wc' %>
+            </span>
+            <span class='comments'>
+              <%= link_to 'read reviews', course_reviews_path(:id => course.id, :offering_id => offering.id) -%>
+            </span>
+            <%# if offering.has_happened? %>
+            <%= link_to 'write review', new_reviews_path(:id => course.id, :offering_id => offering.id), :class => 'write_review_link' %>
+            <%# end %>
+          </div>
+
+          <span class='description'>
+            <% if offering.specific_desc.present? %>
+              <%= offering.specific_desc -%>
+            <% elsif (d = offering.courses.map(&:desc).find(&:present?)) %>
+              <%= raw d %>
+            <% else %>
+              (Course description unavailable)
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+
+  </div>
+</div>

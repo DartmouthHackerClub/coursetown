@@ -42,6 +42,17 @@ class OfferingsController < ApplicationController
     end
   end
 
+  def simple_search
+    @offerings = []
+    if request.post?
+      @offerings = Offering.search request.params[:q]
+    end
+
+    respond_to do |format|
+      format.html
+    end
+  end
+
   # GET /offerings
   # GET /offerings.xml
   def index

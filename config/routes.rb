@@ -19,7 +19,8 @@ Coursetown::Application.routes.draw do
 
   match "/am_i_logged_in" => 'users#am_i_logged_in', :as => :am_i_logged_in
 
-  match "/search" => "offerings#search", :as => :search
+  match "/search" => "offerings#simple_search", :as => :simple_search
+  match "/advanced_search" => "offerings#search", :as => :search
   match "/search_json" => "offerings#search_results", :as => :search_json
 
   match "/auth/:provider/callback" => "sessions#create"
