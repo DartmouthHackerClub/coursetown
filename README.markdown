@@ -67,6 +67,14 @@ $ rake scrape:orc
 $ rake scrape:timetable
 $ rake scrape:departments
 ```
+
+To get the Thinking Sphinx Index going:
+
+$ rake ts:index
+
+If you make any changes to the index, make sure to rebuild it:
+
+$ rake ts:rebuild
 Deploy
 ------
 
