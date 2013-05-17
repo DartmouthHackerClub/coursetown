@@ -59,8 +59,6 @@
             <li><%= link_to simple_search_path do %>
               Search<span class='menu_description'>Course Search</span>
               <% end %>
-              <!-- <a href="/" title="Home">Home<span class="menu_description">Front Page</span></a></li>
-            <li><span class="menuslide"></span><a href="/search" title="Search">Search<span class="menu_description">Course Search</span></a></li> -->
             <li><a href="<%= quick_start_reviews_path %>" title="Write Reviews">Write Reviews<span class="menu_description">Only takes a minute!</span></a></li>
             <% if @current_user.present? %>
               <li><a href="<%= signout_path %>" title="Logout">Logout</a></li>

@@ -1,83 +1,27 @@
 <%= stylesheet_link_tag "review" %>
 <div class="PageTitle">
-<h1>Quick Review</h1>
+<h1>Review Courses</h1>
 </div>
-<p class='prominent'>
-Quick Review makes it easy for you to write reviews.  Rather than enter each course manually, we'll figure out all the classes you've taken <em>for you</em>.
-</p>
-<p class='prominent'>
-Of course, you also have the option of simply searching "the old-fashioned way"
-for classes you've taken using <%= link_to 'the search page', simple_search_path %> and
-writing your reviews that way.
-</p>
-<h3>How does Quick Review work?</h3>
-<ol class='numbered'>
-  <li>You navigate to your own transcript on <%= link_to 'bannerstudent', 'https://dartmouth.edu/bannerstudent' %> and click QUICKREVIEW.
-  <li>QUICKREVIEW discards your grades and any identifying information on your
-    transcript. It sends a list of which courses you've taken to Course Picker.<br/>
-    <span class='hint'>(If you want to report your grades on your reviews, you can tell
-    QUICKREVIEW <strong>not</strong> to discard your grades, but this is completely optional)</span>
-  <li>Course Picker uses this list to make you a super nifty page for you
-    to review <em>dozens of courses at a time, on one page, in a matter of minutes</em>.
-  <li>Every review you write  helps other students pick good classes from bad.
-</ol>
+<h3>How do I write a review?</h3>
+<ul class='unordered type10'>
+  <li>Search for a course using the box below.
+  <li>Click on the "write review" button for your course on the right.
+  <li>Rate your course from 1-5 in a few categories.
+  <li>Every review you write helps other students pick good classes from bad!
+</ul>
+<br>
+<div id="content">
 
-<div>
-  <h2>Cool. Let's do it.</h2>
+  <%= form_tag(simple_search_path, :id => 'simple_search_form') do %>
+    <input id="search" type="text" name="q">
+    <input type="submit" value="Search" />
+    <a href="<%= search_path %>">Advanced Search</a>
+  <% end %>
 
-  <ul class="unordered type18">
-
-  <li>
-  Drag this link into your bookmarks bar at the top of your web browser <span id='quickreview_bookmarklet'>&raquo;<a href="javascript:(function()%7Bdocument.head.appendChild(document.createElement('script')).src='<%= root_url %>assets/transcript_scraper_bookmarklet.js';%7D)();">QUICKREVIEW</a></span>
-  </li>
-
-  <li>
-  Make sure you're on <strong>Dartmouth Secure</strong>before proceeding.
-  </li>
-
-  <li>
-  Go to <%= link_to 'bannerstudent', 'https://dartmouth.edu/bannerstudent' %> (or click the QUICKREVIEW bookmark in your bookmarks bar to
-  be taken there).
-  </li>
-
-  <li>
-  Go to <strong>Academic Transcript (Unofficial)</strong>, and choose the options <strong>Undergraduate</strong>
-  and <strong>Undergraduate Unofficial</strong> before hitting <strong>Submit</strong>.
-  </li>
-
-  <li>
-  Click the QUICKREVIEW bookmarklet.
-  </li>
-
-  <li>
-  Your browser might show you a warning. Don't worry, we're being careful with your data!
-  </li>
-
-  <li>
-  Party.
-  </li>
-
-  </ul>
-</div>
-
-<div>
-  <h3>We take your security seriously</h3>
-  <ul>
-    <li>The Quick Review tool will anonymize your data before it sends it to Course Picker.
-      It removes your identifying data (name and birthdate) from the transcript before anything else.
-      In fact, <strong>we will <em>never</em> store <em>any</em> identifying information that could be used
-      to figure out the identity of your profile.</strong>
-    <li>You have the <em>option</em> to report your grades using the Quick Review tool,
-      but <strong>you don't have to</strong>. The tool will prompt you before it sends any
-      data, and you can follow its instructions to remove your grades from your transcript
-      <em>before the tool sends that data to Course Picker</em>.
-    <li>These aren't just empty promises. I'm...actually building this site as part of my
-      senior thesis, and if malicious things happened on Course Picker, I'd fail! And then I wouldn't
-      graduate! So trust me, I want your data to be secure <em>just as much as you do.</em>
-    <li>If you have a knack for technology, I welcome you to check out Course Picker's
-      <%= link_to 'source code', 'https://github.com/DartmouthHackerClub/coursetown' %> and see for
-      yourself that we're being cautious. If you can point out a real security vulnerability, we'll
-      buy you a cookie or something.
-  </ul>
+  <script type="text/javascript">
+    $(function() {
+      $('#search').focus();
+    });
+  </script>
 </div>
 
