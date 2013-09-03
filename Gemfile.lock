@@ -69,6 +69,7 @@ GEM
       treetop (~> 1.4.8)
     middleware (0.1.0)
     mime-types (1.21)
+    mini_portile (0.5.1)
     multi_json (1.5.1)
     mysql2 (0.3.12b5)
     net-scp (1.1.0)
@@ -78,7 +79,8 @@ GEM
     net-ssh (2.6.5)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.5.6)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
     omniauth (1.1.2)
       hashie (~> 1.2)
       rack
