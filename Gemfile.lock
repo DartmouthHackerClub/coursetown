@@ -46,6 +46,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.4.0)
+    commonjs (0.2.7)
     daemons (1.1.9)
     erubis (2.7.0)
     eventmachine (1.0.0)
@@ -62,6 +63,13 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.7.7)
     kgio (2.8.0)
+    less (2.4.0)
+      commonjs (~> 0.2.7)
+    less-rails (2.4.2)
+      actionpack (>= 3.1)
+      less (~> 2.4.0)
+    less-rails-bootstrap (3.0.3)
+      less-rails (~> 2.4.2)
     libv8 (3.11.8.13)
     mail (2.3.3)
       i18n (>= 0.4.0)
@@ -169,6 +177,7 @@ DEPENDENCIES
   hpricot
   jquery-rails
   json (~> 1.7.7)
+  less-rails-bootstrap
   mysql2 (= 0.3.12b5)
   omniauth
   omniauth-cas

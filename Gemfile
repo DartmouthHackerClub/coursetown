@@ -24,6 +24,7 @@ group :assets do
 end
 
 gem 'jquery-rails'
+gem 'less-rails'
 gem 'pg'
 gem 'mysql2',          '0.3.12b5'
 gem 'thinking-sphinx', '~> 3.0.2'

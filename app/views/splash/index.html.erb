@@ -1,42 +1,15 @@
-
-<div class="PageTitle">
-  <h1>Welcome!</h1>
+<div class="page-header">
+	<h1 class="text-center">Course Search</h1>
 </div>
-
-<div id='content'>
-  <p class='tag-line'>
-    Welcome to <%= link_to 'Hacker Club', 'http://hackdartmouth.org/' %>
-    and
-    <%= link_to 'Student Assembly', 'http://dsa.dartmouth.edu/' %>'s Course Picker.
-  </p>
-
-  <div id='get_started'>
-    <%= link_to simple_search_path, :class => 'pull-left', :id => 'search_splash_button' do %>
-        <h1>Search for Courses</h2>
-        Find future classes to take, or past classes to review.
-    <% end %>
-    <%= link_to quick_start_reviews_path, :class => 'pull-right', :id => 'quick_start_review_button' do %>
-        <h1>Review Courses</h1>
-         Write a review in just a few clicks!
-    <% end %>
-  </div>
-
-    <% if @current_user.present? %>
-      <div class='shout'><span id="review_count">You've written <strong><%= @review_count || 0 %></strong> reviews so far.</span></div>
-    <% end %>
-  
-
-  <div id='beta_note'>
-    <h2>Note: This site is in Beta</h2>
-    <ul class="unordered type10">
-      <li>
-        <strong>We want your feedback!</strong> If you do/don't like something,
-        tell us! We're building this site for you, so we want you
-        to be happy with it! <br/>
-        Shoot us an email at <a href='mailto:hackerclub-core@googlegroups.com'>hackerclub-core@googlegroups.com</a>!
-      <li>We have a <i>bunch</i> of exciting features (course wishlists, search-by-rating, etc)
-        in the works that we'll hopefully be rolling out soon, so <em>stay tuned</em>
-        and be sure to tell us what you think of them.
-    </ul>
-  </div>
-</div>
+<div class="row">
+	<div class="col-lg-6 col-lg-offset-3">
+		<%= form_tag(simple_search_path) do %>
+		<div class="input-group">
+			<input type="text" class="input-lg form-control" placeholder="Search by course title, number, professor, etc." />
+			<span class="input-group-btn">
+				<button class="btn btn-default btn-lg" type="button">Search!</button>
+			</span>
+		</div><!-- /input-group -->
+		<% end %>
+	</div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
