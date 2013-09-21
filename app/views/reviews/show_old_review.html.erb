@@ -2,7 +2,7 @@
 <% course = courses.first %>
 <% x_listings = courses.size > 1 ? courses[1,courses.size-1] : nil %>
 
-<div class="PageTitle">
+<div class="page-header">
 <h1><%= course_link(course, @review.offering) %></h1>
 </div>
 

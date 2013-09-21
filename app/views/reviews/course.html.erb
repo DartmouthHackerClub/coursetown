@@ -1,9 +1,7 @@
 
-<div class="PageTitle">
+<div class="page-header">
 <h1><%= "#{@course.department} #{@course.number}: #{@course.long_title || @course.short_title || '(No title found)'}"%></h1>
 </div>
-
-<div id='content' class='group-review-content'>
 
   <% if @my_review.present? %>
     <%= link_to %(you've reviewed this course), edit_review_path(:id => @my_review.id),
@@ -59,4 +57,3 @@
     :locals => {:avgs => @old_avgs, :counts => @old_counts,
       :reviews => @old_reviews} %>
 
-</div>
