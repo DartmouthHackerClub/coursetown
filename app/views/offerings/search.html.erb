@@ -11,8 +11,8 @@
       <%= label_tag 'query[term]', 'Term' %>
       <%# ideally `years` would be determined by what's IN the database... %>
       <% years = ((Time.now.year-4)..(Time.now.year+1)).to_a.reverse %>
-      <% years = [2013, 2012, 2011] # TEMPORARY! %>
-      <%= select_tag 'query[year]', options_for_select([['any year',''],*years.map{|x| [x,x]}], 2013) %>
+      <% years = [2014, 2013, 2012, 2011] # TEMPORARY! %>
+      <%= select_tag 'query[year]', options_for_select([['any year',''],*years.map{|x| [x,x]}], 2014) %>
       <span id='terms'>
         <% %w(W S X F).each do |term| %>
           <% name = "query[term][#{term}]" %>

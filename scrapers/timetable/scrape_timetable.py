@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import json
 import urllib2
 from html5lib import HTMLParser, treebuilders
