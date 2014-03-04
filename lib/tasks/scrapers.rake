@@ -10,7 +10,7 @@ namespace :scrape do
   task :orc => :environment do
     num_new = 0
     # TODO where did this mysterious course_set file come from?
-    filename = 'scrapers/orc/course_set.json'
+    filename = 'scrapers/orc.json'
     Offering.transaction {
       File.open(filename, 'r') { |f|
         puts "loading the ORC JSON..."
@@ -40,7 +40,7 @@ namespace :scrape do
     puts "done: import finished. Updated #{num_new} courses. (#{Course.count} total)"
   end
   task :timetable => :environment do
-    filename = 'scrapers/timetable/timetable.json'
+    filename = 'scrapers/timetable.json'
 
     courses_count = 0
     offerings_count = 0
