@@ -45,7 +45,10 @@ class OfferingsController < ApplicationController
   def simple_search
     @offerings = []
     if request.post?
-      @offerings = Offering.search request.params[:q]
+      @offerings = Offering.search request.params[:q], :field_weights => {
+        :department => 3, :number => 3, :professor => 2,
+        :short_title => 2, :long_title => 1
+      }
     end
 
     respond_to do |format|
