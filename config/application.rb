@@ -56,7 +56,3 @@ module Coursetown
     )
   end
 end
-
-def local_request?
-    return false if RAILS_ENV == 'production'
-end

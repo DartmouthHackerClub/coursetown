@@ -9,6 +9,11 @@ class ApplicationController < ActionController::Base
     @current_user = User.find_by_id(session[:user_id])
   end
 
+  # so we don't get backtraces on production
+  def local_request?
+    false if RAILS_ENV == 'production'
+  end
+
   # TODO
   def not_found
     raise ActiveRecord::RoutingError.new(:not_found)
